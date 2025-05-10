@@ -1,0 +1,24 @@
+{
+  "name": "areeb",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "turbo dev"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.8.3"
+  },
+  "packageManager": "bun@1.2.0",
+  "workspaces": [
+    "./apps/*"
+  ],
+  "trustedDependencies": [
+    "@scarf/scarf",
+    "@swc/core",
+    "esbuild"
+  ]
+}
