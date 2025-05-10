@@ -1,5 +1,5 @@
+import { type InferRequestType, type InferResponseType, hc } from "hono/client";
 import type _app from "./app";
-import { hc, type InferRequestType, type InferResponseType } from "hono/client";
 
 // this is a trick to calculate the type when compiling
 const _client = hc<typeof _app>("");

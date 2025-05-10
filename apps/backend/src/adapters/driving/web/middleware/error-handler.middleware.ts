@@ -1,6 +1,6 @@
 import { BaseApiError } from "@/common/errors/base-api-error";
 import { BaseError } from "@/common/errors/base-error";
-import { BusinessNotFoundError } from "@/common/errors/business-not-found";
+import { EventNotFoundError } from "@/common/errors/event-not-found";
 import { InvalidCredentialsError } from "@/common/errors/invalid-credentials";
 import { ResourceAlreadyExists } from "@/common/errors/resource-already-exists";
 import { UnauthorizedError } from "@/common/errors/unauthorized";
@@ -17,7 +17,7 @@ export const errorHandler: ErrorHandler<AppBindings> = (err, c) => {
 
 	if (err instanceof BaseError) {
 		switch (true) {
-			case err instanceof BusinessNotFoundError:
+			case err instanceof EventNotFoundError:
 			case err instanceof UserNotFoundError: {
 				[statusCode, errorMessage] = [404, err.message];
 				break;

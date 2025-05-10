@@ -1,9 +1,0 @@
-CREATE TYPE UserRole AS ENUM ('USER', 'ADMIN');
-
-CREATE TABLE "user" (
-    "user_id" SERIAL PRIMARY KEY,
-    "email" VARCHAR UNIQUE NOT NULL,
-    "password" VARCHAR NOT NULL,
-    "role" UserRole NOT NULL,
-    "created_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-);

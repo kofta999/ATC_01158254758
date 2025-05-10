@@ -4,13 +4,17 @@ import {
 	db,
 } from "@/adapters/driven/database/data-sources/drizzle/drizzle.data-source";
 import { PostgresDataSource } from "@/adapters/driven/database/data-sources/postgres/postgres.data-source";
+import { EventRepositoryAdapter } from "@/adapters/driven/database/repositories/event/event.repository.adapter";
 import { UserRepositoryAdapter } from "@/adapters/driven/database/repositories/user/user.repository.adapter";
 import { BcryptPasswordAdapter } from "@/adapters/driven/security/bcrypt-password.adapter";
 import { HonoJwtAdapter } from "@/adapters/driven/security/hono-jwt.adapter";
+import { EventService } from "@/core/application/services/event.service";
 import { UserService } from "@/core/application/services/user.service";
 import env from "@/env";
-import type { UserApiPort } from "@/ports/input/user";
+import type { EventApiPort } from "@/ports/input/event";
+import type { UserApiPort } from "@/ports/input/user/user";
 import type { CachePort } from "@/ports/output/cache/cache.port";
+import type { EventRepositoryPort } from "@/ports/output/repositories/event.repository.port";
 import type { UserRepositoryPort } from "@/ports/output/repositories/user.repository.port";
 import type { JwtPort } from "@/ports/output/security/jwt.port";
 import type { PasswordPort } from "@/ports/output/security/password.port";
@@ -33,9 +37,13 @@ mainContainer
 mainContainer
 	.bind<UserRepositoryPort>(TYPES.UserRepositoryPort)
 	.to(UserRepositoryAdapter);
+mainContainer
+	.bind<EventRepositoryPort>(TYPES.EventRepositoryPort)
+	.to(EventRepositoryAdapter);
 
 // Services
 mainContainer.bind<UserApiPort>(TYPES.UserApiPort).to(UserService);
+mainContainer.bind<EventApiPort>(TYPES.EventApiPort).to(EventService);
 
 // Common services
 mainContainer

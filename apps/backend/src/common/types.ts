@@ -24,9 +24,11 @@ export type UserRole = (typeof userrole.enumValues)[number];
 export const TYPES = {
 	// Input Ports
 	UserApiPort: Symbol.for("UserApiPort"),
+	EventApiPort: Symbol.for("EventApiPort"),
 
 	// Output Ports
 	UserRepositoryPort: Symbol.for("UserRepositoryPort"),
+	EventRepositoryPort: Symbol.for("EventRepositoryPort"),
 	CachePort: Symbol.for("CachePort"),
 	JwtPort: Symbol.for("JwtPort"),
 	PasswordPort: Symbol.for("PasswordPort"),
