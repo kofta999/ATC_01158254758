@@ -70,6 +70,12 @@ export class UserService implements UserApiPort {
 			throw new InvalidCredentialsError();
 		}
 
+		const isRoleValid = dto.role === user.role;
+
+		if (!isRoleValid) {
+			throw new InvalidCredentialsError();
+		}
+
 		const token = await this.jwtService.sign({
 			email: user.email,
 			userId: user.userId,
