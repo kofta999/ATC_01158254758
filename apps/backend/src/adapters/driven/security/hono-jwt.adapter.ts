@@ -7,7 +7,8 @@ import { inject, injectable } from "inversify";
 @injectable()
 export class HonoJwtAdapter<Payload extends JWTPayload> implements JwtPort {
 	private secret: string;
-	private TOKEN_EXP_SECONDS = 60 as const;
+	// 15 mins * 60 secs
+	private TOKEN_EXP_SECONDS = 900 as const;
 
 	constructor(@inject(TYPES.JWT_SECRET) secret: string) {
 		this.secret = secret;

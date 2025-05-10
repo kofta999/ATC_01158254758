@@ -40,7 +40,7 @@ describe("User database repository", () => {
 			const user = new User({
 				email: "test",
 				password: "test",
-				role: "BUSINESS",
+				role: "USER",
 			});
 
 			const userId = await repo.create(user);
@@ -57,7 +57,7 @@ describe("User database repository", () => {
 				userId: 1,
 				email: "test",
 				password: "test",
-				role: "BUSINESS",
+				role: "USER",
 				createdAt: new Date(),
 			};
 
@@ -97,7 +97,7 @@ describe("User database repository", () => {
 				userId: 1,
 				email: "test",
 				password: "test",
-				role: "BUSINESS",
+				role: "USER",
 				createdAt: new Date(),
 			};
 			(mockDb.query.userTable.findFirst as jest.Mock).mockResolvedValueOnce(

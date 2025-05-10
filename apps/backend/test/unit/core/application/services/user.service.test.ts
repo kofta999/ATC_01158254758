@@ -45,7 +45,7 @@ describe("User service", () => {
 			const user = {
 				email: "test",
 				password: "test",
-				role: "BUSINESS" as const,
+				role: "USER" as const,
 			};
 			mockPasswordService.hashPassword.mockReturnValueOnce(
 				Promise.resolve("test"),
@@ -64,7 +64,7 @@ describe("User service", () => {
 			const user = {
 				email: "test",
 				password: "test",
-				role: "BUSINESS" as const,
+				role: "USER" as const,
 			};
 
 			mockUserRepo.getByEmail.mockResolvedValueOnce(new User({ ...user }));
@@ -79,7 +79,7 @@ describe("User service", () => {
 			const user = {
 				email: "test",
 				password: "test",
-				role: "BUSINESS" as const,
+				role: "USER" as const,
 			};
 			mockPasswordService.hashPassword.mockRejectedValueOnce(error);
 
@@ -94,7 +94,7 @@ describe("User service", () => {
 			const user = {
 				email: "test",
 				password: "test",
-				role: "BUSINESS" as const,
+				role: "USER" as const,
 			};
 
 			mockUserRepo.create.mockRejectedValueOnce(
@@ -116,7 +116,7 @@ describe("User service", () => {
 			};
 
 			mockUserRepo.getByEmail.mockResolvedValueOnce(
-				new User({ ...user, role: "BUSINESS", userId: 1 }),
+				new User({ ...user, role: "USER", userId: 1 }),
 			);
 
 			mockPasswordService.comparePassword.mockResolvedValueOnce(true);
@@ -131,7 +131,7 @@ describe("User service", () => {
 			expect(mockJwtService.sign).toHaveBeenCalledWith({
 				email: user.email,
 				userId: 1,
-				role: "BUSINESS",
+				role: "USER",
 			});
 		});
 
@@ -142,7 +142,7 @@ describe("User service", () => {
 			};
 
 			mockUserRepo.getByEmail.mockResolvedValueOnce(
-				new User({ ...user, role: "BUSINESS", userId: 1 }),
+				new User({ ...user, role: "USER", userId: 1 }),
 			);
 
 			mockPasswordService.comparePassword.mockResolvedValueOnce(false);
@@ -175,7 +175,7 @@ describe("User service", () => {
 			};
 
 			mockUserRepo.getByEmail.mockResolvedValueOnce(
-				new User({ ...user, role: "BUSINESS", userId: 1 }),
+				new User({ ...user, role: "USER", userId: 1 }),
 			);
 			mockPasswordService.comparePassword.mockResolvedValueOnce(true);
 
@@ -194,7 +194,7 @@ describe("User service", () => {
 			};
 
 			mockUserRepo.getByEmail.mockResolvedValueOnce(
-				new User({ ...user, role: "BUSINESS", userId: 1 }),
+				new User({ ...user, role: "USER", userId: 1 }),
 			);
 
 			mockPasswordService.comparePassword.mockRejectedValue(

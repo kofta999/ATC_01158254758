@@ -24,7 +24,7 @@ if (env.DATABASE_URL) {
 
 export default defineConfig({
   out: './src/adapters/driven/database/data-sources/drizzle',
-  schema: './src/db/schema.ts',
+  schema: './src/adapters/driven/database/data-sources/drizzle/schema.ts',
   dialect: 'postgresql',
   dbCredentials: {...config, ssl: false},
 });

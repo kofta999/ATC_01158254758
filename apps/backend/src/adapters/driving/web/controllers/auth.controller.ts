@@ -1,7 +1,7 @@
 import { type AppRouteHandler, TYPES } from "@/common/types";
 import type { UserApiPort } from "@/ports/input/user";
 import { inject } from "inversify";
-import type { LoginRoute } from "../routes/auth.routes";
+import type { LoginRoute, RegisterRoute } from "../routes/auth.routes";
 
 export class AuthController {
 	constructor(@inject(TYPES.UserApiPort) private userService: UserApiPort) {}
@@ -20,5 +20,16 @@ export class AuthController {
 			},
 			200,
 		);
+	};
+
+	register: AppRouteHandler<RegisterRoute> = async (c) => {
+		const userData = c.req.valid("json");
+
+		const userId = await this.userService.registerUser({
+			...userData,
+			role: "USER",
+		});
+
+		return c.json({ userId }, 200);
 	};
 }

@@ -14,10 +14,9 @@ function initializeRouters() {
 	const adminController = mainContainer.get(AdminController);
 
 	// Routers
-	const authRouter = createRouter().openapi(
-		authRoutes.login,
-		authController.login,
-	);
+	const authRouter = createRouter()
+		.openapi(authRoutes.login, authController.login)
+		.openapi(authRoutes.register, authController.register);
 
 	const adminRouter = createRouter();
 

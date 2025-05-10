@@ -1,5 +1,5 @@
 import { LoginUserSchema } from "@/common/dtos/login-user.dto";
-import { RegisterBusinessSchema } from "@/common/dtos/register-business.dto";
+import { RegisterUserSchema } from "@/common/dtos/register-user.dto";
 import jsonContent from "@/common/util/json-content";
 import { createRoute } from "@hono/zod-openapi";
 import { z } from "zod";
@@ -25,3 +25,23 @@ export const login = createRoute({
 });
 
 export type LoginRoute = typeof login;
+
+export const register = createRoute({
+	path: "/register",
+	method: "post",
+	tags,
+	summary: "Register",
+	request: {
+		body: jsonContent(RegisterUserSchema, "Registering user's data"),
+	},
+	responses: {
+		200: jsonContent(
+			z.object({
+				userId: z.number(),
+			}),
+			"The user ID",
+		),
+	},
+});
+
+export type RegisterRoute = typeof register;

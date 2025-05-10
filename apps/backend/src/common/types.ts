@@ -1,3 +1,4 @@
+import type { userrole } from "@/adapters/driven/database/data-sources/drizzle/schema";
 import type { OpenAPIHono, RouteConfig, RouteHandler } from "@hono/zod-openapi";
 import type { Env } from "hono";
 import type { PinoLogger } from "hono-pino";
@@ -18,7 +19,7 @@ export type AppRouteHandler<R extends RouteConfig> = RouteHandler<
 
 export type Rating = number;
 
-export type UserRole = "BUSINESS" | "REVIEWER" | "ADMIN";
+export type UserRole = (typeof userrole.enumValues)[number];
 
 export const TYPES = {
 	// Input Ports

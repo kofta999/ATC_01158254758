@@ -1,4 +1,4 @@
-type UserRole = "BUSINESS" | "REVIEWER" | "ADMIN";
+import type { UserRole } from "@/common/types";
 
 export class User {
 	userId?: number;
