@@ -6,6 +6,8 @@ import { ErrorSchema } from "@/common/schemas/error-schema";
 import { IdSchema } from "@/common/schemas/id-schema";
 import jsonContent from "@/common/util/json-content";
 import { createRoute } from "@hono/zod-openapi";
+import { authMiddleware } from "../middleware/auth.middleware";
+import { requireRole } from "../middleware/require-role.middleware";
 
 const tags = ["Events"];
 
@@ -40,6 +42,7 @@ export type GetEventByIdRoute = typeof getEventById;
 export const createEvent = createRoute({
 	path: "/",
 	method: "post",
+	middleware: [authMiddleware, requireRole("ADMIN")] as const,
 	tags,
 	summary: "Create a new event",
 	request: {
@@ -56,6 +59,7 @@ export type CreateEventRoute = typeof createEvent;
 export const updateEvent = createRoute({
 	path: "/{id}",
 	method: "put",
+	middleware: [authMiddleware, requireRole("ADMIN")] as const,
 	tags,
 	summary: "Update an event",
 	request: {
@@ -74,6 +78,7 @@ export const deleteEvent = createRoute({
 	path: "/{id}",
 	method: "delete",
 	tags,
+	middleware: [authMiddleware, requireRole("ADMIN")] as const,
 	summary: "Delete an event",
 	request: {
 		params: IdSchema,

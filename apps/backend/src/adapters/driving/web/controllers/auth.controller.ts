@@ -7,11 +7,12 @@ export class AuthController {
 	constructor(@inject(TYPES.UserApiPort) private userService: UserApiPort) {}
 
 	login: AppRouteHandler<LoginRoute> = async (c) => {
-		const { email, password } = c.req.valid("json");
+		const { email, password, role } = c.req.valid("json");
 
 		const token = await this.userService.loginUser({
 			email,
 			password,
+			role,
 		});
 
 		return c.json(
