@@ -1,14 +1,17 @@
 import { PrimaryButton } from "../../components/primary-button";
 import { Card } from "../../components/card";
-import { registerUser } from "../../actions/auth";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { router } from "@/main";
+import { RegisterUserSchema } from "@/schemas";
+import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/(auth)/register")({
   component: Register,
 });
 
 export default function Register() {
+  const auth = useAuth();
+
   return (
     <div className="flex items-center justify-center h-screen bg-background">
       <Card className="max-w-lg w-96">
@@ -18,7 +21,11 @@ export default function Register() {
           onSubmit={async (e) => {
             e.preventDefault();
             try {
-              await registerUser(new FormData(e.currentTarget));
+              const parsed = RegisterUserSchema.parse(
+                new FormData(e.currentTarget),
+              );
+
+              await auth.login(parsed.email, parsed.password);
               router.navigate({ to: "/login" });
             } catch (error: any) {
               console.error("Registration failed:", error.message);
@@ -36,6 +43,7 @@ export default function Register() {
             <input
               type="email"
               id="email"
+              name="email"
               className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:outline-none"
               placeholder="your@email.com"
             />
@@ -50,6 +58,7 @@ export default function Register() {
             <input
               type="password"
               id="password"
+              name="password"
               className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:outline-none"
               placeholder="********"
             />

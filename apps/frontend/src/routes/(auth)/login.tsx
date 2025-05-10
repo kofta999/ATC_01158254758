@@ -1,23 +1,28 @@
 import { PrimaryButton } from "../../components/primary-button";
 import { Card } from "../../components/card";
-import { loginUser } from "@/actions/auth";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { router } from "@/main";
+import { useAuth } from "@/hooks/use-auth";
+import { LoginUserSchema } from "@/schemas";
 
 export const Route = createFileRoute("/(auth)/login")({
   component: Login,
 });
 
 export default function Login() {
+  const auth = useAuth();
+
   return (
     <Card className="max-w-lg w-96">
       <h1 className="text-2xl font-bold mb-4">Login</h1>
       <form
         className="flex flex-col gap-4"
         onSubmit={async (e) => {
-          e.preventDefault(); // Prevent default form submission
+          e.preventDefault();
           try {
-            await loginUser(new FormData(e.currentTarget));
+            const parsed = LoginUserSchema.parse(new FormData(e.currentTarget));
+            await auth.login(parsed.email, parsed.password);
+
             router.navigate({ to: "/" });
           } catch (error: any) {
             // Handle errors (e.g., display an error message)

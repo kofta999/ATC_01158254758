@@ -1,3 +1,4 @@
+import { AuthProvider } from "@/hooks/use-auth";
 import { Outlet, createRootRoute } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 
@@ -16,7 +17,9 @@ export default function RootLayout() {
       <meta name="description" content="An internet website!" />
       <link rel="icon" type="image/png" href="/images/favicon.png" />
       <main className="flex items-center justify-center min-h-screen">
-        <Outlet />
+        <AuthProvider>
+          <Outlet />
+        </AuthProvider>
       </main>
     </div>
   );
