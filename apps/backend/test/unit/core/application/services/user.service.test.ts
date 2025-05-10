@@ -113,6 +113,7 @@ describe("User service", () => {
 			const user = {
 				email: "test",
 				password: "test",
+				role: "USER" as const,
 			};
 
 			mockUserRepo.getByEmail.mockResolvedValueOnce(
@@ -139,6 +140,7 @@ describe("User service", () => {
 			const user = {
 				email: "test",
 				password: "test",
+				role: "USER" as const,
 			};
 
 			mockUserRepo.getByEmail.mockResolvedValueOnce(
@@ -158,6 +160,7 @@ describe("User service", () => {
 			const user = {
 				email: "test",
 				password: "test",
+				role: "USER" as const,
 			};
 
 			mockUserRepo.getByEmail.mockRejectedValue(new Error("user not found"));
@@ -172,6 +175,7 @@ describe("User service", () => {
 			const user = {
 				email: "test",
 				password: "test",
+				role: "USER" as const,
 			};
 
 			mockUserRepo.getByEmail.mockResolvedValueOnce(
@@ -191,6 +195,7 @@ describe("User service", () => {
 			const user = {
 				email: "test",
 				password: "test",
+				role: "USER" as const,
 			};
 
 			mockUserRepo.getByEmail.mockResolvedValueOnce(

@@ -12,7 +12,7 @@ import { EventService } from "@/core/application/services/event.service";
 import { UserService } from "@/core/application/services/user.service";
 import env from "@/env";
 import type { EventApiPort } from "@/ports/input/event";
-import type { UserApiPort } from "@/ports/input/user/user";
+import type { UserApiPort } from "@/ports/input/user";
 import type { CachePort } from "@/ports/output/cache/cache.port";
 import type { EventRepositoryPort } from "@/ports/output/repositories/event.repository.port";
 import type { UserRepositoryPort } from "@/ports/output/repositories/user.repository.port";

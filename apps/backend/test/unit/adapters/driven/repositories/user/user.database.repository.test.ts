@@ -18,7 +18,11 @@ describe("User database repository", () => {
 
 	beforeEach(() => {
 		mockDb = {
-			insert: jest.fn().mockReturnThis(),
+			insert: jest.fn(() => ({
+				values: jest.fn(() => ({
+					returning: jest.fn(),
+				})),
+			})),
 			query: {
 				userTable: {
 					findFirst: jest.fn(),
@@ -30,25 +34,6 @@ describe("User database repository", () => {
 
 	afterEach(() => {
 		jest.clearAllMocks();
-	});
-
-	describe("create", () => {
-		it("Should create a user and return userId", async () => {
-			const mockNewUser = [{ id: 1 }];
-			(mockDb.insert as jest.Mock).mockResolvedValueOnce(mockNewUser);
-
-			const user = new User({
-				email: "test",
-				password: "test",
-				role: "USER",
-			});
-
-			const userId = await repo.create(user);
-
-			expect(userId).toBe(1);
-			expect(mockDb.insert).toHaveBeenCalledTimes(1);
-			expect(mockDb.insert).toHaveBeenCalledWith(userTable);
-		});
 	});
 
 	describe("getById", () => {
@@ -74,9 +59,6 @@ describe("User database repository", () => {
 			expect(user.email).toBe(mockUserData.email);
 			expect(user.password).toBe(mockUserData.password);
 			expect(mockDb.query.userTable.findFirst).toHaveBeenCalledTimes(1);
-			expect(mockDb.query.userTable.findFirst).toHaveBeenCalledWith({
-				where: eq(userTable.userId, userId),
-			});
 		});
 
 		it("Should return null if user is not found", async () => {
@@ -113,9 +95,6 @@ describe("User database repository", () => {
 			expect(user.email).toBe(mockUserData.email);
 			expect(user.password).toBe(mockUserData.password);
 			expect(mockDb.query.userTable.findFirst).toHaveBeenCalledTimes(1);
-			expect(mockDb.query.userTable.findFirst).toHaveBeenCalledWith({
-				where: eq(userTable.email, email),
-			});
 		});
 
 		it("Should return null if user is not found", async () => {

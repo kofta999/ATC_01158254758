@@ -36,7 +36,7 @@ describe("HonoJwtAdapter", () => {
 			expect(sign).toHaveBeenCalledWith(
 				{
 					...payload,
-					exp: nowSeconds + 60, // TOKEN_EXP_SECONDS = 60
+					exp: nowSeconds + 900, // TOKEN_EXP_SECONDS = 900
 					iat: nowSeconds,
 				},
 				secret,

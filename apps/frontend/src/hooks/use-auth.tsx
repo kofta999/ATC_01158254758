@@ -5,7 +5,11 @@ import { sleep } from "../utils";
 
 export interface AuthContextType {
   isAuthenticated: boolean;
-  login: (email: string, password: string) => Promise<boolean>;
+  login: (
+    email: string,
+    password: string,
+    role: "USER" | "ADMIN",
+  ) => Promise<boolean>;
   register: (email: string, password: string) => Promise<boolean>;
   logout: () => Promise<void>;
   token: string | null;
@@ -13,7 +17,7 @@ export interface AuthContextType {
 
 const AuthContext = React.createContext<AuthContextType | null>(null);
 
-const key = "tanstack.auth.accessToken";
+const key = "auth.accessToken";
 
 function getStoredToken() {
   return localStorage.getItem(key);
@@ -38,27 +42,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setToken(null);
   }, []);
 
-  const login = React.useCallback(async (email: string, password: string) => {
-    try {
-      const response = await baseApiClient.auth.login.$post({
-        json: { email, password },
-      });
+  const login = React.useCallback(
+    async (email: string, password: string, role: "USER" | "ADMIN") => {
+      try {
+        const response = await baseApiClient.auth.login.$post({
+          json: { email, password, role },
+        });
 
-      if (!response.ok) {
-        throw new Error("Server error");
+        if (!response.ok) {
+          throw new Error("Server error");
+        }
+
+        const data = await response.json();
+        const accessToken = data.token;
+        setStoredToken(accessToken);
+        setToken(accessToken);
+        return true;
+      } catch (error: any) {
+        console.error("Login failed:", error.message);
+        alert(error.message);
+        return false;
       }
-
-      const data = await response.json();
-      const accessToken = data.token;
-      setStoredToken(accessToken);
-      setToken(accessToken);
-      return true;
-    } catch (error: any) {
-      console.error("Login failed:", error.message);
-      alert(error.message);
-      return false;
-    }
-  }, []);
+    },
+    [],
+  );
 
   const register = React.useCallback(
     async (email: string, password: string) => {

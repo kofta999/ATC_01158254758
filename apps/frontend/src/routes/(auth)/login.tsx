@@ -21,7 +21,7 @@ export default function Login() {
           e.preventDefault();
           try {
             const parsed = LoginUserSchema.parse(new FormData(e.currentTarget));
-            await auth.login(parsed.email, parsed.password);
+            await auth.login(parsed.email, parsed.password, "USER");
 
             router.navigate({ to: "/" });
           } catch (error: any) {
