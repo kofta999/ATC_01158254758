@@ -20,5 +20,8 @@
     "@scarf/scarf",
     "@swc/core",
     "esbuild"
-  ]
+  ],
+  "dependencies": {
+    "turbo": "^2.5.3"
+  }
 }
