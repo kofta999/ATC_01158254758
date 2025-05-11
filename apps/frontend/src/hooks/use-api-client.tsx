@@ -2,6 +2,7 @@ import { hcWithType } from "@repo/areeb-backend";
 import { useAuth } from "./use-auth";
 import { useCallback } from "react";
 
+const API_URL = import.meta.env.PUBLIC_API_URL || "http://localhost:3000";
 type CustomFetch = typeof fetch;
 
 export const useApiClient = () => {
@@ -33,10 +34,10 @@ export const useApiClient = () => {
 
     const fetchOptions = { headers, fetch: customFetch };
 
-    return hcWithType("http://localhost:3000", fetchOptions).api.v1;
+    return hcWithType(API_URL, fetchOptions).api.v1;
   }, [isAuthenticated, token, logout]); // Added logout to dependency array
 
   return getApiClient;
 };
 
-export const baseApiClient = hcWithType("http://localhost:3000").api.v1;
+export const baseApiClient = hcWithType(API_URL).api.v1;
