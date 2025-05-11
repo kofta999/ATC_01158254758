@@ -42,7 +42,7 @@
   "exports": {
     ".": {
       "types": "./dist/src/hc.d.ts",
-      "default": "./dist/src/hc.js"
+      "import": "./dist/src/hc.js"
     }
   },
   "packageManager": "bun@1.2.0"
