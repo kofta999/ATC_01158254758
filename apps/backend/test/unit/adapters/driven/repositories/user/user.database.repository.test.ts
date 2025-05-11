@@ -1,9 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, jest } from "bun:test";
 import type { DrizzleDataSource } from "@/adapters/driven/database/data-sources/drizzle/drizzle.data-source";
-import { userTable } from "@/adapters/driven/database/data-sources/drizzle/schema";
 import { UserDatabaseRepository } from "@/adapters/driven/database/repositories/user/user.database.repository";
 import { User } from "@/core/domain/entities/user";
-import { eq } from "drizzle-orm";
 
 describe("User database repository", () => {
 	let mockDb: {

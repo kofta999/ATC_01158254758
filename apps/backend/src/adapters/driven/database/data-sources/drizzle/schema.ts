@@ -36,3 +36,27 @@ export const eventTable = pgTable("event", {
 	price: integer("price").notNull(),
 	image: varchar("image").notNull(),
 });
+
+export const bookingTable = pgTable(
+	"booking",
+	{
+		bookingId: serial("booking_id").primaryKey().notNull(),
+		userId: integer("user_id")
+			.notNull()
+			.references(() => userTable.userId),
+		eventId: integer("event_id")
+			.notNull()
+			.references(() => eventTable.eventId),
+		createdAt: timestamp("created_at", { mode: "string" })
+			.default(sql`CURRENT_TIMESTAMP`)
+			.notNull(),
+	},
+	(table) => {
+		return {
+			userIdEventIdUnique: unique("user_id_event_id_unique").on(
+				table.userId,
+				table.eventId,
+			),
+		};
+	},
+);

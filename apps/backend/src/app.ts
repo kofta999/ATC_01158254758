@@ -1,9 +1,11 @@
 import * as authRoutes from "@/adapters/driving/web/routes/auth.routes";
+import * as bookingRoutes from "@/adapters/driving/web/routes/booking.routes";
 import * as eventRoutes from "@/adapters/driving/web/routes/event.routes";
 import configureOpenAPI from "@/common/util/configure-open-api";
 import { createRouter } from "@/common/util/create-router";
 import { AdminController } from "./adapters/driving/web/controllers/admin.controller";
 import { AuthController } from "./adapters/driving/web/controllers/auth.controller";
+import { BookingController } from "./adapters/driving/web/controllers/booking.controller";
 import { EventController } from "./adapters/driving/web/controllers/event.controller";
 import { errorHandler } from "./adapters/driving/web/middleware/error-handler.middleware";
 import { loggerMiddleware } from "./adapters/driving/web/middleware/pino-logger.middleware";
@@ -15,6 +17,7 @@ function initializeRouters() {
 	const authController = mainContainer.get(AuthController);
 	const adminController = mainContainer.get(AdminController);
 	const eventController = mainContainer.get(EventController);
+	const bookingController = mainContainer.get(BookingController);
 
 	// Routers
 	const authRouter = createRouter()
@@ -30,9 +33,11 @@ function initializeRouters() {
 		.openapi(eventRoutes.updateEvent, eventController.updateEvent)
 		.openapi(eventRoutes.deleteEvent, eventController.deleteEvent);
 
-	return { adminRouter, authRouter, eventRouter };
+	const bookingRouter = createRouter()
+		.openapi(bookingRoutes.createBooking, bookingController.createBooking)
+		.openapi(bookingRoutes.deleteBooking, bookingController.deleteBooking);
 
-	// app
+	return { adminRouter, authRouter, eventRouter, bookingRouter };
 }
 
 // Initializes all middlewares etc
@@ -43,13 +48,15 @@ function bootstrap() {
 
 	configureOpenAPI(app);
 
-	const { adminRouter, authRouter, eventRouter } = initializeRouters();
+	const { adminRouter, authRouter, eventRouter, bookingRouter } =
+		initializeRouters();
 
 	return (
 		app
 			.route("/api/v1/auth", authRouter)
 			.route("/api/v1/admin", adminRouter)
 			.route("/api/v1/events", eventRouter)
+			.route("/api/v1/bookings", bookingRouter)
 			// Go to docs on /
 			.get("/", (c) => c.redirect("/reference"))
 			.onError(errorHandler)

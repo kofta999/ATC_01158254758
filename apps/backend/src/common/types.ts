@@ -6,7 +6,7 @@ import type { PinoLogger } from "hono-pino";
 export interface AppBindings extends Env {
 	Variables: {
 		logger: PinoLogger;
-		user: { id: string; email: string; role: UserRole };
+		user: { userId: number; email: string; role: UserRole };
 	};
 }
 
@@ -25,10 +25,12 @@ export const TYPES = {
 	// Input Ports
 	UserApiPort: Symbol.for("UserApiPort"),
 	EventApiPort: Symbol.for("EventApiPort"),
+	BookingApiPort: Symbol.for("BookingApiPort"),
 
 	// Output Ports
 	UserRepositoryPort: Symbol.for("UserRepositoryPort"),
 	EventRepositoryPort: Symbol.for("EventRepositoryPort"),
+	BookingRepositoryPort: Symbol.for("BookingRepositoryPort"),
 	CachePort: Symbol.for("CachePort"),
 	JwtPort: Symbol.for("JwtPort"),
 	PasswordPort: Symbol.for("PasswordPort"),

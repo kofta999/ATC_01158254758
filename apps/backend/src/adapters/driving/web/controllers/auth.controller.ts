@@ -1,5 +1,5 @@
 import { type AppRouteHandler, TYPES } from "@/common/types";
-import type { UserApiPort } from "@/ports/input/user";
+import type { UserApiPort } from "@/ports/input/user.port";
 import { inject } from "inversify";
 import type { LoginRoute, RegisterRoute } from "../routes/auth.routes";
 

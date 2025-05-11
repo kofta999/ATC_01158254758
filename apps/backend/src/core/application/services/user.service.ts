@@ -5,7 +5,7 @@ import { UserNotFoundError } from "@/common/errors/user-not-found";
 import { TYPES } from "@/common/types";
 import { Logger } from "@/common/util/logger";
 import { User } from "@/core/domain/entities/user";
-import type { UserApiPort } from "@/ports/input/user";
+import type { UserApiPort } from "@/ports/input/user.port";
 import type { UserRepositoryPort } from "@/ports/output/repositories/user.repository.port";
 import type { JwtPort } from "@/ports/output/security/jwt.port";
 import type { PasswordPort } from "@/ports/output/security/password.port";

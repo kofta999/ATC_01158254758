@@ -3,7 +3,7 @@ import { InvalidCredentialsError } from "@/common/errors/invalid-credentials";
 import { ResourceAlreadyExists } from "@/common/errors/resource-already-exists";
 import { UserService } from "@/core/application/services/user.service";
 import { User } from "@/core/domain/entities/user";
-import type { UserApiPort } from "@/ports/input/user";
+import type { UserApiPort } from "@/ports/input/user.port";
 import {
 	type MockJwtService,
 	createMockJwtService,

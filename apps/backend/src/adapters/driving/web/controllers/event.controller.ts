@@ -1,5 +1,5 @@
 import { type AppRouteHandler, TYPES } from "@/common/types";
-import type { EventApiPort } from "@/ports/input/event";
+import type { EventApiPort } from "@/ports/input/event.port";
 import { inject, injectable } from "inversify";
 import type {
 	CreateEventRoute,

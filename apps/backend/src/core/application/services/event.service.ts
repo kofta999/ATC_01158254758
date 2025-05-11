@@ -2,10 +2,10 @@ import type { CreateEventDTO } from "@/common/dtos/create-event.dto";
 import type { EventDetailsDTO } from "@/common/dtos/event-details.dto";
 import type { EventListDTO } from "@/common/dtos/event-list.dto";
 import type { UpdateEventDTO } from "@/common/dtos/update-event.dto";
-import { EventNotFoundError } from "@/common/errors/event-not-found";
+import { ResourceNotFoundError } from "@/common/errors/resource-not-found";
 import { TYPES } from "@/common/types";
 import type { Event } from "@/core/domain/entities/event";
-import type { EventApiPort } from "@/ports/input/event";
+import type { EventApiPort } from "@/ports/input/event.port";
 import type { EventRepositoryPort } from "@/ports/output/repositories/event.repository.port";
 import { inject, injectable } from "inversify";
 
@@ -24,7 +24,7 @@ export class EventService implements EventApiPort {
 		const maybeEvent = await this.eventRepository.getById(eventId);
 
 		if (!maybeEvent) {
-			throw new EventNotFoundError(eventId);
+			throw new ResourceNotFoundError("Event", eventId);
 		}
 
 		return maybeEvent;
@@ -44,7 +44,7 @@ export class EventService implements EventApiPort {
 		);
 
 		if (!maybeEvent) {
-			throw new EventNotFoundError(eventId);
+			throw new ResourceNotFoundError("Event", eventId);
 		}
 
 		return maybeEvent;
@@ -54,7 +54,7 @@ export class EventService implements EventApiPort {
 		const maybeEvent = await this.eventRepository.delete(eventId);
 
 		if (!maybeEvent) {
-			throw new EventNotFoundError(eventId);
+			throw new ResourceNotFoundError("Event", eventId);
 		}
 
 		return maybeEvent;

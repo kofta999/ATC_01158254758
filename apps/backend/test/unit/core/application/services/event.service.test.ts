@@ -2,10 +2,10 @@ import { afterEach, beforeEach, describe, expect, it, jest } from "bun:test";
 import type { CreateEventDTO } from "@/common/dtos/create-event.dto";
 import type { EventDetailsDTO } from "@/common/dtos/event-details.dto";
 import type { UpdateEventDTO } from "@/common/dtos/update-event.dto";
-import { EventNotFoundError } from "@/common/errors/event-not-found";
+import { ResourceNotFoundError } from "@/common/errors/resource-not-found";
 import { EventService } from "@/core/application/services/event.service";
 import { Event } from "@/core/domain/entities/event";
-import type { EventApiPort } from "@/ports/input/event";
+import type { EventApiPort } from "@/ports/input/event.port";
 import {
 	type MockEventRepository,
 	createMockEventRepository,
@@ -85,7 +85,7 @@ describe("Event service", () => {
 		it("Should throw an error if event does not exist", async () => {
 			mockEventRepo.getById.mockResolvedValueOnce(null);
 
-			expect(service.getEventDetails(1)).rejects.toThrowError(EventNotFoundError);
+			expect(service.getEventDetails(1)).rejects.toThrowError(ResourceNotFoundError);
 			expect(mockEventRepo.getById).toHaveBeenCalledWith(1);
 			expect(mockEventRepo.getById).toHaveBeenCalledTimes(1);
 		});
@@ -165,7 +165,7 @@ describe("Event service", () => {
 			mockEventRepo.update.mockResolvedValueOnce(null);
 
 			expect(service.updateEvent(1, updateEventDTO)).rejects.toThrowError(
-				EventNotFoundError,
+				ResourceNotFoundError,
 			);
 			expect(mockEventRepo.update).toHaveBeenCalledWith(1, updateEventDTO);
 			expect(mockEventRepo.update).toHaveBeenCalledTimes(1);
@@ -196,7 +196,7 @@ describe("Event service", () => {
 		it("Should throw an error if event to delete does not exist", async () => {
 			mockEventRepo.delete.mockResolvedValueOnce(null);
 
-			expect(service.deleteEvent(1)).rejects.toThrowError(EventNotFoundError);
+			expect(service.deleteEvent(1)).rejects.toThrowError(ResourceNotFoundError);
 			expect(mockEventRepo.delete).toHaveBeenCalledWith(1);
 			expect(mockEventRepo.delete).toHaveBeenCalledTimes(1);
 		});

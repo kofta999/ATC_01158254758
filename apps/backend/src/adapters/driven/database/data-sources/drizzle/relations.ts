@@ -1,2 +1,21 @@
-import { relations } from "drizzle-orm/relations";
-import {} from "./schema";
+import { relations } from "drizzle-orm";
+import { bookingTable, eventTable, userTable } from "./schema";
+
+export const userRelations = relations(userTable, ({ many }) => ({
+	bookings: many(bookingTable),
+}));
+
+export const eventRelations = relations(eventTable, ({ many }) => ({
+	bookings: many(bookingTable),
+}));
+
+export const bookingRelations = relations(bookingTable, ({ one }) => ({
+	user: one(userTable, {
+		fields: [bookingTable.userId],
+		references: [userTable.userId],
+	}),
+	event: one(eventTable, {
+		fields: [bookingTable.eventId],
+		references: [eventTable.eventId],
+	}),
+}));
