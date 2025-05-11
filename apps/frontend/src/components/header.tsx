@@ -32,7 +32,7 @@ export const Header = () => {
               Events
             </Link>
           </li>
-          {isAuthenticated && (
+          {/* {isAuthenticated && (
             <li>
               <Link
                 // TODO: Add correct link
@@ -45,7 +45,7 @@ export const Header = () => {
                 My Bookings
               </Link>
             </li>
-          )}
+          )} */}
           <li>
             {isAuthenticated ? (
               <SecondaryButton
