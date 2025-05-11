@@ -1,16 +1,25 @@
 import { PrimaryButton } from "../../components/primary-button";
 import { Card } from "../../components/card";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { router } from "@/main";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useAuth } from "@/hooks/use-auth";
 import { LoginUserSchema } from "@/schemas";
+import { z } from "zod";
+
+// Define the expected search parameters for this route
+const loginSearchSchema = z.object({
+  redirect: z.string().optional().catch(undefined), // Make redirect optional
+});
 
 export const Route = createFileRoute("/(auth)/login")({
   component: Login,
+  validateSearch: (search) => loginSearchSchema.parse(search), // Validate search params
 });
 
 export default function Login() {
   const auth = useAuth();
+  const navigate = useNavigate();
+  // Access validated search params
+  const { redirect } = Route.useSearch();
 
   return (
     <Card className="max-w-lg w-96">
@@ -20,14 +29,35 @@ export default function Login() {
         onSubmit={async (e) => {
           e.preventDefault();
           try {
-            const parsed = LoginUserSchema.parse(new FormData(e.currentTarget));
-            await auth.login(parsed.email, parsed.password, "USER");
+            const formData = new FormData(e.currentTarget);
+            // Validate form data against LoginUserSchema
+            const parsed = LoginUserSchema.parse({
+              email: formData.get("email"),
+              password: formData.get("password"),
+              // Role is not part of form, defaulting to USER as per original logic
+            });
 
-            router.navigate({ to: "/" });
+            const loginSuccess = await auth.login(
+              parsed.email,
+              parsed.password,
+              "USER",
+            );
+
+            if (loginSuccess) {
+              // If a redirect path is provided and valid, use it. Otherwise, default to home.
+              navigate({ to: redirect || "/", replace: true });
+            } else {
+              // Login attempt failed (handled within auth.login with an alert for now)
+              // You might want more specific error handling here if auth.login doesn't alert.
+              console.error("Login attempt failed.");
+            }
           } catch (error: any) {
-            // Handle errors (e.g., display an error message)
-            console.error("Login failed:", error.message);
-            alert(error.message); // Display error message to the user
+            // Handle Zod parsing errors or other unexpected errors
+            console.error("Login submission error:", error.message);
+            // It's better to display errors in the UI rather than alert
+            alert(
+              error.message || "An unexpected error occurred during login.",
+            );
           }
         }}
       >
@@ -44,6 +74,7 @@ export default function Login() {
             name="email"
             className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:outline-none"
             placeholder="your@email.com"
+            required
           />
         </div>
         <div>
@@ -59,6 +90,7 @@ export default function Login() {
             name="password"
             className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:outline-none"
             placeholder="********"
+            required
           />
         </div>
         <PrimaryButton type="submit">Login</PrimaryButton>

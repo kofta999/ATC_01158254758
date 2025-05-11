@@ -13,6 +13,8 @@
 import { Route as rootRoute } from './routes/__root'
 import { Route as ProtectedRouteImport } from './routes/_protected/route'
 import { Route as IndexImport } from './routes/index'
+import { Route as EventsIndexImport } from './routes/events/index'
+import { Route as EventsEventIdImport } from './routes/events/$eventId'
 import { Route as ProtectedHiImport } from './routes/_protected/hi'
 import { Route as authRegisterImport } from './routes/(auth)/register'
 import { Route as authLoginImport } from './routes/(auth)/login'
@@ -27,6 +29,18 @@ const ProtectedRouteRoute = ProtectedRouteImport.update({
 const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const EventsIndexRoute = EventsIndexImport.update({
+  id: '/events/',
+  path: '/events/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const EventsEventIdRoute = EventsEventIdImport.update({
+  id: '/events/$eventId',
+  path: '/events/$eventId',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -87,6 +101,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedHiImport
       parentRoute: typeof ProtectedRouteImport
     }
+    '/events/$eventId': {
+      id: '/events/$eventId'
+      path: '/events/$eventId'
+      fullPath: '/events/$eventId'
+      preLoaderRoute: typeof EventsEventIdImport
+      parentRoute: typeof rootRoute
+    }
+    '/events/': {
+      id: '/events/'
+      path: '/events'
+      fullPath: '/events'
+      preLoaderRoute: typeof EventsIndexImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -110,6 +138,8 @@ export interface FileRoutesByFullPath {
   '/login': typeof authLoginRoute
   '/register': typeof authRegisterRoute
   '/hi': typeof ProtectedHiRoute
+  '/events/$eventId': typeof EventsEventIdRoute
+  '/events': typeof EventsIndexRoute
 }
 
 export interface FileRoutesByTo {
@@ -118,6 +148,8 @@ export interface FileRoutesByTo {
   '/login': typeof authLoginRoute
   '/register': typeof authRegisterRoute
   '/hi': typeof ProtectedHiRoute
+  '/events/$eventId': typeof EventsEventIdRoute
+  '/events': typeof EventsIndexRoute
 }
 
 export interface FileRoutesById {
@@ -127,13 +159,22 @@ export interface FileRoutesById {
   '/(auth)/login': typeof authLoginRoute
   '/(auth)/register': typeof authRegisterRoute
   '/_protected/hi': typeof ProtectedHiRoute
+  '/events/$eventId': typeof EventsEventIdRoute
+  '/events/': typeof EventsIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '' | '/login' | '/register' | '/hi'
+  fullPaths:
+    | '/'
+    | ''
+    | '/login'
+    | '/register'
+    | '/hi'
+    | '/events/$eventId'
+    | '/events'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '' | '/login' | '/register' | '/hi'
+  to: '/' | '' | '/login' | '/register' | '/hi' | '/events/$eventId' | '/events'
   id:
     | '__root__'
     | '/'
@@ -141,6 +182,8 @@ export interface FileRouteTypes {
     | '/(auth)/login'
     | '/(auth)/register'
     | '/_protected/hi'
+    | '/events/$eventId'
+    | '/events/'
   fileRoutesById: FileRoutesById
 }
 
@@ -149,6 +192,8 @@ export interface RootRouteChildren {
   ProtectedRouteRoute: typeof ProtectedRouteRouteWithChildren
   authLoginRoute: typeof authLoginRoute
   authRegisterRoute: typeof authRegisterRoute
+  EventsEventIdRoute: typeof EventsEventIdRoute
+  EventsIndexRoute: typeof EventsIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
@@ -156,6 +201,8 @@ const rootRouteChildren: RootRouteChildren = {
   ProtectedRouteRoute: ProtectedRouteRouteWithChildren,
   authLoginRoute: authLoginRoute,
   authRegisterRoute: authRegisterRoute,
+  EventsEventIdRoute: EventsEventIdRoute,
+  EventsIndexRoute: EventsIndexRoute,
 }
 
 export const routeTree = rootRoute
@@ -171,7 +218,9 @@ export const routeTree = rootRoute
         "/",
         "/_protected",
         "/(auth)/login",
-        "/(auth)/register"
+        "/(auth)/register",
+        "/events/$eventId",
+        "/events/"
       ]
     },
     "/": {
@@ -192,6 +241,12 @@ export const routeTree = rootRoute
     "/_protected/hi": {
       "filePath": "_protected/hi.tsx",
       "parent": "/_protected"
+    },
+    "/events/$eventId": {
+      "filePath": "events/$eventId.tsx"
+    },
+    "/events/": {
+      "filePath": "events/index.tsx"
     }
   }
 }

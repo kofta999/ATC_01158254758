@@ -1,0 +1,132 @@
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { baseApiClient } from "@/hooks/use-api-client";
+import { router } from "@/main";
+
+export const Route = createFileRoute("/events/")({
+  loader: async () => {
+    const res = await baseApiClient.events.$get();
+    if (!res.ok) {
+      const errorText = await res.text();
+      console.error("Failed to fetch events:", res.status, errorText);
+      throw new Error(`Failed to load events: ${res.status} ${errorText}`);
+    }
+    const events = await res.json();
+    return events;
+  },
+  component: EventsComponent,
+  errorComponent: EventsErrorComponent,
+});
+
+function EventsErrorComponent({ error }: { error: Error }) {
+  return (
+    <div className="p-4 md:p-6 bg-background min-h-screen flex flex-col items-center justify-center">
+      <div className="bg-surface rounded-2xl shadow-md p-6 md:p-8 max-w-lg w-full text-center">
+        <h1 className="text-2xl md:text-3xl font-bold text-danger mb-4">
+          Oops! Something went wrong.
+        </h1>
+        <p className="text-base text-gray-800 mb-2">
+          We couldn't load the events.
+        </p>
+        <p className="text-sm text-muted mb-6">
+          {error.message || "An unknown error occurred."}
+        </p>
+        <Link
+          to="/events"
+          className="px-4 py-2 rounded-lg bg-primary text-white hover:bg-primaryDark transition duration-300 ease-in-out"
+          onClick={() => router.invalidate()} // Use router.invalidate()
+        >
+          Try Again
+        </Link>
+      </div>
+    </div>
+  );
+}
+
+function EventsComponent() {
+  const events = Route.useLoaderData(); // Loader returns EventType[]
+
+  return (
+    <div className="bg-background min-h-screen p-4 md:p-8">
+      <header className="mb-8 text-center md:text-left">
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
+          Upcoming Events
+        </h1>
+        <p className="text-xl font-semibold text-muted">
+          Discover and book your next experience
+        </p>
+      </header>
+
+      {events && events.length > 0 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {events.map((event) => (
+            <Link
+              key={event.eventId}
+              to="/events/$eventId"
+              params={{ eventId: String(event.eventId) }}
+              className="bg-surface rounded-2xl shadow-md overflow-hidden flex flex-col transition duration-300 ease-in-out hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50"
+            >
+              <img
+                src={
+                  event.image ||
+                  `https://ui-avatars.com/api/?name=${encodeURIComponent(event.eventName)}&background=random&size=400x200`
+                }
+                alt={event.eventName}
+                className="w-full h-48 object-cover"
+              />
+              <div className="p-4 md:p-6 flex flex-col flex-grow">
+                <h2
+                  className="text-xl font-semibold text-gray-800 mb-2 truncate"
+                  title={event.eventName}
+                >
+                  {event.eventName}
+                </h2>
+                <p className="text-sm text-muted mb-1">
+                  <span className="font-medium">Date:</span>{" "}
+                  {new Date(event.date).toLocaleDateString()}
+                </p>
+                <p className="text-sm text-muted mb-1">
+                  <span className="font-medium">Venue:</span> {event.venue}
+                </p>
+                <p className="text-sm text-muted mb-3">
+                  <span className="font-medium">Category:</span>{" "}
+                  {event.category}
+                </p>
+                <div className="mt-auto pt-3 border-t border-gray-200">
+                  <p className="text-lg font-bold text-primary text-right">
+                    $
+                    {typeof event.price === "number"
+                      ? event.price.toFixed(2)
+                      : "N/A"}
+                  </p>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      ) : (
+        <div className="text-center text-muted py-10 bg-surface rounded-2xl shadow-md p-6">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="mx-auto h-12 w-12 text-gray-400"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          <p className="text-xl mt-4 font-semibold text-gray-800">
+            No events found at the moment.
+          </p>
+          <p className="text-base text-muted">
+            Please check back later for new and exciting events!
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}
