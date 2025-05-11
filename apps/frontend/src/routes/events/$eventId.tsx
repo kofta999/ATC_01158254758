@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { baseApiClient, useApiClient } from "@/hooks/use-api-client";
 import { router } from "@/main";
 import { useAuth } from "@/hooks/use-auth";
-import { useState } from "react";
+import { useState, useEffect } from "react"; // Import useEffect
 
 export const Route = createFileRoute("/events/$eventId")({
   loader: async ({ params }) => {
@@ -73,8 +73,18 @@ function EventDetailsComponent() {
     type: "success" | "error";
     text: string;
   } | null>(null);
+  // Initialize isActuallyBooked with the loaded event's booking status
+  const [isActuallyBooked, setIsActuallyBooked] = useState(event.isBooked);
+
+  // Effect to update isActuallyBooked if the event data from loader changes
+  // (e.g., due to router.invalidate() and re-fetch)
+  useEffect(() => {
+    setIsActuallyBooked(event.isBooked);
+  }, [event.isBooked]);
 
   const handleBooking = async () => {
+    if (isActuallyBooked) return; // Prevent booking if already booked
+
     setIsBooking(true);
     setBookingMessage(null);
 
@@ -109,8 +119,9 @@ function EventDetailsComponent() {
         type: "success",
         text: "Event booked successfully!",
       });
-
-      router.invalidate();
+      setIsActuallyBooked(true); // Optimistically update UI
+      // Consider invalidating only if necessary, to allow optimistic UI to shine
+      // router.invalidate(); // This would re-fetch loader data
     } catch (error: any) {
       console.error("Booking failed:", error);
       setBookingMessage({
@@ -132,14 +143,21 @@ function EventDetailsComponent() {
         </div>
 
         <div className="bg-surface rounded-2xl shadow-md overflow-hidden">
-          <img
-            src={
-              event.image ||
-              `https://ui-avatars.com/api/?name=${encodeURIComponent(event.eventName)}&background=random&size=1200x400&font-size=0.33`
-            }
-            alt={event.eventName}
-            className="w-full h-64 md:h-96 object-cover"
-          />
+          <div className="relative">
+            <img
+              src={
+                event.image ||
+                `https://ui-avatars.com/api/?name=${encodeURIComponent(event.eventName)}&background=random&size=1200x400&font-size=0.33`
+              }
+              alt={event.eventName}
+              className="w-full h-64 md:h-96 object-cover"
+            />
+            {isActuallyBooked && (
+              <div className="absolute top-4 right-4 bg-success text-white text-sm font-semibold px-3 py-1 rounded-lg shadow-lg z-10">
+                ✓ Booked
+              </div>
+            )}
+          </div>
           <div className="p-6 md:p-8">
             <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
               {event.eventName}
@@ -196,13 +214,23 @@ function EventDetailsComponent() {
             </div>
 
             <div className="mt-8 pt-6 border-t border-gray-200 text-center">
-              <button
-                onClick={handleBooking}
-                disabled={isBooking}
-                className="px-8 py-3 rounded-lg bg-primary text-white font-semibold hover:bg-primaryDark transition duration-300 ease-in-out text-lg shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isBooking ? "Booking..." : "Book This Event"}
-              </button>
+              {isActuallyBooked ? (
+                <button
+                  // onClick={handleUnbook} // Future: Implement unbooking
+                  disabled // Or style differently, allow unbooking
+                  className="px-8 py-3 rounded-lg bg-success text-white font-semibold text-lg shadow-md disabled:opacity-70"
+                >
+                  Already Booked
+                </button>
+              ) : (
+                <button
+                  onClick={handleBooking}
+                  disabled={isBooking}
+                  className="px-8 py-3 rounded-lg bg-primary text-white font-semibold hover:bg-primaryDark transition duration-300 ease-in-out text-lg shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isBooking ? "Booking..." : "Book This Event"}
+                </button>
+              )}
               {bookingMessage && (
                 <p
                   className={`mt-4 text-sm ${bookingMessage.type === "success" ? "text-success" : "text-danger"}`}
@@ -210,7 +238,7 @@ function EventDetailsComponent() {
                   {bookingMessage.text}
                 </p>
               )}
-              {!bookingMessage && ( // Show default message only if no booking attempt has been made yet or after clearing message
+              {!bookingMessage && !isActuallyBooked && (
                 <p className="text-sm text-muted mt-3">
                   Secure your spot now! Limited availability.
                 </p>

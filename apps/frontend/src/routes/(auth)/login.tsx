@@ -44,6 +44,8 @@ export default function Login() {
             );
 
             if (loginSuccess) {
+              console.log(redirect);
+
               // If a redirect path is provided and valid, use it. Otherwise, default to home.
               navigate({ to: redirect || "/", replace: true });
             } else {

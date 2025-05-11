@@ -1,7 +1,6 @@
 import * as React from "react";
 import { baseApiClient } from "./use-api-client";
-
-import { sleep } from "../utils";
+import { router } from "@/main";
 
 export interface AuthContextType {
   isAuthenticated: boolean;
@@ -11,7 +10,7 @@ export interface AuthContextType {
     role: "USER" | "ADMIN",
   ) => Promise<boolean>;
   register: (email: string, password: string) => Promise<boolean>;
-  logout: () => Promise<void>;
+  logout: (redirectToLogin: boolean) => Promise<void>;
   token: string | null;
 }
 
@@ -35,11 +34,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [token, setToken] = React.useState<string | null>(getStoredToken());
   const isAuthenticated = !!token;
 
-  const logout = React.useCallback(async () => {
-    await sleep(250);
-
+  const logout = React.useCallback(async (redirectToLogin?: boolean) => {
     setStoredToken(null);
     setToken(null);
+
+    if (redirectToLogin) {
+      router.navigate({ to: "/login" });
+    }
   }, []);
 
   const login = React.useCallback(
