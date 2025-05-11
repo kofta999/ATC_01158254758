@@ -35,5 +35,6 @@
     "vite": "^6.1.0",
     "vitest": "^3.0.5",
     "web-vitals": "^4.2.4"
-  }
+  },
+  "packageManager": "bun@1.2.0"
 }
