@@ -35,7 +35,8 @@ export const Header = () => {
           {isAuthenticated && (
             <li>
               <Link
-                to="/my-bookings"
+                // TODO: Add correct link
+                to="/"
                 className="text-muted hover:text-primary transition duration-300 ease-in-out px-2 py-1 sm:px-3 rounded-md"
                 activeProps={{
                   className: "!text-primary font-semibold bg-primary/10",
