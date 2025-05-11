@@ -1,6 +1,7 @@
 import env from "@/env";
 import { drizzle } from "drizzle-orm/node-postgres";
 import type pg from "pg";
+import * as relations from "./relations";
 import * as schema from "./schema";
 
 let config: pg.PoolConfig;
@@ -24,7 +25,7 @@ if (env.DATABASE_URL) {
 }
 
 export const db = drizzle({
-	schema,
+	schema: { ...schema, ...relations },
 	connection: config,
 });
 
