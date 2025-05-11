@@ -3,6 +3,9 @@ import { baseApiClient, useApiClient } from "@/hooks/use-api-client";
 import { router } from "@/main";
 import { useAuth } from "@/hooks/use-auth";
 import { useState, useEffect } from "react"; // Import useEffect
+import { Card } from "@/components/card";
+import { PrimaryButton } from "@/components/primary-button";
+import { SecondaryButton } from "@/components/secondary-button";
 
 export const Route = createFileRoute("/events/$eventId")({
   loader: async ({ params }) => {
@@ -33,7 +36,7 @@ function EventDetailsErrorComponent({ error }: { error: any }) {
   const { eventId } = Route.useParams();
   return (
     <div className="p-4 md:p-8 bg-background min-h-screen flex flex-col items-center justify-center">
-      <div className="bg-surface rounded-2xl shadow-md p-6 md:p-8 max-w-xl w-full text-center">
+      <Card className="max-w-xl w-full text-center">
         <h1 className="text-2xl md:text-3xl font-bold text-danger mb-4">
           Oops! Something Went Wrong
         </h1>
@@ -46,18 +49,19 @@ function EventDetailsErrorComponent({ error }: { error: any }) {
         <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
           <Link
             to="/events"
+            // Using classes similar to PrimaryButton for this Link for now
             className="px-4 py-2 rounded-lg bg-primary text-white hover:bg-primaryDark transition duration-300 ease-in-out w-full sm:w-auto"
           >
             Back to Events
           </Link>
-          <button
+          <SecondaryButton
             onClick={() => router.invalidate()}
-            className="px-4 py-2 rounded-lg bg-white border border-primary text-primary hover:bg-primary/10 transition duration-300 ease-in-out w-full sm:w-auto"
+            className="w-full sm:w-auto"
           >
             Try Again
-          </button>
+          </SecondaryButton>
         </div>
-      </div>
+      </Card>
     </div>
   );
 }
@@ -215,21 +219,20 @@ function EventDetailsComponent() {
 
             <div className="mt-8 pt-6 border-t border-gray-200 text-center">
               {isActuallyBooked ? (
-                <button
-                  // onClick={handleUnbook} // Future: Implement unbooking
-                  disabled // Or style differently, allow unbooking
-                  className="px-8 py-3 rounded-lg bg-success text-white font-semibold text-lg shadow-md disabled:opacity-70"
+                <PrimaryButton
+                  disabled
+                  className="px-8 py-3 text-lg shadow-md bg-success hover:bg-green-600 disabled:bg-success disabled:hover:bg-success"
                 >
                   Already Booked
-                </button>
+                </PrimaryButton>
               ) : (
-                <button
+                <PrimaryButton
                   onClick={handleBooking}
                   disabled={isBooking}
-                  className="px-8 py-3 rounded-lg bg-primary text-white font-semibold hover:bg-primaryDark transition duration-300 ease-in-out text-lg shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-8 py-3 text-lg shadow-md hover:shadow-lg"
                 >
                   {isBooking ? "Booking..." : "Book This Event"}
-                </button>
+                </PrimaryButton>
               )}
               {bookingMessage && (
                 <p
