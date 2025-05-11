@@ -2,7 +2,7 @@ import { hcWithType } from "@repo/areeb-backend";
 import { useAuth } from "./use-auth";
 import { useCallback } from "react";
 
-const API_URL = import.meta.env.PUBLIC_API_URL || "http://localhost:3000";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 type CustomFetch = typeof fetch;
 
 export const useApiClient = () => {
