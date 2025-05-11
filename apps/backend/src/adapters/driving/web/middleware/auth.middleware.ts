@@ -1,16 +1,11 @@
 import { HonoJwtAdapter } from "@/adapters/driven/security/hono-jwt.adapter";
 import { UnauthorizedError } from "@/common/errors/unauthorized";
-import type { AppBindings, UserRole } from "@/common/types";
-import env from "@/env";
+import { mainContainer } from "@/common/ioc";
+import type { AppBindings, JwtAuthPayload, UserRole } from "@/common/types";
 import { createMiddleware } from "hono/factory";
 
 export const authMiddleware = createMiddleware<AppBindings>(async (c, next) => {
-	// TODO: Decouple
-	const jwtService = new HonoJwtAdapter<{
-		email: string;
-		id: string;
-		role: UserRole;
-	}>(env.JWT_SECRET);
+	const jwtService = mainContainer.get(HonoJwtAdapter<JwtAuthPayload>);
 	const header = c.req.header("Authorization");
 
 	if (!header) {
