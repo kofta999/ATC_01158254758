@@ -13,7 +13,7 @@ export default function Register() {
   const auth = useAuth();
 
   return (
-    <div className="flex items-center justify-center h-screen bg-background">
+    <div className="flex flex-grow items-center justify-center py-6">
       <Card className="max-w-lg w-96">
         <h1 className="text-2xl font-bold mb-4">Register</h1>
         <form
@@ -25,7 +25,7 @@ export default function Register() {
                 new FormData(e.currentTarget),
               );
 
-              await auth.login(parsed.email, parsed.password);
+              await auth.register(parsed.email, parsed.password);
               router.navigate({ to: "/login" });
             } catch (error: any) {
               console.error("Registration failed:", error.message);

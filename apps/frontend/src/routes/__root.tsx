@@ -1,26 +1,34 @@
 import { AuthProvider } from "@/hooks/use-auth";
 import { Outlet, createRootRoute } from "@tanstack/react-router";
+import { Header } from "@/components/header";
+import { Footer } from "@/components/footer";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 
 export const Route = createRootRoute({
   component: () => (
-    <>
+    <AuthProvider>
       <RootLayout />
-      <TanStackRouterDevtools />
-    </>
+      {/* Render Devtools outside the main flex layout if preferred, or inside if that works better for your z-indexing */}
+      <TanStackRouterDevtools position="bottom-left" />
+    </AuthProvider>
   ),
 });
 
 export default function RootLayout() {
   return (
-    <div className="font-display bg-background min-h-screen">
-      <meta name="description" content="An internet website!" />
-      <link rel="icon" type="image/png" href="/images/favicon.png" />
-      <main className="flex items-center justify-center min-h-screen">
-        <AuthProvider>
-          <Outlet />
-        </AuthProvider>
+    <div className="font-display bg-background text-gray-800 min-h-screen flex flex-col">
+      {/* Added default text color */}
+      {/* Meta tags and link tags for favicon should ideally be in your public/index.html
+          or managed with a library like React Helmet for better SEO and standards compliance.
+          <meta name="description" content="Evently - Your go-to platform for events!" />
+          <link rel="icon" type="image/png" href="/images/favicon.png" />
+      */}
+      <Header />
+      <main className="flex-grow container mx-auto px-4 py-6 md:py-8 w-full">
+        {/* Adjusted padding slightly */}
+        <Outlet />
       </main>
+      <Footer />
     </div>
   );
 }

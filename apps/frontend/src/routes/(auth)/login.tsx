@@ -22,86 +22,88 @@ export default function Login() {
   const { redirect } = Route.useSearch();
 
   return (
-    <Card className="max-w-lg w-96">
-      <h1 className="text-2xl font-bold mb-4">Login</h1>
-      <form
-        className="flex flex-col gap-4"
-        onSubmit={async (e) => {
-          e.preventDefault();
-          try {
-            const formData = new FormData(e.currentTarget);
-            // Validate form data against LoginUserSchema
-            const parsed = LoginUserSchema.parse({
-              email: formData.get("email"),
-              password: formData.get("password"),
-              // Role is not part of form, defaulting to USER as per original logic
-            });
+    <div className="flex flex-grow items-center justify-center py-6">
+      <Card className="max-w-lg w-96">
+        <h1 className="text-2xl font-bold mb-4">Login</h1>
+        <form
+          className="flex flex-col gap-4"
+          onSubmit={async (e) => {
+            e.preventDefault();
+            try {
+              const formData = new FormData(e.currentTarget);
+              // Validate form data against LoginUserSchema
+              const parsed = LoginUserSchema.parse({
+                email: formData.get("email"),
+                password: formData.get("password"),
+                // Role is not part of form, defaulting to USER as per original logic
+              });
 
-            const loginSuccess = await auth.login(
-              parsed.email,
-              parsed.password,
-              "USER",
-            );
+              const loginSuccess = await auth.login(
+                parsed.email,
+                parsed.password,
+                "USER",
+              );
 
-            if (loginSuccess) {
-              console.log(redirect);
+              if (loginSuccess) {
+                console.log(redirect);
 
-              // If a redirect path is provided and valid, use it. Otherwise, default to home.
-              navigate({ to: redirect || "/", replace: true });
-            } else {
-              // Login attempt failed (handled within auth.login with an alert for now)
-              // You might want more specific error handling here if auth.login doesn't alert.
-              console.error("Login attempt failed.");
+                // If a redirect path is provided and valid, use it. Otherwise, default to home.
+                navigate({ to: redirect || "/", replace: true });
+              } else {
+                // Login attempt failed (handled within auth.login with an alert for now)
+                // You might want more specific error handling here if auth.login doesn't alert.
+                console.error("Login attempt failed.");
+              }
+            } catch (error: any) {
+              // Handle Zod parsing errors or other unexpected errors
+              console.error("Login submission error:", error.message);
+              // It's better to display errors in the UI rather than alert
+              alert(
+                error.message || "An unexpected error occurred during login.",
+              );
             }
-          } catch (error: any) {
-            // Handle Zod parsing errors or other unexpected errors
-            console.error("Login submission error:", error.message);
-            // It's better to display errors in the UI rather than alert
-            alert(
-              error.message || "An unexpected error occurred during login.",
-            );
-          }
-        }}
-      >
-        <div>
-          <label
-            htmlFor="email"
-            className="block text-sm font-medium text-gray-700 mb-1"
-          >
-            Email
-          </label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:outline-none"
-            placeholder="your@email.com"
-            required
-          />
+          }}
+        >
+          <div>
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Email
+            </label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:outline-none"
+              placeholder="your@email.com"
+              required
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Password
+            </label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:outline-none"
+              placeholder="********"
+              required
+            />
+          </div>
+          <PrimaryButton type="submit">Login</PrimaryButton>
+        </form>
+        <div className="mt-4 text-sm">
+          <Link to="/register" className="text-primary hover:underline">
+            Don't have an account? Register
+          </Link>
         </div>
-        <div>
-          <label
-            htmlFor="password"
-            className="block text-sm font-medium text-gray-700 mb-1"
-          >
-            Password
-          </label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:outline-none"
-            placeholder="********"
-            required
-          />
-        </div>
-        <PrimaryButton type="submit">Login</PrimaryButton>
-      </form>
-      <div className="mt-4 text-sm">
-        <Link to="/register" className="text-primary hover:underline">
-          Don't have an account? Register
-        </Link>
-      </div>
-    </Card>
+      </Card>
+    </div>
   );
 }
