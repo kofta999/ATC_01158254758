@@ -3,6 +3,7 @@ import * as bookingRoutes from "@/adapters/driving/web/routes/booking.routes";
 import * as eventRoutes from "@/adapters/driving/web/routes/event.routes";
 import configureOpenAPI from "@/common/util/configure-open-api";
 import { createRouter } from "@/common/util/create-router";
+import { cors } from "hono/cors";
 import { AdminController } from "./adapters/driving/web/controllers/admin.controller";
 import { AuthController } from "./adapters/driving/web/controllers/auth.controller";
 import { BookingController } from "./adapters/driving/web/controllers/booking.controller";
@@ -45,6 +46,27 @@ function bootstrap() {
 	const app = createRouter();
 	app.use(loggerMiddleware());
 	app.use(rateLimiterMiddleware(50));
+
+	// Configure CORS
+	app.use(
+		cors({
+			origin: ["http://localhost:3002", "https://areeb-frontend.vercel.app"],
+			allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+			allowHeaders: [
+				"Content-Type",
+				"Authorization",
+				"authorization",
+				"content-type",
+			],
+			credentials: true,
+			exposeHeaders: [
+				"Content-Length",
+				"authorization",
+				"Authorization",
+				"content-type",
+			],
+		}),
+	);
 
 	configureOpenAPI(app);
 

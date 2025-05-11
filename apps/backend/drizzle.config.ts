@@ -1,12 +1,11 @@
 import env from './src/env';
-import 'dotenv/config';
 import { defineConfig } from 'drizzle-kit';
 
 let config;
 
 if (env.DATABASE_URL) {
 	config = {
-		connectionString: env.DATABASE_URL,
+		url: env.DATABASE_URL,
 
 		ssl: {
 			rejectUnauthorized: false,
@@ -19,6 +18,7 @@ if (env.DATABASE_URL) {
 		user: env.PG_USER,
 		password: env.PG_PASSWORD,
 		database: env.PG_DB_NAME,
+		ssl: false
 	};
 }
 
@@ -26,5 +26,5 @@ export default defineConfig({
   out: './src/adapters/driven/database/data-sources/drizzle',
   schema: './src/adapters/driven/database/data-sources/drizzle/schema.ts',
   dialect: 'postgresql',
-  dbCredentials: {...config, ssl: false},
+  dbCredentials: {...config},
 });
