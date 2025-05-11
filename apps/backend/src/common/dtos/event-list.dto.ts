@@ -7,7 +7,9 @@ const EventCardSchema = z
 		category: z.string().openapi({ example: "Music" }),
 		date: z.string().openapi({ example: "2024-07-20" }),
 		venue: z.string().openapi({ example: "Central Park, New York" }),
+		price: z.number().openapi({ example: 50 }),
 		image: z.string().openapi({ example: "url-to-image" }),
+		isBooked: z.boolean().openapi({ example: false }),
 	})
 	.openapi("EventCard");
 

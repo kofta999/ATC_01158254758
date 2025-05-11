@@ -27,7 +27,7 @@ describe("Event service", () => {
 	});
 
 	describe("getEventList", () => {
-		it("Should return a list of events", async () => {
+		it("Should return a list of events with isBooked status", async () => {
 			const mockEvents = [
 				new Event({
 					eventId: 1,
@@ -38,6 +38,7 @@ describe("Event service", () => {
 					venue: "Test Venue 1",
 					price: 100,
 					image: "test-image-1.jpg",
+					isBooked: false,
 				}),
 				new Event({
 					eventId: 2,
@@ -48,6 +49,7 @@ describe("Event service", () => {
 					venue: "Test Venue 2",
 					price: 200,
 					image: "test-image-2.jpg",
+					isBooked: true,
 				}),
 			];
 
@@ -56,13 +58,16 @@ describe("Event service", () => {
 			const events = await service.getEventList();
 
 			expect(events).toEqual(mockEvents);
+			expect(events[0].isBooked).toBe(false);
+			expect(events[1].isBooked).toBe(true);
 			expect(mockEventRepo.getAll).toHaveBeenCalledTimes(1);
 		});
 	});
 
-	describe("getOne", () => {
-		it("Should return an event when event exists", async () => {
-			const mockEvent: EventDetailsDTO = {
+	describe("getEventDetails", () => {
+		// Renamed from getOne
+		it("Should return an event with isBooked status when event exists", async () => {
+			const mockEventData = {
 				eventId: 1,
 				eventName: "Test Event",
 				description: "Test Description",
@@ -71,13 +76,15 @@ describe("Event service", () => {
 				venue: "Test Venue",
 				price: 100,
 				image: "test-image.jpg",
+				isBooked: false,
 			};
+			const mockEventEntity = new Event(mockEventData);
+			mockEventRepo.getById.mockResolvedValueOnce(mockEventEntity);
 
-			mockEventRepo.getById.mockResolvedValueOnce(mockEvent);
+			const eventDetails = await service.getEventDetails(1);
 
-			const event = await service.getEventDetails(1);
-
-			expect(event).toEqual(mockEvent);
+			expect(eventDetails).toEqual(mockEventEntity);
+			expect(eventDetails.isBooked).toBe(false);
 			expect(mockEventRepo.getById).toHaveBeenCalledWith(1);
 			expect(mockEventRepo.getById).toHaveBeenCalledTimes(1);
 		});
@@ -85,14 +92,16 @@ describe("Event service", () => {
 		it("Should throw an error if event does not exist", async () => {
 			mockEventRepo.getById.mockResolvedValueOnce(null);
 
-			expect(service.getEventDetails(1)).rejects.toThrowError(ResourceNotFoundError);
+			await expect(service.getEventDetails(1)).rejects.toThrowError(
+				ResourceNotFoundError,
+			);
 			expect(mockEventRepo.getById).toHaveBeenCalledWith(1);
 			expect(mockEventRepo.getById).toHaveBeenCalledTimes(1);
 		});
 	});
 
 	describe("createEvent", () => {
-		it("Should create an event successfully", async () => {
+		it("Should create an event successfully with isBooked as false", async () => {
 			const createEventDTO: CreateEventDTO = {
 				eventName: "New Event",
 				description: "New Description",
@@ -102,28 +111,24 @@ describe("Event service", () => {
 				price: 300,
 				image: "new-image.jpg",
 			};
-			const mockEvent: EventDetailsDTO = {
-				eventId: 3,
-				eventName: "New Event",
-				description: "New Description",
-				category: "New Category",
-				date: "2024-01-03",
-				venue: "New Venue",
-				price: 300,
-				image: "new-image.jpg",
-			};
-			mockEventRepo.create.mockResolvedValueOnce(mockEvent);
+			const expectedCreatedEvent = new Event({
+				eventId: 3, // Assuming an ID is assigned by the repository
+				...createEventDTO,
+				isBooked: false, // New events are not booked
+			});
+			mockEventRepo.create.mockResolvedValueOnce(expectedCreatedEvent);
 
 			const newEvent = await service.createEvent(createEventDTO);
 
-			expect(newEvent).toEqual(mockEvent);
+			expect(newEvent).toEqual(expectedCreatedEvent);
+			expect(newEvent.isBooked).toBe(false);
 			expect(mockEventRepo.create).toHaveBeenCalledWith(createEventDTO);
 			expect(mockEventRepo.create).toHaveBeenCalledTimes(1);
 		});
 	});
 
 	describe("updateEvent", () => {
-		it("Should update an event successfully", async () => {
+		it("Should update an event successfully and return it with isBooked status", async () => {
 			const updateEventDTO: UpdateEventDTO = {
 				eventName: "Updated Event",
 				description: "Updated Description",
@@ -133,7 +138,7 @@ describe("Event service", () => {
 				price: 400,
 				image: "updated-image.jpg",
 			};
-			const mockEvent: EventDetailsDTO = {
+			const expectedUpdatedEvent = new Event({
 				eventId: 1,
 				eventName: "Updated Event",
 				description: "Updated Description",
@@ -142,12 +147,14 @@ describe("Event service", () => {
 				venue: "Updated Venue",
 				price: 400,
 				image: "updated-image.jpg",
-			};
-			mockEventRepo.update.mockResolvedValueOnce(mockEvent);
+				isBooked: true, // Example status after update, repo re-fetches
+			});
+			mockEventRepo.update.mockResolvedValueOnce(expectedUpdatedEvent);
 
 			const updatedEvent = await service.updateEvent(1, updateEventDTO);
 
-			expect(updatedEvent).toEqual(mockEvent);
+			expect(updatedEvent).toEqual(expectedUpdatedEvent);
+			expect(updatedEvent.isBooked).toBe(true);
 			expect(mockEventRepo.update).toHaveBeenCalledWith(1, updateEventDTO);
 			expect(mockEventRepo.update).toHaveBeenCalledTimes(1);
 		});
@@ -164,7 +171,7 @@ describe("Event service", () => {
 			};
 			mockEventRepo.update.mockResolvedValueOnce(null);
 
-			expect(service.updateEvent(1, updateEventDTO)).rejects.toThrowError(
+			await expect(service.updateEvent(1, updateEventDTO)).rejects.toThrowError(
 				ResourceNotFoundError,
 			);
 			expect(mockEventRepo.update).toHaveBeenCalledWith(1, updateEventDTO);
@@ -173,8 +180,8 @@ describe("Event service", () => {
 	});
 
 	describe("deleteEvent", () => {
-		it("Should delete an event successfully", async () => {
-			const mockEvent: EventDetailsDTO = {
+		it("Should delete an event successfully and return its previous state", async () => {
+			const eventToBeDeleted = new Event({
 				eventId: 1,
 				eventName: "Test Event",
 				description: "Test Description",
@@ -183,12 +190,14 @@ describe("Event service", () => {
 				venue: "Test Venue",
 				price: 100,
 				image: "test-image.jpg",
-			};
-			mockEventRepo.delete.mockResolvedValueOnce(mockEvent);
+				isBooked: true, // Example: event was booked before deletion
+			});
+			mockEventRepo.delete.mockResolvedValueOnce(eventToBeDeleted);
 
 			const deletedEvent = await service.deleteEvent(1);
 
-			expect(deletedEvent).toEqual(mockEvent);
+			expect(deletedEvent).toEqual(eventToBeDeleted);
+			expect(deletedEvent.isBooked).toBe(true);
 			expect(mockEventRepo.delete).toHaveBeenCalledWith(1);
 			expect(mockEventRepo.delete).toHaveBeenCalledTimes(1);
 		});
@@ -196,7 +205,9 @@ describe("Event service", () => {
 		it("Should throw an error if event to delete does not exist", async () => {
 			mockEventRepo.delete.mockResolvedValueOnce(null);
 
-			expect(service.deleteEvent(1)).rejects.toThrowError(ResourceNotFoundError);
+			await expect(service.deleteEvent(1)).rejects.toThrowError(
+				ResourceNotFoundError,
+			);
 			expect(mockEventRepo.delete).toHaveBeenCalledWith(1);
 			expect(mockEventRepo.delete).toHaveBeenCalledTimes(1);
 		});

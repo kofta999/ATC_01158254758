@@ -16,7 +16,9 @@ export class EventDatabaseRepository implements EventRepositoryPort {
 	}
 
 	async getAll(): Promise<Event[]> {
-		const events = await this.db.query.eventTable.findMany();
+		const events = await this.db.query.eventTable.findMany({
+			with: { bookings: true },
+		});
 
 		return events.map(
 			(event) =>
@@ -29,6 +31,7 @@ export class EventDatabaseRepository implements EventRepositoryPort {
 					venue: event.venue,
 					price: event.price,
 					image: event.image,
+					isBooked: event.bookings.length > 0,
 				}),
 		);
 	}
@@ -36,6 +39,7 @@ export class EventDatabaseRepository implements EventRepositoryPort {
 	async getById(eventId: number): Promise<Event | null> {
 		const event = await this.db.query.eventTable.findFirst({
 			where: (f, { eq }) => eq(f.eventId, eventId),
+			with: { bookings: true },
 		});
 
 		if (!event) {
@@ -51,6 +55,7 @@ export class EventDatabaseRepository implements EventRepositoryPort {
 			venue: event.venue,
 			price: event.price,
 			image: event.image,
+			isBooked: event.bookings.length > 0,
 		});
 	}
 
@@ -77,50 +82,55 @@ export class EventDatabaseRepository implements EventRepositoryPort {
 			venue: newEvent[0].venue,
 			price: newEvent[0].price,
 			image: newEvent[0].image,
+			isBooked: false, // A new event cannot be booked yet
 		});
 	}
 
-	async update(eventId: number, updatedEvent: Event): Promise<Event | null> {
+	async update(
+		eventId: number,
+		updatedEventData: Event,
+	): Promise<Event | null> {
+		// Create a partial object for update, excluding 'isBooked' as it's derived
+		const eventDataForUpdate: Partial<typeof eventTable.$inferInsert> = {
+			eventName: updatedEventData.eventName,
+			description: updatedEventData.description,
+			category: updatedEventData.category,
+			date: updatedEventData.date,
+			venue: updatedEventData.venue,
+			price: updatedEventData.price,
+			image: updatedEventData.image,
+		};
+
 		const updated = await this.db
 			.update(eventTable)
-			.set(updatedEvent)
+			.set(eventDataForUpdate)
 			.where(eq(eventTable.eventId, eventId))
 			.returning();
+
 		if (!updated[0]) {
 			return null;
 		}
-		const event = updated[0];
-		return new Event({
-			eventId: event.eventId,
-			eventName: event.eventName,
-			description: event.description,
-			category: event.category,
-			date: event.date,
-			venue: event.venue,
-			price: event.price,
-			image: event.image,
-		});
+		// After updating, fetch again to get current booking status
+		return this.getById(updated[0].eventId);
 	}
 
 	async delete(eventId: number): Promise<Event | null> {
-		const deletedEvent = await this.db
-			.delete(eventTable)
-			.where(eq(eventTable.eventId, eventId))
-			.returning();
-		if (!deletedEvent[0]) {
+		// Fetch the event first to return its state before deletion, including isBooked.
+		const eventToDelete = await this.getById(eventId);
+		if (!eventToDelete) {
 			return null;
 		}
 
-		const event = deletedEvent[0];
-		return new Event({
-			eventId: event.eventId,
-			eventName: event.eventName,
-			description: event.description,
-			category: event.category,
-			date: event.date,
-			venue: event.venue,
-			price: event.price,
-			image: event.image,
-		});
+		const deletedDbResult = await this.db
+			.delete(eventTable)
+			.where(eq(eventTable.eventId, eventId))
+			.returning();
+
+		if (!deletedDbResult[0]) {
+			// This case should ideally not be reached if eventToDelete was found
+			return null;
+		}
+		// Return the state of the event *before* it was deleted
+		return eventToDelete;
 	}
 }

@@ -3,10 +3,12 @@ import type { OpenAPIHono, RouteConfig, RouteHandler } from "@hono/zod-openapi";
 import type { Env } from "hono";
 import type { PinoLogger } from "hono-pino";
 
+export type JwtAuthPayload = { userId: number; email: string; role: UserRole };
+
 export interface AppBindings extends Env {
 	Variables: {
 		logger: PinoLogger;
-		user: { userId: number; email: string; role: UserRole };
+		user: JwtAuthPayload;
 	};
 }
 
