@@ -1,5 +1,6 @@
 import { LoginUserSchema } from "@/common/dtos/login-user.dto";
 import { RegisterUserSchema } from "@/common/dtos/register-user.dto";
+import { ErrorSchema } from "@/common/schemas/error-schema";
 import jsonContent from "@/common/util/json-content";
 import { createRoute } from "@hono/zod-openapi";
 import { z } from "zod";
@@ -21,6 +22,7 @@ export const login = createRoute({
 			}),
 			"The JWT token",
 		),
+		401: jsonContent(ErrorSchema, "Invalid credentials"),
 	},
 });
 
@@ -41,6 +43,7 @@ export const register = createRoute({
 			}),
 			"The user ID",
 		),
+		409: jsonContent(ErrorSchema, "User already exists"),
 	},
 });
 
