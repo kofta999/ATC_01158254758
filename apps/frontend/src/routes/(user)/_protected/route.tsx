@@ -1,7 +1,7 @@
 import { redirect } from "@tanstack/react-router";
 import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/_protected")({
+export const Route = createFileRoute("/(user)/_protected")({
   beforeLoad: ({ location }) => {
     const accessToken = localStorage.getItem("accessToken");
     if (!accessToken) {

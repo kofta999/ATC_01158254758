@@ -1,5 +1,5 @@
-import { PrimaryButton } from "../../components/primary-button";
-import { Card } from "../../components/card";
+import { PrimaryButton } from "@/components/primary-button";
+import { Card } from "@/components/card";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useAuth } from "@/hooks/use-auth";
 import { LoginUserSchema } from "@/schemas";
@@ -10,7 +10,7 @@ const loginSearchSchema = z.object({
   redirect: z.string().optional().catch(undefined), // Make redirect optional
 });
 
-export const Route = createFileRoute("/(auth)/login")({
+export const Route = createFileRoute("/(user)/(auth)/login")({
   component: Login,
   validateSearch: (search) => loginSearchSchema.parse(search), // Validate search params
 });

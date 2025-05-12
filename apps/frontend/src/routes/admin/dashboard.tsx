@@ -5,7 +5,7 @@ import {
   redirect,
 } from "@tanstack/react-router";
 import { useAuth } from "@/hooks/use-auth";
-import { useApiClient, baseApiClient } from "@/hooks/use-api-client";
+import { baseApiClient } from "@/hooks/use-api-client";
 import { Card } from "@/components/card";
 import { PrimaryButton } from "@/components/primary-button";
 import { SecondaryButton } from "@/components/secondary-button";
@@ -86,8 +86,7 @@ function AdminDashboardErrorComponent({ error }: { error: Error }) {
 function AdminDashboardComponent() {
   const events = Route.useLoaderData();
   const navigate = useNavigate();
-  const getApiClient = useApiClient();
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, user, apiClient } = useAuth();
 
   useEffect(() => {
     if (!isAuthenticated || user?.role !== "ADMIN") {
@@ -104,7 +103,6 @@ function AdminDashboardComponent() {
       return;
     }
     try {
-      const apiClient = getApiClient();
       const res = await apiClient.events[":id"].$delete({
         param: { id: eventId },
       });
@@ -152,8 +150,12 @@ function AdminDashboardComponent() {
 
       {Array.isArray(events) && events.length > 0 ? (
         <Card className="overflow-x-auto shadow-lg">
-          <table className="min-w-full divide-y divide-gray-200"> {/* Using neutral gray for divider */}
-            <thead className="bg-background"> {/* Changed from bg-gray-50 */}
+          <table className="min-w-full divide-y divide-gray-200">
+            {" "}
+            {/* Using neutral gray for divider */}
+            <thead className="bg-background">
+              {" "}
+              {/* Changed from bg-gray-50 */}
               <tr>
                 <th
                   scope="col"
@@ -193,25 +195,37 @@ function AdminDashboardComponent() {
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-surface divide-y divide-gray-200"> {/* Using neutral gray for divider */}
+            <tbody className="bg-surface divide-y divide-gray-200">
+              {" "}
+              {/* Using neutral gray for divider */}
               {events.map((event) => (
                 <tr
                   key={event.eventId}
                   className="hover:bg-background transition-colors duration-150" /* Use bg-background for hover for slight contrast */
                 >
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800"> {/* Changed from text-gray-900 */}
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800">
+                    {" "}
+                    {/* Changed from text-gray-900 */}
                     {event.eventName}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-muted"> {/* Changed from text-gray-400 */}
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-muted">
+                    {" "}
+                    {/* Changed from text-gray-400 */}
                     {event.category}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-muted"> {/* Changed from text-gray-400 */}
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-muted">
+                    {" "}
+                    {/* Changed from text-gray-400 */}
                     {new Date(event.date).toLocaleDateString()}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-muted"> {/* Changed from text-gray-400 */}
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-muted">
+                    {" "}
+                    {/* Changed from text-gray-400 */}
                     {event.venue}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-muted text-right"> {/* Changed from text-gray-400 */}
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-muted text-right">
+                    {" "}
+                    {/* Changed from text-gray-400 */}
                     {typeof event.price === "number"
                       ? `$${event.price.toFixed(2)}`
                       : "N/A"}
@@ -253,7 +267,9 @@ function AdminDashboardComponent() {
               d="M15.75 15.75l-2.489-2.489m0 0a3.375 3.375 0 10-4.773-4.773 3.375 3.375 0 004.774 4.774zM21 12a9 9 0 11-18 0 9 9 0 0118 0z"
             />
           </svg>
-          <p className="text-xl text-gray-800 font-semibold mb-2"> {/* Changed from text-gray-700 dark:text-gray-300 */}
+          <p className="text-xl text-gray-800 font-semibold mb-2">
+            {" "}
+            {/* Changed from text-gray-700 dark:text-gray-300 */}
             No events found.
           </p>
           <p className="text-muted mb-6">

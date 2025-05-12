@@ -1,7 +1,13 @@
 import * as React from "react";
 import { baseApiClient } from "./use-api-client";
 import { router } from "@/main";
-import { jwtDecode } from "jwt-decode"; // Import jwt-decode
+import { jwtDecode } from "jwt-decode";
+import { hcWithType } from "@repo/areeb-backend";
+
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+
+// Type Definition (remains the same)
+type ApiClientInstanceType = typeof baseApiClient;
 
 export interface User {
   userId: string;
@@ -9,23 +15,26 @@ export interface User {
   role: "USER" | "ADMIN";
 }
 
+// AuthContextType still defines the shape including apiClient
 export interface AuthContextType {
   isAuthenticated: boolean;
-  user: User | null; // Add user to the context type
+  user: User | null;
   login: (
     email: string,
     password: string,
     role: "USER" | "ADMIN",
   ) => Promise<boolean>;
   register: (email: string, password: string) => Promise<boolean>;
-  logout: (redirectToLogin?: boolean) => Promise<void>; // redirectToLogin is now optional
+  logout: (redirectToLogin?: boolean) => Promise<void>;
   token: string | null;
+  apiClient: ApiClientInstanceType; // The type contract remains
 }
 
 const AuthContext = React.createContext<AuthContextType | null>(null);
 
 const key = "auth.accessToken";
 
+// getStoredToken, setStoredToken, getUserFromToken (remain the same)
 function getStoredToken() {
   return localStorage.getItem(key);
 }
@@ -38,7 +47,6 @@ function setStoredToken(token: string | null) {
   }
 }
 
-// Helper to decode token and get user, or return null if invalid/error
 function getUserFromToken(token: string | null): User | null {
   if (!token) return null;
   try {
@@ -49,10 +57,9 @@ function getUserFromToken(token: string | null): User | null {
       exp: number;
     } = jwtDecode(token);
 
-    // Check for token expiration if needed, though API should handle this with 401
     if (decodedToken.exp * 1000 < Date.now()) {
       console.warn("Token expired.");
-      setStoredToken(null); // Clear expired token
+      setStoredToken(null);
       return null;
     }
 
@@ -63,27 +70,70 @@ function getUserFromToken(token: string | null): User | null {
     };
   } catch (error) {
     console.error("Failed to decode token:", error);
-    setStoredToken(null); // Clear invalid token
+    setStoredToken(null);
     return null;
   }
 }
+
+// Helper function to create the API client (remains mostly the same)
+const createApiClientInstance = (
+  apiBaseUrl: string,
+  authToken: string | null,
+  logoutHandler: (redirectToLogin?: boolean) => Promise<void>,
+): ApiClientInstanceType => {
+  const customFetch: typeof fetch = async (input, init) => {
+    const currentHeaders = new Headers(init?.headers);
+    if (authToken) {
+      currentHeaders.set("Authorization", `Bearer ${authToken}`);
+    }
+    const response = await fetch(input, { ...init, headers: currentHeaders });
+    if (response.status === 401 && authToken) {
+      console.warn("API client (dynamic) returned 401. Logging out.");
+      await logoutHandler(true);
+      // Potentially throw to signal failure upstream
+      // throw new Error("Unauthorized - Logged out");
+    }
+    return response;
+  };
+
+  const clientRoot = hcWithType(apiBaseUrl, { fetch: customFetch });
+
+  if (clientRoot && clientRoot.api && clientRoot.api.v1) {
+    return clientRoot.api.v1 as ApiClientInstanceType;
+  } else {
+    console.error(
+      "Failed to create API client structure inside helper. Expected '.api.v1' but got:",
+      clientRoot,
+    );
+    throw new Error(
+      "API client initialization failed: Unexpected structure in helper.",
+    );
+  }
+};
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [token, setToken] = React.useState<string | null>(getStoredToken());
   const [user, setUser] = React.useState<User | null>(() =>
     getUserFromToken(token),
-  ); // Initialize user from stored token
-  const isAuthenticated = !!token && !!user; // User must also be valid
+  );
+  const isAuthenticated = !!token && !!user;
 
-  const logout = React.useCallback(async (redirectToLogin?: boolean) => {
+  // Memoized logout function (remains the same)
+  const performLogout = React.useCallback(async (redirectToLogin?: boolean) => {
     setStoredToken(null);
     setToken(null);
-    setUser(null); // Clear user state
+    setUser(null);
     if (redirectToLogin) {
-      router.navigate({ to: "/login" }); // Default to user login, admin might need specific redirect
+      try {
+        await router.navigate({ to: "/login" });
+      } catch (error) {
+        console.error("Failed to navigate on logout:", error);
+        window.location.href = "/login";
+      }
     }
   }, []);
 
+  // Login and Register (remain the same, use performLogout and originalBaseApiClient)
   const login = React.useCallback(
     async (email: string, password: string, role: "USER" | "ADMIN") => {
       try {
@@ -92,13 +142,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         });
 
         if (!response.ok) {
-          // Try to parse error from backend
+          /* ... error handling ... */
           let errorMessage = "Login failed. Please check your credentials.";
           try {
             const errorData = await response.json();
             errorMessage = errorData.message || errorMessage;
           } catch (e) {
-            /* ignore if error response is not JSON */
+            /* ignore */
           }
           throw new Error(errorMessage);
         }
@@ -107,21 +157,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const accessToken = data.token;
 
         setStoredToken(accessToken);
-        setToken(accessToken);
-        const currentUser = getUserFromToken(accessToken);
-        setUser(currentUser);
+        const currentUser = getUserFromToken(accessToken); // Decode right away
+        setToken(accessToken); // Set token state *after* decoding
+        setUser(currentUser); // Update user state
 
-        return !!currentUser; // Login successful if user could be decoded
+        return !!currentUser;
       } catch (error: any) {
         console.error("Login failed:", error);
-        // It's better to handle error display in the component using the login form
-        // For now, keeping alert for immediate feedback, but consider removing/replacing.
         alert(error.message || "An unknown error occurred during login.");
-        setUser(null); // Ensure user is null on login failure
+        await performLogout(false); // Clear state on failure
         return false;
       }
     },
-    [],
+    [performLogout],
   );
 
   const register = React.useCallback(
@@ -141,8 +189,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           }
           throw new Error(errorMessage);
         }
-        // Typically, successful registration prompts the user to login.
-        // Or, if the backend auto-logs in and returns a token, handle that like the login flow.
         return true;
       } catch (error: any) {
         console.error("Registration failed:", error);
@@ -155,19 +201,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     [],
   );
 
-  // Effect to sync user state if token changes externally (e.g. another tab logs out)
-  // Also handles initial load based on stored token.
+  // Storage sync effect (remains the same)
   React.useEffect(() => {
-    const currentToken = getStoredToken();
-    setToken(currentToken);
-    setUser(getUserFromToken(currentToken));
-
-    // Optional: Listen to storage events to sync across tabs
     const handleStorageChange = (event: StorageEvent) => {
       if (event.key === key) {
         const newToken = event.newValue;
+        const freshUser = getUserFromToken(newToken);
         setToken(newToken);
-        setUser(getUserFromToken(newToken));
+        setUser(freshUser);
       }
     };
     window.addEventListener("storage", handleStorageChange);
@@ -176,9 +217,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
+  // --- Create apiClient within the context value using useMemo ---
+  const contextApiClient = React.useMemo(() => {
+    console.log("Recreating apiClient for context value. Token:", !!token); // Debug log
+    // Pass the current token and the stable performLogout function
+    return createApiClientInstance(API_URL, token, performLogout);
+    // Dependencies: Recreate only if token or the logout function instance changes
+  }, [token, performLogout]);
+
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, token, user, login, register, logout }} // Provide user
+      value={{
+        isAuthenticated,
+        token,
+        user,
+        login,
+        register,
+        logout: performLogout,
+        // Provide the memoized client created above
+        apiClient: contextApiClient,
+      }}
     >
       {children}
     </AuthContext.Provider>

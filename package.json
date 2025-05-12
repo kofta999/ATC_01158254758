@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "turbo dev",
     "build": "turbo build",
-    "start": "turbo start"
+    "start": "turbo start",
+    "typecheck": "turbo typecheck"
   },
   "devDependencies": {
     "@types/bun": "latest"

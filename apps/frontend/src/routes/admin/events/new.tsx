@@ -1,9 +1,7 @@
 import { createFileRoute, useNavigate, redirect } from "@tanstack/react-router";
-import { useApiClient } from "@/hooks/use-api-client";
 import { EventForm, type EventFormData } from "@/components/admin/event-form"; // Adjust path if needed
 import { useState } from "react";
-// Assuming CreateEventSchema is similar to EventFormData or can be mapped
-// import type { CreateEventSchema } from "@repo/areeb-backend/src/common/dtos/create-event.dto";
+import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/admin/events/new")({
   beforeLoad: ({ context, location }) => {
@@ -20,19 +18,15 @@ export const Route = createFileRoute("/admin/events/new")({
 
 function CreateEventPage() {
   const navigate = useNavigate();
-  const getApiClient = useApiClient();
+  const { apiClient } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submissionError, setSubmissionError] = useState<string | null>(null);
+  const [_, setSubmissionError] = useState<string | null>(null);
 
   const handleCreateEvent = async (data: EventFormData) => {
     setIsSubmitting(true);
     setSubmissionError(null);
-    const apiClient = getApiClient();
 
     try {
-      // Ensure data sent matches the backend's CreateEventSchema
-      // This might involve mapping EventFormData if it differs.
-      // For Hono/hc, the json body should match the input schema of the route.
       const eventToCreate = {
         ...data,
         price: Number(data.price), // Ensure price is a number

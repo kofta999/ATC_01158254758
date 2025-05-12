@@ -4,9 +4,10 @@ import {
   useParams,
   redirect,
 } from "@tanstack/react-router";
-import { baseApiClient, useApiClient } from "@/hooks/use-api-client";
+import { baseApiClient } from "@/hooks/use-api-client";
 import { EventForm, type EventFormData } from "@/components/admin/event-form"; // Adjust path
 import { useState } from "react";
+import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/admin/events/$eventId/edit")({
   beforeLoad: ({ context, location }) => {
@@ -23,7 +24,6 @@ export const Route = createFileRoute("/admin/events/$eventId/edit")({
     const res = await baseApiClient.events[":id"].$get({
       param: { id: parseInt(eventId) },
     });
-    console.log(res)
 
     if (!res.ok) {
       throw new Error(`Failed to load event for editing: ${res.status}`);
@@ -45,14 +45,13 @@ function EditEventPage() {
   const navigate = useNavigate();
   const { eventId } = useParams({ from: "/admin/events/$eventId/edit" });
   const initialEventData = Route.useLoaderData();
-  const getApiClient = useApiClient();
+  const { apiClient } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submissionError, setSubmissionError] = useState<string | null>(null);
+  const [_, setSubmissionError] = useState<string | null>(null);
 
   const handleUpdateEvent = async (data: EventFormData) => {
     setIsSubmitting(true);
     setSubmissionError(null);
-    const apiClient = getApiClient();
 
     try {
       const eventToUpdate = {

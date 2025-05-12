@@ -8,43 +8,37 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
+import { createFileRoute } from '@tanstack/react-router'
+
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as ProtectedRouteImport } from './routes/_protected/route'
 import { Route as IndexImport } from './routes/index'
-import { Route as EventsIndexImport } from './routes/events/index'
-import { Route as EventsEventIdImport } from './routes/events/$eventId'
 import { Route as AdminLoginImport } from './routes/admin/login'
 import { Route as AdminDashboardImport } from './routes/admin/dashboard'
-import { Route as ProtectedHiImport } from './routes/_protected/hi'
-import { Route as authRegisterImport } from './routes/(auth)/register'
-import { Route as authLoginImport } from './routes/(auth)/login'
+import { Route as userProtectedRouteImport } from './routes/(user)/_protected/route'
+import { Route as userEventsIndexImport } from './routes/(user)/events/index'
 import { Route as AdminEventsNewImport } from './routes/admin/events/new'
+import { Route as userEventsEventIdImport } from './routes/(user)/events/$eventId'
+import { Route as userProtectedBookingsImport } from './routes/(user)/_protected/bookings'
+import { Route as userauthRegisterImport } from './routes/(user)/(auth)/register'
+import { Route as userauthLoginImport } from './routes/(user)/(auth)/login'
 import { Route as AdminEventsEventIdEditImport } from './routes/admin/events/$eventId.edit'
+
+// Create Virtual Routes
+
+const userImport = createFileRoute('/(user)')()
 
 // Create/Update Routes
 
-const ProtectedRouteRoute = ProtectedRouteImport.update({
-  id: '/_protected',
+const userRoute = userImport.update({
+  id: '/(user)',
   getParentRoute: () => rootRoute,
 } as any)
 
 const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const EventsIndexRoute = EventsIndexImport.update({
-  id: '/events/',
-  path: '/events/',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const EventsEventIdRoute = EventsEventIdImport.update({
-  id: '/events/$eventId',
-  path: '/events/$eventId',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -60,28 +54,45 @@ const AdminDashboardRoute = AdminDashboardImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const ProtectedHiRoute = ProtectedHiImport.update({
-  id: '/hi',
-  path: '/hi',
-  getParentRoute: () => ProtectedRouteRoute,
+const userProtectedRouteRoute = userProtectedRouteImport.update({
+  id: '/_protected',
+  getParentRoute: () => userRoute,
 } as any)
 
-const authRegisterRoute = authRegisterImport.update({
-  id: '/(auth)/register',
-  path: '/register',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const authLoginRoute = authLoginImport.update({
-  id: '/(auth)/login',
-  path: '/login',
-  getParentRoute: () => rootRoute,
+const userEventsIndexRoute = userEventsIndexImport.update({
+  id: '/events/',
+  path: '/events/',
+  getParentRoute: () => userRoute,
 } as any)
 
 const AdminEventsNewRoute = AdminEventsNewImport.update({
   id: '/admin/events/new',
   path: '/admin/events/new',
   getParentRoute: () => rootRoute,
+} as any)
+
+const userEventsEventIdRoute = userEventsEventIdImport.update({
+  id: '/events/$eventId',
+  path: '/events/$eventId',
+  getParentRoute: () => userRoute,
+} as any)
+
+const userProtectedBookingsRoute = userProtectedBookingsImport.update({
+  id: '/bookings',
+  path: '/bookings',
+  getParentRoute: () => userProtectedRouteRoute,
+} as any)
+
+const userauthRegisterRoute = userauthRegisterImport.update({
+  id: '/(auth)/register',
+  path: '/register',
+  getParentRoute: () => userRoute,
+} as any)
+
+const userauthLoginRoute = userauthLoginImport.update({
+  id: '/(auth)/login',
+  path: '/login',
+  getParentRoute: () => userRoute,
 } as any)
 
 const AdminEventsEventIdEditRoute = AdminEventsEventIdEditImport.update({
@@ -101,33 +112,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
-    '/_protected': {
-      id: '/_protected'
-      path: ''
-      fullPath: ''
-      preLoaderRoute: typeof ProtectedRouteImport
+    '/(user)': {
+      id: '/(user)'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof userImport
       parentRoute: typeof rootRoute
     }
-    '/(auth)/login': {
-      id: '/(auth)/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof authLoginImport
-      parentRoute: typeof rootRoute
-    }
-    '/(auth)/register': {
-      id: '/(auth)/register'
-      path: '/register'
-      fullPath: '/register'
-      preLoaderRoute: typeof authRegisterImport
-      parentRoute: typeof rootRoute
-    }
-    '/_protected/hi': {
-      id: '/_protected/hi'
-      path: '/hi'
-      fullPath: '/hi'
-      preLoaderRoute: typeof ProtectedHiImport
-      parentRoute: typeof ProtectedRouteImport
+    '/(user)/_protected': {
+      id: '/(user)/_protected'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof userProtectedRouteImport
+      parentRoute: typeof userRoute
     }
     '/admin/dashboard': {
       id: '/admin/dashboard'
@@ -143,19 +140,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminLoginImport
       parentRoute: typeof rootRoute
     }
-    '/events/$eventId': {
-      id: '/events/$eventId'
+    '/(user)/(auth)/login': {
+      id: '/(user)/(auth)/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof userauthLoginImport
+      parentRoute: typeof userImport
+    }
+    '/(user)/(auth)/register': {
+      id: '/(user)/(auth)/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof userauthRegisterImport
+      parentRoute: typeof userImport
+    }
+    '/(user)/_protected/bookings': {
+      id: '/(user)/_protected/bookings'
+      path: '/bookings'
+      fullPath: '/bookings'
+      preLoaderRoute: typeof userProtectedBookingsImport
+      parentRoute: typeof userProtectedRouteImport
+    }
+    '/(user)/events/$eventId': {
+      id: '/(user)/events/$eventId'
       path: '/events/$eventId'
       fullPath: '/events/$eventId'
-      preLoaderRoute: typeof EventsEventIdImport
-      parentRoute: typeof rootRoute
-    }
-    '/events/': {
-      id: '/events/'
-      path: '/events'
-      fullPath: '/events'
-      preLoaderRoute: typeof EventsIndexImport
-      parentRoute: typeof rootRoute
+      preLoaderRoute: typeof userEventsEventIdImport
+      parentRoute: typeof userImport
     }
     '/admin/events/new': {
       id: '/admin/events/new'
@@ -163,6 +174,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/events/new'
       preLoaderRoute: typeof AdminEventsNewImport
       parentRoute: typeof rootRoute
+    }
+    '/(user)/events/': {
+      id: '/(user)/events/'
+      path: '/events'
+      fullPath: '/events'
+      preLoaderRoute: typeof userEventsIndexImport
+      parentRoute: typeof userImport
     }
     '/admin/events/$eventId/edit': {
       id: '/admin/events/$eventId/edit'
@@ -176,58 +194,74 @@ declare module '@tanstack/react-router' {
 
 // Create and export the route tree
 
-interface ProtectedRouteRouteChildren {
-  ProtectedHiRoute: typeof ProtectedHiRoute
+interface userProtectedRouteRouteChildren {
+  userProtectedBookingsRoute: typeof userProtectedBookingsRoute
 }
 
-const ProtectedRouteRouteChildren: ProtectedRouteRouteChildren = {
-  ProtectedHiRoute: ProtectedHiRoute,
+const userProtectedRouteRouteChildren: userProtectedRouteRouteChildren = {
+  userProtectedBookingsRoute: userProtectedBookingsRoute,
 }
 
-const ProtectedRouteRouteWithChildren = ProtectedRouteRoute._addFileChildren(
-  ProtectedRouteRouteChildren,
-)
+const userProtectedRouteRouteWithChildren =
+  userProtectedRouteRoute._addFileChildren(userProtectedRouteRouteChildren)
+
+interface userRouteChildren {
+  userProtectedRouteRoute: typeof userProtectedRouteRouteWithChildren
+  userauthLoginRoute: typeof userauthLoginRoute
+  userauthRegisterRoute: typeof userauthRegisterRoute
+  userEventsEventIdRoute: typeof userEventsEventIdRoute
+  userEventsIndexRoute: typeof userEventsIndexRoute
+}
+
+const userRouteChildren: userRouteChildren = {
+  userProtectedRouteRoute: userProtectedRouteRouteWithChildren,
+  userauthLoginRoute: userauthLoginRoute,
+  userauthRegisterRoute: userauthRegisterRoute,
+  userEventsEventIdRoute: userEventsEventIdRoute,
+  userEventsIndexRoute: userEventsIndexRoute,
+}
+
+const userRouteWithChildren = userRoute._addFileChildren(userRouteChildren)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '': typeof ProtectedRouteRouteWithChildren
-  '/login': typeof authLoginRoute
-  '/register': typeof authRegisterRoute
-  '/hi': typeof ProtectedHiRoute
+  '/': typeof userProtectedRouteRouteWithChildren
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/login': typeof AdminLoginRoute
-  '/events/$eventId': typeof EventsEventIdRoute
-  '/events': typeof EventsIndexRoute
+  '/login': typeof userauthLoginRoute
+  '/register': typeof userauthRegisterRoute
+  '/bookings': typeof userProtectedBookingsRoute
+  '/events/$eventId': typeof userEventsEventIdRoute
   '/admin/events/new': typeof AdminEventsNewRoute
+  '/events': typeof userEventsIndexRoute
   '/admin/events/$eventId/edit': typeof AdminEventsEventIdEditRoute
 }
 
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '': typeof ProtectedRouteRouteWithChildren
-  '/login': typeof authLoginRoute
-  '/register': typeof authRegisterRoute
-  '/hi': typeof ProtectedHiRoute
+  '/': typeof userProtectedRouteRouteWithChildren
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/login': typeof AdminLoginRoute
-  '/events/$eventId': typeof EventsEventIdRoute
-  '/events': typeof EventsIndexRoute
+  '/login': typeof userauthLoginRoute
+  '/register': typeof userauthRegisterRoute
+  '/bookings': typeof userProtectedBookingsRoute
+  '/events/$eventId': typeof userEventsEventIdRoute
   '/admin/events/new': typeof AdminEventsNewRoute
+  '/events': typeof userEventsIndexRoute
   '/admin/events/$eventId/edit': typeof AdminEventsEventIdEditRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
-  '/_protected': typeof ProtectedRouteRouteWithChildren
-  '/(auth)/login': typeof authLoginRoute
-  '/(auth)/register': typeof authRegisterRoute
-  '/_protected/hi': typeof ProtectedHiRoute
+  '/(user)': typeof userRouteWithChildren
+  '/(user)/_protected': typeof userProtectedRouteRouteWithChildren
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/login': typeof AdminLoginRoute
-  '/events/$eventId': typeof EventsEventIdRoute
-  '/events/': typeof EventsIndexRoute
+  '/(user)/(auth)/login': typeof userauthLoginRoute
+  '/(user)/(auth)/register': typeof userauthRegisterRoute
+  '/(user)/_protected/bookings': typeof userProtectedBookingsRoute
+  '/(user)/events/$eventId': typeof userEventsEventIdRoute
   '/admin/events/new': typeof AdminEventsNewRoute
+  '/(user)/events/': typeof userEventsIndexRoute
   '/admin/events/$eventId/edit': typeof AdminEventsEventIdEditRoute
 }
 
@@ -235,67 +269,58 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | ''
-    | '/login'
-    | '/register'
-    | '/hi'
     | '/admin/dashboard'
     | '/admin/login'
+    | '/login'
+    | '/register'
+    | '/bookings'
     | '/events/$eventId'
-    | '/events'
     | '/admin/events/new'
+    | '/events'
     | '/admin/events/$eventId/edit'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | ''
-    | '/login'
-    | '/register'
-    | '/hi'
     | '/admin/dashboard'
     | '/admin/login'
+    | '/login'
+    | '/register'
+    | '/bookings'
     | '/events/$eventId'
-    | '/events'
     | '/admin/events/new'
+    | '/events'
     | '/admin/events/$eventId/edit'
   id:
     | '__root__'
     | '/'
-    | '/_protected'
-    | '/(auth)/login'
-    | '/(auth)/register'
-    | '/_protected/hi'
+    | '/(user)'
+    | '/(user)/_protected'
     | '/admin/dashboard'
     | '/admin/login'
-    | '/events/$eventId'
-    | '/events/'
+    | '/(user)/(auth)/login'
+    | '/(user)/(auth)/register'
+    | '/(user)/_protected/bookings'
+    | '/(user)/events/$eventId'
     | '/admin/events/new'
+    | '/(user)/events/'
     | '/admin/events/$eventId/edit'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  ProtectedRouteRoute: typeof ProtectedRouteRouteWithChildren
-  authLoginRoute: typeof authLoginRoute
-  authRegisterRoute: typeof authRegisterRoute
+  userRoute: typeof userRouteWithChildren
   AdminDashboardRoute: typeof AdminDashboardRoute
   AdminLoginRoute: typeof AdminLoginRoute
-  EventsEventIdRoute: typeof EventsEventIdRoute
-  EventsIndexRoute: typeof EventsIndexRoute
   AdminEventsNewRoute: typeof AdminEventsNewRoute
   AdminEventsEventIdEditRoute: typeof AdminEventsEventIdEditRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  ProtectedRouteRoute: ProtectedRouteRouteWithChildren,
-  authLoginRoute: authLoginRoute,
-  authRegisterRoute: authRegisterRoute,
+  userRoute: userRouteWithChildren,
   AdminDashboardRoute: AdminDashboardRoute,
   AdminLoginRoute: AdminLoginRoute,
-  EventsEventIdRoute: EventsEventIdRoute,
-  EventsIndexRoute: EventsIndexRoute,
   AdminEventsNewRoute: AdminEventsNewRoute,
   AdminEventsEventIdEditRoute: AdminEventsEventIdEditRoute,
 }
@@ -311,13 +336,9 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/_protected",
-        "/(auth)/login",
-        "/(auth)/register",
+        "/(user)",
         "/admin/dashboard",
         "/admin/login",
-        "/events/$eventId",
-        "/events/",
         "/admin/events/new",
         "/admin/events/$eventId/edit"
       ]
@@ -325,21 +346,22 @@ export const routeTree = rootRoute
     "/": {
       "filePath": "index.tsx"
     },
-    "/_protected": {
-      "filePath": "_protected/route.tsx",
+    "/(user)": {
+      "filePath": "(user)/_protected",
       "children": [
-        "/_protected/hi"
+        "/(user)/_protected",
+        "/(user)/(auth)/login",
+        "/(user)/(auth)/register",
+        "/(user)/events/$eventId",
+        "/(user)/events/"
       ]
     },
-    "/(auth)/login": {
-      "filePath": "(auth)/login.tsx"
-    },
-    "/(auth)/register": {
-      "filePath": "(auth)/register.tsx"
-    },
-    "/_protected/hi": {
-      "filePath": "_protected/hi.tsx",
-      "parent": "/_protected"
+    "/(user)/_protected": {
+      "filePath": "(user)/_protected/route.tsx",
+      "parent": "/(user)",
+      "children": [
+        "/(user)/_protected/bookings"
+      ]
     },
     "/admin/dashboard": {
       "filePath": "admin/dashboard.tsx"
@@ -347,14 +369,28 @@ export const routeTree = rootRoute
     "/admin/login": {
       "filePath": "admin/login.tsx"
     },
-    "/events/$eventId": {
-      "filePath": "events/$eventId.tsx"
+    "/(user)/(auth)/login": {
+      "filePath": "(user)/(auth)/login.tsx",
+      "parent": "/(user)"
     },
-    "/events/": {
-      "filePath": "events/index.tsx"
+    "/(user)/(auth)/register": {
+      "filePath": "(user)/(auth)/register.tsx",
+      "parent": "/(user)"
+    },
+    "/(user)/_protected/bookings": {
+      "filePath": "(user)/_protected/bookings.tsx",
+      "parent": "/(user)/_protected"
+    },
+    "/(user)/events/$eventId": {
+      "filePath": "(user)/events/$eventId.tsx",
+      "parent": "/(user)"
     },
     "/admin/events/new": {
       "filePath": "admin/events/new.tsx"
+    },
+    "/(user)/events/": {
+      "filePath": "(user)/events/index.tsx",
+      "parent": "/(user)"
     },
     "/admin/events/$eventId/edit": {
       "filePath": "admin/events/$eventId.edit.tsx"

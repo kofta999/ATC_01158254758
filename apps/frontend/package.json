@@ -6,6 +6,7 @@
     "dev": "vite --port 3002",
     "start": "vite --port 3002",
     "build": "vite build && tsc",
+    "typecheck": "bunx tsc --skipLibCheck --noEmit --project tsconfig.json",
     "serve": "vite preview",
     "test": "vitest run",
     "format": "biome format",

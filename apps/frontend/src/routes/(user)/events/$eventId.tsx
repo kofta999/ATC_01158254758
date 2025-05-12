@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { baseApiClient, useApiClient } from "@/hooks/use-api-client";
+import { baseApiClient } from "@/hooks/use-api-client";
 import { router } from "@/main";
 import { useAuth } from "@/hooks/use-auth";
 import { useState, useEffect } from "react"; // Import useEffect
@@ -7,7 +7,7 @@ import { Card } from "@/components/card";
 import { PrimaryButton } from "@/components/primary-button";
 import { SecondaryButton } from "@/components/secondary-button";
 
-export const Route = createFileRoute("/events/$eventId")({
+export const Route = createFileRoute("/(user)/events/$eventId")({
   loader: async ({ params }) => {
     const { eventId } = params;
     const res = await baseApiClient.events[":id"].$get({
@@ -68,9 +68,8 @@ function EventDetailsErrorComponent({ error }: { error: any }) {
 
 function EventDetailsComponent() {
   const event = Route.useLoaderData();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, apiClient } = useAuth();
   const navigate = useNavigate();
-  const getApiClient = useApiClient();
 
   const [isBooking, setIsBooking] = useState(false);
   const [bookingMessage, setBookingMessage] = useState<{
@@ -100,22 +99,13 @@ function EventDetailsComponent() {
     }
 
     try {
-      const apiClient = getApiClient();
       const response = await apiClient.bookings.$post({
         json: { eventId: event.eventId },
       });
 
       if (!response.ok) {
         let errorText = `Server error: ${response.status}`;
-        try {
-          // Attempt to parse backend error message
-          const errorData = await response.json();
-          // @ts-expect-error - Assuming errorData might have a 'message' property
-          errorText = errorData.message || errorText;
-        } catch (e) {
-          // If JSON parsing fails, use the generic errorText
-          console.warn("Could not parse error response JSON:", e);
-        }
+
         throw new Error(errorText);
       }
 

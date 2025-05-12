@@ -4,7 +4,7 @@ import { router } from "@/main";
 import { Card } from "@/components/card";
 import { PrimaryButton } from "@/components/primary-button";
 
-export const Route = createFileRoute("/events/")({
+export const Route = createFileRoute("/(user)/events/")({
   loader: async () => {
     const res = await baseApiClient.events.$get();
     if (!res.ok) {

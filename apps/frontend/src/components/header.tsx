@@ -32,11 +32,11 @@ export const Header = () => {
               Events
             </Link>
           </li>
-          {/* {isAuthenticated && (
+          {isAuthenticated && (
             <li>
               <Link
                 // TODO: Add correct link
-                to="/"
+                to="/bookings"
                 className="text-muted hover:text-primary transition duration-300 ease-in-out px-2 py-1 sm:px-3 rounded-md"
                 activeProps={{
                   className: "!text-primary font-semibold bg-primary/10",
@@ -45,7 +45,7 @@ export const Header = () => {
                 My Bookings
               </Link>
             </li>
-          )} */}
+          )}
           <li>
             {isAuthenticated ? (
               <SecondaryButton

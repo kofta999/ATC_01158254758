@@ -1,11 +1,11 @@
-import { PrimaryButton } from "../../components/primary-button";
-import { Card } from "../../components/card";
+import { PrimaryButton } from "@/components/primary-button";
+import { Card } from "@/components/card";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { router } from "@/main";
 import { RegisterUserSchema } from "@/schemas";
 import { useAuth } from "@/hooks/use-auth";
 
-export const Route = createFileRoute("/(auth)/register")({
+export const Route = createFileRoute("/(user)/(auth)/register")({
   component: Register,
 });
 
