@@ -1,13 +1,13 @@
 import type { Event } from "@/core/domain/entities/event";
 import type { EventRepositoryPort } from "@/ports/output/repositories/event.repository.port";
 import { inject, injectable } from "inversify";
-import { EventDatabaseRepository } from "./event.database.repository";
+import { EventCacheRepository } from "./event.cache.repository";
 
 @injectable()
 export class EventRepositoryAdapter implements EventRepositoryPort {
 	constructor(
-		@inject(EventDatabaseRepository)
-		private repository: EventDatabaseRepository,
+		@inject(EventCacheRepository)
+		private repository: EventCacheRepository,
 	) {}
 
 	create(event: Event): Promise<Event> {

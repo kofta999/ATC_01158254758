@@ -4,4 +4,5 @@ export interface CachePort {
 	has(key: string): Promise<boolean>;
 	del(key: string): Promise<void>;
 	delByPattern(pattern: string): Promise<void>;
+	generateKey(key: string, ...args: (string | number)[]): string;
 }

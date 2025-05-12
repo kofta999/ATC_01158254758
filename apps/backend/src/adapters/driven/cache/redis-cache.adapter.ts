@@ -40,4 +40,8 @@ export class RedisCacheAdapter implements CachePort {
 
 		return void Promise.all(keys.map((k) => this.client.DEL(k)));
 	}
+
+	generateKey(key: string, ...args: (string | number)[]): string {
+		return [key, ...args].join(":");
+	}
 }

@@ -1,6 +1,6 @@
 import type { CachePort } from "@/ports/output/cache/cache.port";
 
-export class CacheService implements CachePort {
+export class MemoryCacheAdapter implements CachePort {
 	constructor(private cache: Map<string, unknown> = new Map()) {}
 
 	get<T>(key: string): Promise<T | null> {
@@ -44,5 +44,9 @@ export class CacheService implements CachePort {
 				resolve();
 			}
 		});
+	}
+
+	generateKey(key: string, ...args: (string | number)[]): string {
+		return [key, ...args].join(":");
 	}
 }
