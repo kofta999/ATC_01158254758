@@ -2,6 +2,8 @@ import type { CreateEventDTO } from "@/common/dtos/create-event.dto";
 import type { EventDetailsDTO } from "@/common/dtos/event-details.dto";
 import type { EventListDTO } from "@/common/dtos/event-list.dto";
 import type { UpdateEventDTO } from "@/common/dtos/update-event.dto";
+import { EventIsBookedError } from "@/common/errors/event-is-booked";
+import { ResourceAlreadyExists } from "@/common/errors/resource-already-exists";
 import { ResourceNotFoundError } from "@/common/errors/resource-not-found";
 import { TYPES } from "@/common/types";
 import type { Event } from "@/core/domain/entities/event";
@@ -55,6 +57,10 @@ export class EventService implements EventApiPort {
 
 		if (!maybeEvent) {
 			throw new ResourceNotFoundError("Event", eventId);
+		}
+
+		if (maybeEvent.isBooked) {
+			throw new EventIsBookedError(maybeEvent.eventId);
 		}
 
 		return maybeEvent;

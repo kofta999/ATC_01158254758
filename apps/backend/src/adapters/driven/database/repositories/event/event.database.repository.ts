@@ -1,4 +1,5 @@
 import type { CreateEventDTO } from "@/common/dtos/create-event.dto";
+import { ResourceAlreadyExists } from "@/common/errors/resource-already-exists";
 import { TYPES } from "@/common/types";
 import { Event } from "@/core/domain/entities/event";
 import type { EventRepositoryPort } from "@/ports/output/repositories/event.repository.port";
@@ -119,6 +120,10 @@ export class EventDatabaseRepository implements EventRepositoryPort {
 		const eventToDelete = await this.getById(eventId);
 		if (!eventToDelete) {
 			return null;
+		}
+
+		if (eventToDelete.isBooked) {
+			return eventToDelete;
 		}
 
 		const deletedDbResult = await this.db
