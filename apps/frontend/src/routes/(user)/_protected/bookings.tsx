@@ -1,7 +1,10 @@
+import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { router } from "@/main";
 import { Card } from "@/components/card";
 import { PrimaryButton } from "@/components/primary-button";
+import { DangerButton } from "@/components/danger-button"; // Import DangerButton
+import { useAuth } from "@/hooks/use-auth"; // Import useAuth to access apiClient
 
 export const Route = createFileRoute("/(user)/_protected/bookings")({
   loader: async ({ context }) => {
@@ -11,7 +14,7 @@ export const Route = createFileRoute("/(user)/_protected/bookings")({
       // Should not happen
       if (!apiClient) throw new Error("API Client not found");
 
-      console.log(apiClient.auth)
+      console.log(apiClient.auth);
       const res = await apiClient.bookings.$get();
 
       if (!res.ok) {
@@ -34,10 +37,9 @@ export const Route = createFileRoute("/(user)/_protected/bookings")({
 });
 
 function BookingsErrorComponent({ error }: { error: Error }) {
-  console.error("Rendering BookingsErrorComponent:", error); // Log the error being handled
+  console.error("Rendering BookingsErrorComponent:", error);
   return (
     <div className="p-4 md:p-6 bg-background min-h-[calc(100vh-var(--header-height))] flex flex-col items-center justify-center">
-      {/* Adjust min-h if header height is known */}
       <Card className="max-w-lg w-full text-center">
         <h1 className="text-2xl md:text-3xl font-bold text-danger mb-4">
           Oops! Something went wrong.
@@ -48,13 +50,7 @@ function BookingsErrorComponent({ error }: { error: Error }) {
         <p className="text-sm text-muted mb-6">
           Error: {error.message || "An unknown error occurred."}
         </p>
-        <PrimaryButton
-          onClick={() => {
-            // Invalidate route data and retry loading
-            router.invalidate();
-            // router.load() might also be needed depending on TanStack Router version and setup
-          }}
-        >
+        <PrimaryButton onClick={() => router.invalidate()}>
           Try Again
         </PrimaryButton>
       </Card>
@@ -64,6 +60,40 @@ function BookingsErrorComponent({ error }: { error: Error }) {
 
 function BookingsComponent() {
   const bookings = Route.useLoaderData();
+  const { apiClient } = useAuth();
+  const [cancellingId, setCancellingId] = useState<number | null>(null);
+
+  const handleCancelBooking = async (bookingId: number) => {
+    if (!window.confirm("Are you sure you want to cancel this booking?")) {
+      return;
+    }
+
+    setCancellingId(bookingId);
+    try {
+      const res = await apiClient.bookings[":id"].$delete({
+        param: { id: bookingId }, // Pass bookingId as a string param
+      });
+
+      if (!res.ok) {
+        let errorMsg = `Failed to cancel booking (status: ${res.status}).`;
+        try {
+          const errorData = await res.json();
+          errorMsg = errorData.message || errorMsg;
+        } catch (e) {
+          /* Ignore if response is not JSON */
+        }
+        throw new Error(errorMsg);
+      }
+
+      alert("Booking cancelled successfully!"); // Simple feedback
+      router.invalidate();
+    } catch (error: any) {
+      console.error("Failed to cancel booking:", error);
+      alert(`Error cancelling booking: ${error.message || "Unknown error"}`);
+    } finally {
+      setCancellingId(null);
+    }
+  };
 
   return (
     <div className="bg-background min-h-[calc(100vh-var(--header-height))] p-4 md:p-8">
@@ -78,67 +108,78 @@ function BookingsComponent() {
 
       {Array.isArray(bookings) && bookings.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {bookings.map(
-            (
-              { booking, bookedEvent }, // Destructure here
-            ) => (
+          {bookings.map(({ booking, bookedEvent }) => {
+            const isCancelling = cancellingId === booking.bookingId; // Check if this card's cancel is loading
+            return (
               <Card
-                key={booking.bookingId} // Use bookingId from nested object
+                key={booking.bookingId}
                 className="flex flex-col overflow-hidden"
               >
                 <img
                   src={
-                    bookedEvent.image || // Access image from bookedEvent
+                    bookedEvent.image ||
                     `https://ui-avatars.com/api/?name=${encodeURIComponent(bookedEvent.eventName)}&background=random&size=400x200`
                   }
-                  alt={bookedEvent.eventName} // Access eventName from bookedEvent
+                  alt={bookedEvent.eventName}
                   className="w-full h-48 object-cover"
                 />
                 <div className="p-4 md:p-6 flex flex-col flex-grow">
                   <h2
                     className="text-xl font-semibold text-gray-800 mb-2 truncate"
-                    title={bookedEvent.eventName} // Access eventName from bookedEvent
+                    title={bookedEvent.eventName}
                   >
                     {bookedEvent.eventName}
                   </h2>
+                  {/* ... other event details ... */}
                   <p className="text-sm text-muted mb-1">
                     <span className="font-medium">Event Date:</span>{" "}
-                    {new Date(bookedEvent.date).toLocaleDateString()}{" "}
-                    {/* Access date from bookedEvent */}
+                    {new Date(bookedEvent.date).toLocaleDateString()}
                   </p>
                   <p className="text-sm text-muted mb-1">
                     <span className="font-medium">Venue:</span>{" "}
-                    {bookedEvent.venue} {/* Access venue from bookedEvent */}
+                    {bookedEvent.venue}
                   </p>
                   <p className="text-sm text-muted mb-3">
                     <span className="font-medium">Category:</span>{" "}
-                    {bookedEvent.category}{" "}
-                    {/* Access category from bookedEvent */}
+                    {bookedEvent.category}
                   </p>
                   <p className="text-xs text-gray-400 mb-3">
                     Booked on:{" "}
-                    {new Date(booking.createdAt).toLocaleDateString()}{" "}
-                    {/* Access createdAt from booking */}
+                    {new Date(booking.createdAt).toLocaleDateString()}
                   </p>
-                  <div className="mt-auto pt-3 border-t border-gray-200 flex justify-between items-center">
+
+                  <div className="mt-auto pt-3 border-t border-gray-200 flex justify-between items-center gap-2">
+                    {/* Price */}
                     <p className="text-lg font-bold text-primary">
-                      ${bookedEvent.price.toFixed(2)}{" "}
-                      {/* Access price from bookedEvent */}
+                      ${bookedEvent.price.toFixed(2)}
                     </p>
-                    <Link
-                      to="/events/$eventId"
-                      params={{ eventId: String(bookedEvent.eventId) }} // Access eventId from bookedEvent
-                      className="text-sm text-primary hover:underline"
-                    >
-                      View Event
-                    </Link>
+                    {/* Action Buttons */}
+                    <div className="flex gap-2 items-center">
+                      <Link
+                        to="/events/$eventId"
+                        params={{ eventId: String(bookedEvent.eventId) }}
+                        className="text-sm text-primary hover:underline whitespace-nowrap px-3 py-1 rounded hover:bg-primary/10 transition-colors"
+                        aria-label={`View details for ${bookedEvent.eventName}`}
+                      >
+                        View Event
+                      </Link>
+                      <DangerButton
+                        onClick={() => handleCancelBooking(booking.bookingId)}
+                        disabled={isCancelling}
+                        className="text-sm px-3 py-1" // Smaller padding
+                        aria-label={`Cancel booking for ${bookedEvent.eventName}`}
+                      >
+                        {isCancelling ? "Cancelling..." : "Cancel"}
+                      </DangerButton>
+                    </div>
                   </div>
                 </div>
               </Card>
-            ),
-          )}
+            );
+          })}
         </div>
       ) : (
+        // "No bookings yet" message remains the same
         <Card className="text-center py-10">
           <svg
             xmlns="http://www.w3.org/2000/svg"

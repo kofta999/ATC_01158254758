@@ -61,17 +61,15 @@ export const Route = createFileRoute("/admin/dashboard")({
   errorComponent: AdminDashboardErrorComponent,
 });
 
-function AdminDashboardErrorComponent({ error }: { error: Error }) {
+function AdminDashboardErrorComponent({}: { error: Error }) {
   const navigate = useNavigate();
   return (
     <div className="flex flex-grow items-center justify-center p-6">
-      {" "}
       {/* Use flex-grow for centering in available space */}
       <Card className="text-center max-w-lg w-full p-6 md:p-8">
         <h2 className="text-2xl md:text-3xl font-bold text-danger mb-4">
           Error Loading Dashboard
         </h2>
-        <p className="text-base text-gray-800 mb-6">{error.message}</p>{" "}
         {/* Matched text color to design system */}
         <PrimaryButton
           onClick={() => navigate({ to: Route.fullPath, replace: true })}
@@ -151,10 +149,8 @@ function AdminDashboardComponent() {
       {Array.isArray(events) && events.length > 0 ? (
         <Card className="overflow-x-auto shadow-lg">
           <table className="min-w-full divide-y divide-gray-200">
-            {" "}
             {/* Using neutral gray for divider */}
             <thead className="bg-background">
-              {" "}
               {/* Changed from bg-gray-50 */}
               <tr>
                 <th
@@ -196,7 +192,6 @@ function AdminDashboardComponent() {
               </tr>
             </thead>
             <tbody className="bg-surface divide-y divide-gray-200">
-              {" "}
               {/* Using neutral gray for divider */}
               {events.map((event) => (
                 <tr
@@ -204,27 +199,22 @@ function AdminDashboardComponent() {
                   className="hover:bg-background transition-colors duration-150" /* Use bg-background for hover for slight contrast */
                 >
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800">
-                    {" "}
                     {/* Changed from text-gray-900 */}
                     {event.eventName}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-muted">
-                    {" "}
                     {/* Changed from text-gray-400 */}
                     {event.category}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-muted">
-                    {" "}
                     {/* Changed from text-gray-400 */}
                     {new Date(event.date).toLocaleDateString()}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-muted">
-                    {" "}
                     {/* Changed from text-gray-400 */}
                     {event.venue}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-muted text-right">
-                    {" "}
                     {/* Changed from text-gray-400 */}
                     {typeof event.price === "number"
                       ? `$${event.price.toFixed(2)}`
@@ -268,7 +258,6 @@ function AdminDashboardComponent() {
             />
           </svg>
           <p className="text-xl text-gray-800 font-semibold mb-2">
-            {" "}
             {/* Changed from text-gray-700 dark:text-gray-300 */}
             No events found.
           </p>
