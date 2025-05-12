@@ -1,4 +1,5 @@
 import type { Booking } from "@/core/domain/entities/booking";
+import type { Event } from "@/core/domain/entities/event";
 import type { BookingRepositoryPort } from "@/ports/output/repositories/booking.repository.port";
 import { inject, injectable } from "inversify";
 import { BookingDatabaseRepository } from "./booking.database.repository";
@@ -22,7 +23,9 @@ export class BookingRepositoryAdapter implements BookingRepositoryPort {
 		return this.repository.delete(userId, eventId);
 	}
 
-	getAllForUser(userId: number): Promise<Booking[]> {
+	getAllForUser(
+		userId: number,
+	): Promise<{ booking: Booking; bookedEvent: Event }[]> {
 		return this.repository.getAllForUser(userId);
 	}
 }

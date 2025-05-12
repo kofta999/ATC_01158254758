@@ -1,4 +1,5 @@
 import type { BookingDetailsDTO } from "@/common/dtos/booking-details.dto";
+import type { BookingListDTO } from "@/common/dtos/bookings-list.dto";
 import type { CreateBookingDTO } from "@/common/dtos/create-booking.dto";
 import { ResourceAlreadyExists } from "@/common/errors/resource-already-exists";
 import { ResourceNotFoundError } from "@/common/errors/resource-not-found";
@@ -45,5 +46,11 @@ export class BookingService implements BookingApiPort {
 		}
 
 		return maybeBooking;
+	}
+
+	async getBookings(userId: number): Promise<BookingListDTO> {
+		const bookings = await this.bookingRepository.getAllForUser(userId);
+
+		return bookings;
 	}
 }

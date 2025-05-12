@@ -1,4 +1,5 @@
 import { BookingDetailsSchema } from "@/common/dtos/booking-details.dto";
+import { BookingListSchema } from "@/common/dtos/bookings-list.dto";
 import { CreateBookingSchema } from "@/common/dtos/create-booking.dto";
 import { ErrorSchema } from "@/common/schemas/error-schema";
 import { IdSchema } from "@/common/schemas/id-schema";
@@ -42,3 +43,17 @@ export const deleteBooking = createRoute({
 });
 
 export type DeleteBookingRoute = typeof deleteBooking;
+
+export const getBookings = createRoute({
+	path: "/",
+	method: "get",
+	tags,
+	middleware: [authMiddleware, requireRole("USER")] as const,
+	summary: "Get Bookings",
+	responses: {
+		200: jsonContent(BookingListSchema, "User's bookings list"),
+		404: jsonContent(ErrorSchema, "Booking not found"),
+	},
+});
+
+export type GetBookingsRoute = typeof getBookings;

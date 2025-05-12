@@ -1,6 +1,7 @@
 import type { BookingDetailsDTO } from "@/common/dtos/booking-details.dto";
 import { TYPES } from "@/common/types";
 import { Booking } from "@/core/domain/entities/booking";
+import { Event } from "@/core/domain/entities/event";
 import type { BookingRepositoryPort } from "@/ports/output/repositories/booking.repository.port";
 import { and, eq } from "drizzle-orm";
 import { inject, injectable } from "inversify";
@@ -14,20 +15,23 @@ export class BookingDatabaseRepository implements BookingRepositoryPort {
 	constructor(@inject(TYPES.DrizzleDataSource) db: DrizzleDataSource) {
 		this.db = db;
 	}
-	async getAllForUser(userId: number): Promise<Booking[]> {
+	async getAllForUser(
+		userId: number,
+	): Promise<{ booking: Booking; bookedEvent: Event }[]> {
 		const bookings = await this.db.query.bookingTable.findMany({
 			where: (f, { eq }) => eq(f.userId, userId),
+			with: { event: true },
 		});
 
-		return bookings.map(
-			(booking) =>
-				new Booking({
-					bookingId: booking.bookingId,
-					userId: booking.userId,
-					eventId: booking.eventId,
-					createdAt: new Date(booking.createdAt),
-				}),
-		);
+		return bookings.map((booking) => ({
+			booking: new Booking({
+				bookingId: booking.bookingId,
+				userId: booking.userId,
+				eventId: booking.eventId,
+				createdAt: new Date(booking.createdAt),
+			}),
+			bookedEvent: new Event({ ...booking.event, isBooked: true }),
+		}));
 	}
 
 	async exists(eventId: number): Promise<boolean> {

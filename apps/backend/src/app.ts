@@ -36,7 +36,8 @@ function initializeRouters() {
 
 	const bookingRouter = createRouter()
 		.openapi(bookingRoutes.createBooking, bookingController.createBooking)
-		.openapi(bookingRoutes.deleteBooking, bookingController.deleteBooking);
+		.openapi(bookingRoutes.deleteBooking, bookingController.deleteBooking)
+		.openapi(bookingRoutes.getBookings, bookingController.getBookings);
 
 	return { adminRouter, authRouter, eventRouter, bookingRouter };
 }
