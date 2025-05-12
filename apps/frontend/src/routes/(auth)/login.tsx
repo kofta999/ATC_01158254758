@@ -32,11 +32,7 @@ export default function Login() {
             try {
               const formData = new FormData(e.currentTarget);
               // Validate form data against LoginUserSchema
-              const parsed = LoginUserSchema.parse({
-                email: formData.get("email"),
-                password: formData.get("password"),
-                // Role is not part of form, defaulting to USER as per original logic
-              });
+              const parsed = LoginUserSchema.parse(formData);
 
               const loginSuccess = await auth.login(
                 parsed.email,

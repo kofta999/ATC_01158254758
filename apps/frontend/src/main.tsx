@@ -1,17 +1,22 @@
 import { RouterProvider, createRouter } from "@tanstack/react-router";
-import { StrictMode } from "react";
+import { StrictMode, useEffect } from "react"; // Import React and useEffect
 import ReactDOM from "react-dom/client";
-
-// Import the generated route tree
 import { routeTree } from "./routeTree.gen";
-
 import "./styles.css";
 import reportWebVitals from "./reportWebVitals.ts";
+import { AuthProvider, useAuth } from "./hooks/use-auth"; // Import AuthProvider, useAuth, and AuthContextType
+
+// Update AuthContextType in use-auth.tsx to include the user
+// For now, let's assume AuthContextType might look like this for the router:
+// We will effectively use AuthContextType directly and expect it to be updated in use-auth.tsx
+// to include the `user` property.
 
 // Create a new router instance
 export const router = createRouter({
   routeTree,
-  context: {},
+  context: {
+    auth: undefined,
+  },
   defaultPreload: "intent",
   scrollRestoration: true,
   defaultStructuralSharing: true,
@@ -25,13 +30,33 @@ declare module "@tanstack/react-router" {
   }
 }
 
+// Create a component to wrap RouterProvider and update router context
+function App() {
+  const auth = useAuth(); // This hook now works because AuthProvider is a parent
+
+  useEffect(() => {
+    // Update the router context whenever auth state changes
+    // Make sure the `auth` object from `useAuth` includes all necessary fields like `user`
+    router.update({
+      context: {
+        ...router.options.context,
+        auth,
+      },
+    });
+  }, [auth]); // Dependency array ensures this runs when auth object changes
+
+  return <RouterProvider router={router} />;
+}
+
 // Render the app
 const rootElement = document.getElementById("app");
 if (rootElement && !rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement);
   root.render(
     <StrictMode>
-      <RouterProvider router={router} />
+      <AuthProvider>
+        <App />
+      </AuthProvider>
     </StrictMode>,
   );
 }

@@ -15,9 +15,13 @@ import { Route as ProtectedRouteImport } from './routes/_protected/route'
 import { Route as IndexImport } from './routes/index'
 import { Route as EventsIndexImport } from './routes/events/index'
 import { Route as EventsEventIdImport } from './routes/events/$eventId'
+import { Route as AdminLoginImport } from './routes/admin/login'
+import { Route as AdminDashboardImport } from './routes/admin/dashboard'
 import { Route as ProtectedHiImport } from './routes/_protected/hi'
 import { Route as authRegisterImport } from './routes/(auth)/register'
 import { Route as authLoginImport } from './routes/(auth)/login'
+import { Route as AdminEventsNewImport } from './routes/admin/events/new'
+import { Route as AdminEventsEventIdEditImport } from './routes/admin/events/$eventId.edit'
 
 // Create/Update Routes
 
@@ -44,6 +48,18 @@ const EventsEventIdRoute = EventsEventIdImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const AdminLoginRoute = AdminLoginImport.update({
+  id: '/admin/login',
+  path: '/admin/login',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AdminDashboardRoute = AdminDashboardImport.update({
+  id: '/admin/dashboard',
+  path: '/admin/dashboard',
+  getParentRoute: () => rootRoute,
+} as any)
+
 const ProtectedHiRoute = ProtectedHiImport.update({
   id: '/hi',
   path: '/hi',
@@ -59,6 +75,18 @@ const authRegisterRoute = authRegisterImport.update({
 const authLoginRoute = authLoginImport.update({
   id: '/(auth)/login',
   path: '/login',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AdminEventsNewRoute = AdminEventsNewImport.update({
+  id: '/admin/events/new',
+  path: '/admin/events/new',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AdminEventsEventIdEditRoute = AdminEventsEventIdEditImport.update({
+  id: '/admin/events/$eventId/edit',
+  path: '/admin/events/$eventId/edit',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -101,6 +129,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedHiImport
       parentRoute: typeof ProtectedRouteImport
     }
+    '/admin/dashboard': {
+      id: '/admin/dashboard'
+      path: '/admin/dashboard'
+      fullPath: '/admin/dashboard'
+      preLoaderRoute: typeof AdminDashboardImport
+      parentRoute: typeof rootRoute
+    }
+    '/admin/login': {
+      id: '/admin/login'
+      path: '/admin/login'
+      fullPath: '/admin/login'
+      preLoaderRoute: typeof AdminLoginImport
+      parentRoute: typeof rootRoute
+    }
     '/events/$eventId': {
       id: '/events/$eventId'
       path: '/events/$eventId'
@@ -113,6 +155,20 @@ declare module '@tanstack/react-router' {
       path: '/events'
       fullPath: '/events'
       preLoaderRoute: typeof EventsIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/admin/events/new': {
+      id: '/admin/events/new'
+      path: '/admin/events/new'
+      fullPath: '/admin/events/new'
+      preLoaderRoute: typeof AdminEventsNewImport
+      parentRoute: typeof rootRoute
+    }
+    '/admin/events/$eventId/edit': {
+      id: '/admin/events/$eventId/edit'
+      path: '/admin/events/$eventId/edit'
+      fullPath: '/admin/events/$eventId/edit'
+      preLoaderRoute: typeof AdminEventsEventIdEditImport
       parentRoute: typeof rootRoute
     }
   }
@@ -138,8 +194,12 @@ export interface FileRoutesByFullPath {
   '/login': typeof authLoginRoute
   '/register': typeof authRegisterRoute
   '/hi': typeof ProtectedHiRoute
+  '/admin/dashboard': typeof AdminDashboardRoute
+  '/admin/login': typeof AdminLoginRoute
   '/events/$eventId': typeof EventsEventIdRoute
   '/events': typeof EventsIndexRoute
+  '/admin/events/new': typeof AdminEventsNewRoute
+  '/admin/events/$eventId/edit': typeof AdminEventsEventIdEditRoute
 }
 
 export interface FileRoutesByTo {
@@ -148,8 +208,12 @@ export interface FileRoutesByTo {
   '/login': typeof authLoginRoute
   '/register': typeof authRegisterRoute
   '/hi': typeof ProtectedHiRoute
+  '/admin/dashboard': typeof AdminDashboardRoute
+  '/admin/login': typeof AdminLoginRoute
   '/events/$eventId': typeof EventsEventIdRoute
   '/events': typeof EventsIndexRoute
+  '/admin/events/new': typeof AdminEventsNewRoute
+  '/admin/events/$eventId/edit': typeof AdminEventsEventIdEditRoute
 }
 
 export interface FileRoutesById {
@@ -159,8 +223,12 @@ export interface FileRoutesById {
   '/(auth)/login': typeof authLoginRoute
   '/(auth)/register': typeof authRegisterRoute
   '/_protected/hi': typeof ProtectedHiRoute
+  '/admin/dashboard': typeof AdminDashboardRoute
+  '/admin/login': typeof AdminLoginRoute
   '/events/$eventId': typeof EventsEventIdRoute
   '/events/': typeof EventsIndexRoute
+  '/admin/events/new': typeof AdminEventsNewRoute
+  '/admin/events/$eventId/edit': typeof AdminEventsEventIdEditRoute
 }
 
 export interface FileRouteTypes {
@@ -171,10 +239,25 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/hi'
+    | '/admin/dashboard'
+    | '/admin/login'
     | '/events/$eventId'
     | '/events'
+    | '/admin/events/new'
+    | '/admin/events/$eventId/edit'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '' | '/login' | '/register' | '/hi' | '/events/$eventId' | '/events'
+  to:
+    | '/'
+    | ''
+    | '/login'
+    | '/register'
+    | '/hi'
+    | '/admin/dashboard'
+    | '/admin/login'
+    | '/events/$eventId'
+    | '/events'
+    | '/admin/events/new'
+    | '/admin/events/$eventId/edit'
   id:
     | '__root__'
     | '/'
@@ -182,8 +265,12 @@ export interface FileRouteTypes {
     | '/(auth)/login'
     | '/(auth)/register'
     | '/_protected/hi'
+    | '/admin/dashboard'
+    | '/admin/login'
     | '/events/$eventId'
     | '/events/'
+    | '/admin/events/new'
+    | '/admin/events/$eventId/edit'
   fileRoutesById: FileRoutesById
 }
 
@@ -192,8 +279,12 @@ export interface RootRouteChildren {
   ProtectedRouteRoute: typeof ProtectedRouteRouteWithChildren
   authLoginRoute: typeof authLoginRoute
   authRegisterRoute: typeof authRegisterRoute
+  AdminDashboardRoute: typeof AdminDashboardRoute
+  AdminLoginRoute: typeof AdminLoginRoute
   EventsEventIdRoute: typeof EventsEventIdRoute
   EventsIndexRoute: typeof EventsIndexRoute
+  AdminEventsNewRoute: typeof AdminEventsNewRoute
+  AdminEventsEventIdEditRoute: typeof AdminEventsEventIdEditRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
@@ -201,8 +292,12 @@ const rootRouteChildren: RootRouteChildren = {
   ProtectedRouteRoute: ProtectedRouteRouteWithChildren,
   authLoginRoute: authLoginRoute,
   authRegisterRoute: authRegisterRoute,
+  AdminDashboardRoute: AdminDashboardRoute,
+  AdminLoginRoute: AdminLoginRoute,
   EventsEventIdRoute: EventsEventIdRoute,
   EventsIndexRoute: EventsIndexRoute,
+  AdminEventsNewRoute: AdminEventsNewRoute,
+  AdminEventsEventIdEditRoute: AdminEventsEventIdEditRoute,
 }
 
 export const routeTree = rootRoute
@@ -219,8 +314,12 @@ export const routeTree = rootRoute
         "/_protected",
         "/(auth)/login",
         "/(auth)/register",
+        "/admin/dashboard",
+        "/admin/login",
         "/events/$eventId",
-        "/events/"
+        "/events/",
+        "/admin/events/new",
+        "/admin/events/$eventId/edit"
       ]
     },
     "/": {
@@ -242,11 +341,23 @@ export const routeTree = rootRoute
       "filePath": "_protected/hi.tsx",
       "parent": "/_protected"
     },
+    "/admin/dashboard": {
+      "filePath": "admin/dashboard.tsx"
+    },
+    "/admin/login": {
+      "filePath": "admin/login.tsx"
+    },
     "/events/$eventId": {
       "filePath": "events/$eventId.tsx"
     },
     "/events/": {
       "filePath": "events/index.tsx"
+    },
+    "/admin/events/new": {
+      "filePath": "admin/events/new.tsx"
+    },
+    "/admin/events/$eventId/edit": {
+      "filePath": "admin/events/$eventId.edit.tsx"
     }
   }
 }
