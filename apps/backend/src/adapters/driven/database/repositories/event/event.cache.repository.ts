@@ -7,7 +7,7 @@ import { EventDatabaseRepository } from "./event.database.repository";
 
 @injectable()
 export class EventCacheRepository implements EventRepositoryPort {
-	private CACHE_KEY = "events" as const;
+	private readonly CACHE_KEY_PREFIX = "events" as const;
 
 	constructor(
 		@inject(EventDatabaseRepository)
@@ -16,47 +16,67 @@ export class EventCacheRepository implements EventRepositoryPort {
 		private cache: CachePort,
 	) {}
 
-	create(event: Event): Promise<Event> {
-		return this.repository.create(event);
+	private getEventCacheKey(eventId: number | string): string {
+		return this.cache.generateKey(this.CACHE_KEY_PREFIX, String(eventId));
+	}
+
+	private getAllEventsCacheKey() {
+		return this.cache.generateKey(this.CACHE_KEY_PREFIX, "all");
+	}
+
+	async create(eventData: Omit<Event, "eventId" | "isBooked">): Promise<Event> {
+		await this.cache.del(this.getAllEventsCacheKey());
+
+		const newEvent = await this.repository.create(eventData);
+
+		return newEvent;
 	}
 
 	async getById(eventId: number): Promise<Event | null> {
-		const key = this.cache.generateKey(this.CACHE_KEY, eventId);
+		const key = this.getEventCacheKey(eventId);
 		const cached = await this.cache.get<Event>(key);
 
 		if (cached) {
 			return new Event(cached);
 		}
 
-		const event = this.repository.getById(eventId);
+		const event = await this.repository.getById(eventId);
 
-		this.cache.set(key, event);
-
+		if (event) {
+			await this.cache.set(key, event);
+		}
 		return event;
 	}
 
-	update(eventId: number, event: Event): Promise<Event | null> {
-		this.cache.del(this.cache.generateKey(this.CACHE_KEY, eventId));
-		return this.repository.update(eventId, event);
+	async update(eventId: number, eventData: Event): Promise<Event | null> {
+		await this.cache.del(this.getEventCacheKey(eventId));
+		await this.cache.del(this.getAllEventsCacheKey());
+
+		const updatedEvent = await this.repository.update(eventId, eventData);
+
+		return updatedEvent;
 	}
 
-	delete(eventId: number): Promise<Event | null> {
-		this.cache.del(this.cache.generateKey(this.CACHE_KEY, eventId));
-		return this.repository.delete(eventId);
+	async delete(eventId: number): Promise<Event | null> {
+		const eventToDelete = await this.repository.delete(eventId);
+
+		if (eventToDelete) {
+			await this.cache.del(this.getEventCacheKey(eventId));
+			await this.cache.del(this.getAllEventsCacheKey());
+		}
+
+		return eventToDelete;
 	}
 
 	async getAll(): Promise<Event[]> {
-		const key = this.cache.generateKey(this.CACHE_KEY);
-		const cached = await this.cache.get<Event[]>(key);
+		const cached = await this.cache.get<Event[]>(this.getAllEventsCacheKey());
 
-		if (cached) {
+		if (cached && cached.length > 0) {
 			return cached.map((ev) => new Event(ev));
 		}
 
-		const events = this.repository.getAll();
-
-		this.cache.set(key, events);
-
+		const events = await this.repository.getAll();
+		await this.cache.set(this.getAllEventsCacheKey(), events);
 		return events;
 	}
 }

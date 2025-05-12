@@ -36,7 +36,6 @@ export class RedisCacheAdapter implements CachePort {
 
 	async delByPattern(pattern: string): Promise<void> {
 		const keys = await this.client.KEYS(pattern);
-		console.log(keys);
 
 		return void Promise.all(keys.map((k) => this.client.DEL(k)));
 	}
