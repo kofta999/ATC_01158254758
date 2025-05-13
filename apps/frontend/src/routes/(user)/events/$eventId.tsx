@@ -109,13 +109,15 @@ function EventDetailsComponent() {
         throw new Error(errorText);
       }
 
-      setBookingMessage({
-        type: "success",
-        text: "Event booked successfully!",
+      // Navigate to the booking success page with event details
+      navigate({
+        to: "/booking-success",
+        search: {
+          eventName: event.eventName,
+          eventDate: event.date, // Assuming event.date is an ISO string
+        },
+        replace: true, // Replace current history entry so back button goes to events list
       });
-      setIsActuallyBooked(true); // Optimistically update UI
-      // Consider invalidating only if necessary, to allow optimistic UI to shine
-      // router.invalidate(); // This would re-fetch loader data
     } catch (error: any) {
       console.error("Booking failed:", error);
       setBookingMessage({

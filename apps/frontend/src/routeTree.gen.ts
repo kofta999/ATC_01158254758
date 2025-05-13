@@ -16,6 +16,7 @@ import { Route as rootRoute } from './routes/__root'
 import { Route as IndexImport } from './routes/index'
 import { Route as AdminLoginImport } from './routes/admin/login'
 import { Route as AdminDashboardImport } from './routes/admin/dashboard'
+import { Route as userBookingSuccessImport } from './routes/(user)/booking-success'
 import { Route as userProtectedRouteImport } from './routes/(user)/_protected/route'
 import { Route as userEventsIndexImport } from './routes/(user)/events/index'
 import { Route as AdminEventsNewImport } from './routes/admin/events/new'
@@ -52,6 +53,12 @@ const AdminDashboardRoute = AdminDashboardImport.update({
   id: '/admin/dashboard',
   path: '/admin/dashboard',
   getParentRoute: () => rootRoute,
+} as any)
+
+const userBookingSuccessRoute = userBookingSuccessImport.update({
+  id: '/booking-success',
+  path: '/booking-success',
+  getParentRoute: () => userRoute,
 } as any)
 
 const userProtectedRouteRoute = userProtectedRouteImport.update({
@@ -125,6 +132,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof userProtectedRouteImport
       parentRoute: typeof userRoute
+    }
+    '/(user)/booking-success': {
+      id: '/(user)/booking-success'
+      path: '/booking-success'
+      fullPath: '/booking-success'
+      preLoaderRoute: typeof userBookingSuccessImport
+      parentRoute: typeof userImport
     }
     '/admin/dashboard': {
       id: '/admin/dashboard'
@@ -207,6 +221,7 @@ const userProtectedRouteRouteWithChildren =
 
 interface userRouteChildren {
   userProtectedRouteRoute: typeof userProtectedRouteRouteWithChildren
+  userBookingSuccessRoute: typeof userBookingSuccessRoute
   userauthLoginRoute: typeof userauthLoginRoute
   userauthRegisterRoute: typeof userauthRegisterRoute
   userEventsEventIdRoute: typeof userEventsEventIdRoute
@@ -215,6 +230,7 @@ interface userRouteChildren {
 
 const userRouteChildren: userRouteChildren = {
   userProtectedRouteRoute: userProtectedRouteRouteWithChildren,
+  userBookingSuccessRoute: userBookingSuccessRoute,
   userauthLoginRoute: userauthLoginRoute,
   userauthRegisterRoute: userauthRegisterRoute,
   userEventsEventIdRoute: userEventsEventIdRoute,
@@ -225,6 +241,7 @@ const userRouteWithChildren = userRoute._addFileChildren(userRouteChildren)
 
 export interface FileRoutesByFullPath {
   '/': typeof userProtectedRouteRouteWithChildren
+  '/booking-success': typeof userBookingSuccessRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/login': typeof AdminLoginRoute
   '/login': typeof userauthLoginRoute
@@ -238,6 +255,7 @@ export interface FileRoutesByFullPath {
 
 export interface FileRoutesByTo {
   '/': typeof userProtectedRouteRouteWithChildren
+  '/booking-success': typeof userBookingSuccessRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/login': typeof AdminLoginRoute
   '/login': typeof userauthLoginRoute
@@ -254,6 +272,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/(user)': typeof userRouteWithChildren
   '/(user)/_protected': typeof userProtectedRouteRouteWithChildren
+  '/(user)/booking-success': typeof userBookingSuccessRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/login': typeof AdminLoginRoute
   '/(user)/(auth)/login': typeof userauthLoginRoute
@@ -269,6 +288,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/booking-success'
     | '/admin/dashboard'
     | '/admin/login'
     | '/login'
@@ -281,6 +301,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/booking-success'
     | '/admin/dashboard'
     | '/admin/login'
     | '/login'
@@ -295,6 +316,7 @@ export interface FileRouteTypes {
     | '/'
     | '/(user)'
     | '/(user)/_protected'
+    | '/(user)/booking-success'
     | '/admin/dashboard'
     | '/admin/login'
     | '/(user)/(auth)/login'
@@ -350,6 +372,7 @@ export const routeTree = rootRoute
       "filePath": "(user)/_protected",
       "children": [
         "/(user)/_protected",
+        "/(user)/booking-success",
         "/(user)/(auth)/login",
         "/(user)/(auth)/register",
         "/(user)/events/$eventId",
@@ -362,6 +385,10 @@ export const routeTree = rootRoute
       "children": [
         "/(user)/_protected/bookings"
       ]
+    },
+    "/(user)/booking-success": {
+      "filePath": "(user)/booking-success.tsx",
+      "parent": "/(user)"
     },
     "/admin/dashboard": {
       "filePath": "admin/dashboard.tsx"
