@@ -4,10 +4,15 @@ import {
   useParams,
   redirect,
 } from "@tanstack/react-router";
-import { EventForm, type EventFormData } from "@/components/admin/event-form";
+import { EventForm } from "@/components/admin/event-form";
 import { useState } from "react";
 import { baseApiClient } from "@/lib/base-api-client";
 import { useAuth } from "@/lib/hooks/use-auth";
+import type { InferRequestType } from "@repo/areeb-backend";
+
+export type EditEventFormData = InferRequestType<
+  (typeof baseApiClient.events)[":id"]["$put"]
+>["form"];
 
 export const Route = createFileRoute(
   "/(admin)/admin/dashboard/events/$eventId/edit",
@@ -30,6 +35,7 @@ export const Route = createFileRoute(
     if (!res.ok) {
       throw new Error(`Failed to load event for editing: ${res.status}`);
     }
+
     const eventData = await res.json();
     // Map to EventFormData, especially ensuring date is in YYYY-MM-DD
     return {
@@ -38,20 +44,22 @@ export const Route = createFileRoute(
         ? new Date(eventData.date).toISOString().split("T")[0]
         : "",
       price: Number(eventData.price) || 0,
-    } as EventFormData;
+    };
   },
   component: EditEventPage,
 });
 
 function EditEventPage() {
   const navigate = useNavigate();
-  const { eventId } = useParams({ from: "/(admin)/admin/dashboard/events/$eventId/edit" });
+  const { eventId } = useParams({
+    from: "/(admin)/admin/dashboard/events/$eventId/edit",
+  });
   const initialEventData = Route.useLoaderData();
   const { apiClient } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [_, setSubmissionError] = useState<string | null>(null);
 
-  const handleUpdateEvent = async (data: EventFormData) => {
+  const handleUpdateEvent = async (data: EditEventFormData) => {
     setIsSubmitting(true);
     setSubmissionError(null);
 
@@ -63,7 +71,7 @@ function EditEventPage() {
 
       const res = await apiClient.events[":id"].$put({
         param: { id: parseInt(eventId) },
-        json: eventToUpdate,
+        form: eventToUpdate,
       });
 
       if (!res.ok) {
