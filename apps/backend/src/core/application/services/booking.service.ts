@@ -6,6 +6,7 @@ import { ResourceNotFoundError } from "@/common/errors/resource-not-found";
 import { TYPES } from "@/common/types";
 import type { BookingApiPort } from "@/ports/input/booking.port";
 import type { BookingRepositoryPort } from "@/ports/output/repositories/booking.repository.port";
+import type { EventRepositoryPort } from "@/ports/output/repositories/event.repository.port";
 import { inject, injectable } from "inversify";
 
 @injectable()
@@ -13,6 +14,8 @@ export class BookingService implements BookingApiPort {
 	constructor(
 		@inject(TYPES.BookingRepositoryPort)
 		private bookingRepository: BookingRepositoryPort,
+		@inject(TYPES.EventRepositoryPort)
+		private eventRepository: EventRepositoryPort,
 	) {}
 
 	async bookEvent(
@@ -32,6 +35,9 @@ export class BookingService implements BookingApiPort {
 			...booking,
 		});
 
+		await this.eventRepository.invalidateCache();
+		await this.eventRepository.invalidateCache(newBooking.eventId);
+
 		return newBooking;
 	}
 
@@ -45,6 +51,8 @@ export class BookingService implements BookingApiPort {
 			throw new ResourceNotFoundError("Booking", bookingId);
 		}
 
+		await this.eventRepository.invalidateCache();
+		await this.eventRepository.invalidateCache(maybeBooking.eventId);
 		return maybeBooking;
 	}
 

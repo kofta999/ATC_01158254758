@@ -29,4 +29,8 @@ export class EventRepositoryAdapter implements EventRepositoryPort {
 	getAll(): Promise<Event[]> {
 		return this.repository.getAll();
 	}
+
+	invalidateCache(eventId?: number): Promise<void> {
+		return this.repository.invalidateCache(eventId);
+	}
 }

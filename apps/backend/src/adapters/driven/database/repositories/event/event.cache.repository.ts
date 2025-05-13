@@ -25,7 +25,7 @@ export class EventCacheRepository implements EventRepositoryPort {
 	}
 
 	async create(eventData: Omit<Event, "eventId" | "isBooked">): Promise<Event> {
-		await this.cache.del(this.getAllEventsCacheKey());
+		await this.invalidateCache();
 
 		const newEvent = await this.repository.create(eventData);
 
@@ -49,10 +49,12 @@ export class EventCacheRepository implements EventRepositoryPort {
 	}
 
 	async update(eventId: number, eventData: Event): Promise<Event | null> {
-		await this.cache.del(this.getEventCacheKey(eventId));
-		await this.cache.del(this.getAllEventsCacheKey());
-
 		const updatedEvent = await this.repository.update(eventId, eventData);
+
+		if (updatedEvent) {
+			await this.invalidateCache(eventId);
+			await this.invalidateCache();
+		}
 
 		return updatedEvent;
 	}
@@ -61,8 +63,8 @@ export class EventCacheRepository implements EventRepositoryPort {
 		const eventToDelete = await this.repository.delete(eventId);
 
 		if (eventToDelete) {
-			await this.cache.del(this.getEventCacheKey(eventId));
-			await this.cache.del(this.getAllEventsCacheKey());
+			await this.invalidateCache(eventId);
+			await this.invalidateCache();
 		}
 
 		return eventToDelete;
@@ -78,5 +80,11 @@ export class EventCacheRepository implements EventRepositoryPort {
 		const events = await this.repository.getAll();
 		await this.cache.set(this.getAllEventsCacheKey(), events);
 		return events;
+	}
+
+	invalidateCache(eventId?: number): Promise<void> {
+		return this.cache.del(
+			eventId ? this.getEventCacheKey(eventId) : this.getAllEventsCacheKey(),
+		);
 	}
 }

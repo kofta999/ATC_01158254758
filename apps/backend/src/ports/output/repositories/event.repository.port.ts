@@ -6,4 +6,5 @@ export interface EventRepositoryPort {
 	create(event: Omit<Event, "eventId" | "isBooked">): Promise<Event>;
 	update(eventId: number, updatedEvent: Partial<Event>): Promise<Event | null>;
 	delete(eventId: number): Promise<Event | null>;
+	invalidateCache(eventId?: number): Promise<void>;
 }

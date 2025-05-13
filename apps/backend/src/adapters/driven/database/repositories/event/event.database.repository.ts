@@ -138,4 +138,8 @@ export class EventDatabaseRepository implements EventRepositoryPort {
 		// Return the state of the event *before* it was deleted
 		return eventToDelete;
 	}
+
+	async invalidateCache(eventId?: number): Promise<void> {
+		return;
+	}
 }
