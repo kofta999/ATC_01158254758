@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth } from "@/lib/hooks/use-auth";
 import { PrimaryButton } from "./primary-button";
 import { SecondaryButton } from "./secondary-button";
 

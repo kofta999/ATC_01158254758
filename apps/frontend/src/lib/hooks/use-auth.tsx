@@ -1,8 +1,8 @@
 import * as React from "react";
-import { baseApiClient } from "./use-api-client";
 import { router } from "@/main";
 import { jwtDecode } from "jwt-decode";
 import { hcWithType } from "@repo/areeb-backend";
+import { baseApiClient } from "../base-api-client";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
@@ -133,7 +133,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  // Login and Register (remain the same, use performLogout and originalBaseApiClient)
   const login = React.useCallback(
     async (email: string, password: string, role: "USER" | "ADMIN") => {
       try {
@@ -142,7 +141,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         });
 
         if (!response.ok) {
-          /* ... error handling ... */
           let errorMessage = "Login failed. Please check your credentials.";
           try {
             const errorData = await response.json();

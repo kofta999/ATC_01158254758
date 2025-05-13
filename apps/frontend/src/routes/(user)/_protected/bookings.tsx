@@ -4,7 +4,7 @@ import { router } from "@/main";
 import { Card } from "@/components/card";
 import { PrimaryButton } from "@/components/primary-button";
 import { DangerButton } from "@/components/danger-button"; // Import DangerButton
-import { useAuth } from "@/hooks/use-auth"; // Import useAuth to access apiClient
+import { useAuth } from "@/lib/hooks/use-auth"; // Import useAuth to access apiClient
 
 export const Route = createFileRoute("/(user)/_protected/bookings")({
   loader: async ({ context }) => {
@@ -14,7 +14,6 @@ export const Route = createFileRoute("/(user)/_protected/bookings")({
       // Should not happen
       if (!apiClient) throw new Error("API Client not found");
 
-      console.log(apiClient.auth);
       const res = await apiClient.bookings.$get();
 
       if (!res.ok) {
@@ -86,7 +85,7 @@ function BookingsComponent() {
       }
 
       alert("Booking cancelled successfully!"); // Simple feedback
-      router.invalidate();
+      await router.invalidate();
     } catch (error: any) {
       console.error("Failed to cancel booking:", error);
       alert(`Error cancelling booking: ${error.message || "Unknown error"}`);

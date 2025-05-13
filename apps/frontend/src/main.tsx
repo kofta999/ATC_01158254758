@@ -4,7 +4,7 @@ import ReactDOM from "react-dom/client";
 import { routeTree } from "./routeTree.gen";
 import "./styles.css";
 import reportWebVitals from "./reportWebVitals.ts";
-import { AuthProvider, useAuth } from "./hooks/use-auth"; // Import AuthProvider, useAuth, and AuthContextType
+import { useAuth, AuthProvider } from "@/lib/hooks/use-auth.tsx";
 
 // Update AuthContextType in use-auth.tsx to include the user
 // For now, let's assume AuthContextType might look like this for the router:

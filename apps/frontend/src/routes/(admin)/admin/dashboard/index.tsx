@@ -4,18 +4,19 @@ import {
   useNavigate,
   redirect,
 } from "@tanstack/react-router";
-import { useAuth } from "@/hooks/use-auth";
-import { baseApiClient } from "@/hooks/use-api-client";
 import { Card } from "@/components/card";
 import { PrimaryButton } from "@/components/primary-button";
 import { SecondaryButton } from "@/components/secondary-button";
 import { DangerButton } from "@/components/danger-button";
 import { useEffect } from "react";
 import { router } from "@/main";
+import { baseApiClient } from "@/lib/base-api-client";
+import { useAuth } from "@/lib/hooks/use-auth";
 
-export const Route = createFileRoute("/admin/dashboard")({
+export const Route = createFileRoute("/(admin)/admin/dashboard/")({
   beforeLoad: ({ context, location }) => {
     const auth = context.auth;
+    console.log(auth)
 
     if (!auth?.isAuthenticated || !auth.user) {
       // Also check if auth.user exists
@@ -34,28 +35,13 @@ export const Route = createFileRoute("/admin/dashboard")({
     }
   },
   loader: async () => {
-    // const auth = context.auth; // auth from context is available if needed for an authenticated API call
-    // Ensure we have an API client that uses the admin's token.
-    // The useApiClient hook is for components. For loaders, we might need a different approach
-    // or ensure the baseApiClient can be configured with a token if necessary from context.
-    // For now, assuming /events endpoint is readable by admin without specific loader-side auth client,
-    // or that actions (create/update/delete) will use an authenticated client.
-    // If GET /events requires ADMIN role, this should use an authenticated client.
-
-    // If you have a way to get an auth-configured client in loader context, use it.
-    // Otherwise, baseApiClient is used for non-authenticated or global context calls.
     const res = await baseApiClient.events.$get();
     if (!res.ok) {
       const errorText = await res.text();
       console.error("Failed to fetch events for admin dashboard:", errorText);
       throw new Error(`Failed to load events: ${res.status} ${errorText}`);
     }
-    const data = await res.json();
-    // Ensure the loader returns an array of events.
-    // Adjust `(data.events || data)` based on your actual API response structure.
-    // If data is directly the array, use `data as DashboardEventType[]`.
-    // If data is an object like { events: [...] }, use `data.events as DashboardEventType[]`.
-    return data;
+    return res.json();
   },
   component: AdminDashboardComponent,
   errorComponent: AdminDashboardErrorComponent,
@@ -112,7 +98,7 @@ function AdminDashboardComponent() {
         throw new Error(errorData.message || `Server error: ${res.status}`);
       }
       alert("Event deleted successfully!");
-      router.invalidate();
+      await router.invalidate();
     } catch (error: any) {
       console.error("Failed to delete event:", error);
       alert(`Error deleting event: ${error.message}`);
@@ -125,7 +111,7 @@ function AdminDashboardComponent() {
         <h1 className="text-3xl md:text-4xl font-bold text-gray-800 text-center sm:text-left">
           Events Management
         </h1>
-        <Link to="/admin/events/new" className="w-full sm:w-auto">
+        <Link to="/admin/dashboard/events/new" className="w-full sm:w-auto">
           <PrimaryButton className="text-base w-full">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -222,7 +208,7 @@ function AdminDashboardComponent() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-center space-x-2">
                     <Link
-                      to="/admin/events/$eventId/edit"
+                      to="/admin/dashboard/events/$eventId/edit"
                       params={{ eventId: event.eventId.toString() }}
                     >
                       <SecondaryButton className="text-xs py-1 px-2 leading-tight">
@@ -264,7 +250,7 @@ function AdminDashboardComponent() {
           <p className="text-muted mb-6">
             Get started by creating your first event.
           </p>
-          <Link to="/admin/events/new">
+          <Link to="/admin/dashboard/events/new">
             <PrimaryButton className="text-base">
               <svg
                 xmlns="http://www.w3.org/2000/svg"

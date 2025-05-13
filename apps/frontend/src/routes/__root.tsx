@@ -1,4 +1,4 @@
-import { AuthProvider, type AuthContextType } from "@/hooks/use-auth";
+import { type AuthContextType } from "@/lib/hooks/use-auth";
 import { Outlet, createRootRouteWithContext } from "@tanstack/react-router";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
@@ -10,11 +10,11 @@ type RouterContext = {
 
 export const Route = createRootRouteWithContext<RouterContext>()({
   component: () => (
-    <AuthProvider>
+    <>
       <RootLayout />
       {/* Render Devtools outside the main flex layout if preferred, or inside if that works better for your z-indexing */}
       <TanStackRouterDevtools position="bottom-left" />
-    </AuthProvider>
+    </>
   ),
 });
 

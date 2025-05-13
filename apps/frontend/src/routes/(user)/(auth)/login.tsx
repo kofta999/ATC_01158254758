@@ -1,9 +1,10 @@
 import { PrimaryButton } from "@/components/primary-button";
 import { Card } from "@/components/card";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth } from "@/lib/hooks/use-auth";
 import { LoginUserSchema } from "@/schemas";
 import { z } from "zod";
+import { router } from "@/main";
 
 // Define the expected search parameters for this route
 const loginSearchSchema = z.object({
@@ -41,9 +42,7 @@ export default function Login() {
               );
 
               if (loginSuccess) {
-                console.log(redirect);
-
-                // If a redirect path is provided and valid, use it. Otherwise, default to home.
+                await router.invalidate();
                 navigate({ to: redirect || "/", replace: true });
               } else {
                 // Login attempt failed (handled within auth.login with an alert for now)

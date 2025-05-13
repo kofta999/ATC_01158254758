@@ -1,9 +1,9 @@
 import { createFileRoute, useNavigate, redirect } from "@tanstack/react-router";
 import { EventForm, type EventFormData } from "@/components/admin/event-form"; // Adjust path if needed
 import { useState } from "react";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth } from "@/lib/hooks/use-auth";
 
-export const Route = createFileRoute("/admin/events/new")({
+export const Route = createFileRoute("/(admin)/admin/dashboard/events/new")({
   beforeLoad: ({ context, location }) => {
     const auth = context.auth;
     if (!auth?.isAuthenticated || auth.user?.role !== "ADMIN") {

@@ -1,16 +1,17 @@
 import { PrimaryButton } from "@/components/primary-button";
 import { Card } from "@/components/card";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth } from "@/lib/hooks/use-auth";
 import { LoginUserSchema } from "@/schemas";
 import { z } from "zod";
+import { router } from "@/main";
 
 // Define expected search parameters for this route (e.g., redirect after login)
 const adminLoginSearchSchema = z.object({
   redirect: z.string().optional().catch(undefined),
 });
 
-export const Route = createFileRoute("/admin/login")({
+export const Route = createFileRoute("/(admin)/admin/login")({
   component: AdminLogin,
   validateSearch: (search) => adminLoginSearchSchema.parse(search),
 });
@@ -41,6 +42,7 @@ export default function AdminLogin() {
               );
 
               if (loginSuccess) {
+                await router.invalidate();
                 navigate({ to: redirect || "/admin/dashboard", replace: true });
               } else {
                 alert("Admin login failed. Please check your credentials.");

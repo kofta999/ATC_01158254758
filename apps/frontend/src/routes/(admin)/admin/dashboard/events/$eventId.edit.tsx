@@ -4,12 +4,14 @@ import {
   useParams,
   redirect,
 } from "@tanstack/react-router";
-import { baseApiClient } from "@/hooks/use-api-client";
-import { EventForm, type EventFormData } from "@/components/admin/event-form"; // Adjust path
+import { EventForm, type EventFormData } from "@/components/admin/event-form";
 import { useState } from "react";
-import { useAuth } from "@/hooks/use-auth";
+import { baseApiClient } from "@/lib/base-api-client";
+import { useAuth } from "@/lib/hooks/use-auth";
 
-export const Route = createFileRoute("/admin/events/$eventId/edit")({
+export const Route = createFileRoute(
+  "/(admin)/admin/dashboard/events/$eventId/edit",
+)({
   beforeLoad: ({ context, location }) => {
     const auth = context.auth;
     if (!auth?.isAuthenticated || auth.user?.role !== "ADMIN") {
@@ -43,7 +45,7 @@ export const Route = createFileRoute("/admin/events/$eventId/edit")({
 
 function EditEventPage() {
   const navigate = useNavigate();
-  const { eventId } = useParams({ from: "/admin/events/$eventId/edit" });
+  const { eventId } = useParams({ from: "/(admin)/admin/dashboard/events/$eventId/edit" });
   const initialEventData = Route.useLoaderData();
   const { apiClient } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);

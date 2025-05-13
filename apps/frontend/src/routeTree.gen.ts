@@ -14,17 +14,18 @@ import { createFileRoute } from '@tanstack/react-router'
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as IndexImport } from './routes/index'
-import { Route as AdminLoginImport } from './routes/admin/login'
-import { Route as AdminDashboardImport } from './routes/admin/dashboard'
-import { Route as userBookingSuccessImport } from './routes/(user)/booking-success'
 import { Route as userProtectedRouteImport } from './routes/(user)/_protected/route'
+import { Route as adminAdminRouteImport } from './routes/(admin)/admin/route'
 import { Route as userEventsIndexImport } from './routes/(user)/events/index'
-import { Route as AdminEventsNewImport } from './routes/admin/events/new'
 import { Route as userEventsEventIdImport } from './routes/(user)/events/$eventId'
 import { Route as userProtectedBookingsImport } from './routes/(user)/_protected/bookings'
+import { Route as userProtectedBookingSuccessImport } from './routes/(user)/_protected/booking-success'
 import { Route as userauthRegisterImport } from './routes/(user)/(auth)/register'
 import { Route as userauthLoginImport } from './routes/(user)/(auth)/login'
-import { Route as AdminEventsEventIdEditImport } from './routes/admin/events/$eventId.edit'
+import { Route as adminAdminLoginImport } from './routes/(admin)/admin/login'
+import { Route as adminAdminDashboardIndexImport } from './routes/(admin)/admin/dashboard/index'
+import { Route as adminAdminDashboardEventsNewImport } from './routes/(admin)/admin/dashboard/events/new'
+import { Route as adminAdminDashboardEventsEventIdEditImport } from './routes/(admin)/admin/dashboard/events/$eventId.edit'
 
 // Create Virtual Routes
 
@@ -43,39 +44,21 @@ const IndexRoute = IndexImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const AdminLoginRoute = AdminLoginImport.update({
-  id: '/admin/login',
-  path: '/admin/login',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const AdminDashboardRoute = AdminDashboardImport.update({
-  id: '/admin/dashboard',
-  path: '/admin/dashboard',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const userBookingSuccessRoute = userBookingSuccessImport.update({
-  id: '/booking-success',
-  path: '/booking-success',
-  getParentRoute: () => userRoute,
-} as any)
-
 const userProtectedRouteRoute = userProtectedRouteImport.update({
   id: '/_protected',
   getParentRoute: () => userRoute,
+} as any)
+
+const adminAdminRouteRoute = adminAdminRouteImport.update({
+  id: '/(admin)/admin',
+  path: '/admin',
+  getParentRoute: () => rootRoute,
 } as any)
 
 const userEventsIndexRoute = userEventsIndexImport.update({
   id: '/events/',
   path: '/events/',
   getParentRoute: () => userRoute,
-} as any)
-
-const AdminEventsNewRoute = AdminEventsNewImport.update({
-  id: '/admin/events/new',
-  path: '/admin/events/new',
-  getParentRoute: () => rootRoute,
 } as any)
 
 const userEventsEventIdRoute = userEventsEventIdImport.update({
@@ -90,6 +73,13 @@ const userProtectedBookingsRoute = userProtectedBookingsImport.update({
   getParentRoute: () => userProtectedRouteRoute,
 } as any)
 
+const userProtectedBookingSuccessRoute =
+  userProtectedBookingSuccessImport.update({
+    id: '/booking-success',
+    path: '/booking-success',
+    getParentRoute: () => userProtectedRouteRoute,
+  } as any)
+
 const userauthRegisterRoute = userauthRegisterImport.update({
   id: '/(auth)/register',
   path: '/register',
@@ -102,11 +92,31 @@ const userauthLoginRoute = userauthLoginImport.update({
   getParentRoute: () => userRoute,
 } as any)
 
-const AdminEventsEventIdEditRoute = AdminEventsEventIdEditImport.update({
-  id: '/admin/events/$eventId/edit',
-  path: '/admin/events/$eventId/edit',
-  getParentRoute: () => rootRoute,
+const adminAdminLoginRoute = adminAdminLoginImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => adminAdminRouteRoute,
 } as any)
+
+const adminAdminDashboardIndexRoute = adminAdminDashboardIndexImport.update({
+  id: '/dashboard/',
+  path: '/dashboard/',
+  getParentRoute: () => adminAdminRouteRoute,
+} as any)
+
+const adminAdminDashboardEventsNewRoute =
+  adminAdminDashboardEventsNewImport.update({
+    id: '/dashboard/events/new',
+    path: '/dashboard/events/new',
+    getParentRoute: () => adminAdminRouteRoute,
+  } as any)
+
+const adminAdminDashboardEventsEventIdEditRoute =
+  adminAdminDashboardEventsEventIdEditImport.update({
+    id: '/dashboard/events/$eventId/edit',
+    path: '/dashboard/events/$eventId/edit',
+    getParentRoute: () => adminAdminRouteRoute,
+  } as any)
 
 // Populate the FileRoutesByPath interface
 
@@ -117,6 +127,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/(admin)/admin': {
+      id: '/(admin)/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof adminAdminRouteImport
       parentRoute: typeof rootRoute
     }
     '/(user)': {
@@ -133,26 +150,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof userProtectedRouteImport
       parentRoute: typeof userRoute
     }
-    '/(user)/booking-success': {
-      id: '/(user)/booking-success'
-      path: '/booking-success'
-      fullPath: '/booking-success'
-      preLoaderRoute: typeof userBookingSuccessImport
-      parentRoute: typeof userImport
-    }
-    '/admin/dashboard': {
-      id: '/admin/dashboard'
-      path: '/admin/dashboard'
-      fullPath: '/admin/dashboard'
-      preLoaderRoute: typeof AdminDashboardImport
-      parentRoute: typeof rootRoute
-    }
-    '/admin/login': {
-      id: '/admin/login'
-      path: '/admin/login'
+    '/(admin)/admin/login': {
+      id: '/(admin)/admin/login'
+      path: '/login'
       fullPath: '/admin/login'
-      preLoaderRoute: typeof AdminLoginImport
-      parentRoute: typeof rootRoute
+      preLoaderRoute: typeof adminAdminLoginImport
+      parentRoute: typeof adminAdminRouteImport
     }
     '/(user)/(auth)/login': {
       id: '/(user)/(auth)/login'
@@ -168,6 +171,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof userauthRegisterImport
       parentRoute: typeof userImport
     }
+    '/(user)/_protected/booking-success': {
+      id: '/(user)/_protected/booking-success'
+      path: '/booking-success'
+      fullPath: '/booking-success'
+      preLoaderRoute: typeof userProtectedBookingSuccessImport
+      parentRoute: typeof userProtectedRouteImport
+    }
     '/(user)/_protected/bookings': {
       id: '/(user)/_protected/bookings'
       path: '/bookings'
@@ -182,13 +192,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof userEventsEventIdImport
       parentRoute: typeof userImport
     }
-    '/admin/events/new': {
-      id: '/admin/events/new'
-      path: '/admin/events/new'
-      fullPath: '/admin/events/new'
-      preLoaderRoute: typeof AdminEventsNewImport
-      parentRoute: typeof rootRoute
-    }
     '/(user)/events/': {
       id: '/(user)/events/'
       path: '/events'
@@ -196,23 +199,58 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof userEventsIndexImport
       parentRoute: typeof userImport
     }
-    '/admin/events/$eventId/edit': {
-      id: '/admin/events/$eventId/edit'
-      path: '/admin/events/$eventId/edit'
-      fullPath: '/admin/events/$eventId/edit'
-      preLoaderRoute: typeof AdminEventsEventIdEditImport
-      parentRoute: typeof rootRoute
+    '/(admin)/admin/dashboard/': {
+      id: '/(admin)/admin/dashboard/'
+      path: '/dashboard'
+      fullPath: '/admin/dashboard'
+      preLoaderRoute: typeof adminAdminDashboardIndexImport
+      parentRoute: typeof adminAdminRouteImport
+    }
+    '/(admin)/admin/dashboard/events/new': {
+      id: '/(admin)/admin/dashboard/events/new'
+      path: '/dashboard/events/new'
+      fullPath: '/admin/dashboard/events/new'
+      preLoaderRoute: typeof adminAdminDashboardEventsNewImport
+      parentRoute: typeof adminAdminRouteImport
+    }
+    '/(admin)/admin/dashboard/events/$eventId/edit': {
+      id: '/(admin)/admin/dashboard/events/$eventId/edit'
+      path: '/dashboard/events/$eventId/edit'
+      fullPath: '/admin/dashboard/events/$eventId/edit'
+      preLoaderRoute: typeof adminAdminDashboardEventsEventIdEditImport
+      parentRoute: typeof adminAdminRouteImport
     }
   }
 }
 
 // Create and export the route tree
 
+interface adminAdminRouteRouteChildren {
+  adminAdminLoginRoute: typeof adminAdminLoginRoute
+  adminAdminDashboardIndexRoute: typeof adminAdminDashboardIndexRoute
+  adminAdminDashboardEventsNewRoute: typeof adminAdminDashboardEventsNewRoute
+  adminAdminDashboardEventsEventIdEditRoute: typeof adminAdminDashboardEventsEventIdEditRoute
+}
+
+const adminAdminRouteRouteChildren: adminAdminRouteRouteChildren = {
+  adminAdminLoginRoute: adminAdminLoginRoute,
+  adminAdminDashboardIndexRoute: adminAdminDashboardIndexRoute,
+  adminAdminDashboardEventsNewRoute: adminAdminDashboardEventsNewRoute,
+  adminAdminDashboardEventsEventIdEditRoute:
+    adminAdminDashboardEventsEventIdEditRoute,
+}
+
+const adminAdminRouteRouteWithChildren = adminAdminRouteRoute._addFileChildren(
+  adminAdminRouteRouteChildren,
+)
+
 interface userProtectedRouteRouteChildren {
+  userProtectedBookingSuccessRoute: typeof userProtectedBookingSuccessRoute
   userProtectedBookingsRoute: typeof userProtectedBookingsRoute
 }
 
 const userProtectedRouteRouteChildren: userProtectedRouteRouteChildren = {
+  userProtectedBookingSuccessRoute: userProtectedBookingSuccessRoute,
   userProtectedBookingsRoute: userProtectedBookingsRoute,
 }
 
@@ -221,7 +259,6 @@ const userProtectedRouteRouteWithChildren =
 
 interface userRouteChildren {
   userProtectedRouteRoute: typeof userProtectedRouteRouteWithChildren
-  userBookingSuccessRoute: typeof userBookingSuccessRoute
   userauthLoginRoute: typeof userauthLoginRoute
   userauthRegisterRoute: typeof userauthRegisterRoute
   userEventsEventIdRoute: typeof userEventsEventIdRoute
@@ -230,7 +267,6 @@ interface userRouteChildren {
 
 const userRouteChildren: userRouteChildren = {
   userProtectedRouteRoute: userProtectedRouteRouteWithChildren,
-  userBookingSuccessRoute: userBookingSuccessRoute,
   userauthLoginRoute: userauthLoginRoute,
   userauthRegisterRoute: userauthRegisterRoute,
   userEventsEventIdRoute: userEventsEventIdRoute,
@@ -241,110 +277,110 @@ const userRouteWithChildren = userRoute._addFileChildren(userRouteChildren)
 
 export interface FileRoutesByFullPath {
   '/': typeof userProtectedRouteRouteWithChildren
-  '/booking-success': typeof userBookingSuccessRoute
-  '/admin/dashboard': typeof AdminDashboardRoute
-  '/admin/login': typeof AdminLoginRoute
+  '/admin': typeof adminAdminRouteRouteWithChildren
+  '/admin/login': typeof adminAdminLoginRoute
   '/login': typeof userauthLoginRoute
   '/register': typeof userauthRegisterRoute
+  '/booking-success': typeof userProtectedBookingSuccessRoute
   '/bookings': typeof userProtectedBookingsRoute
   '/events/$eventId': typeof userEventsEventIdRoute
-  '/admin/events/new': typeof AdminEventsNewRoute
   '/events': typeof userEventsIndexRoute
-  '/admin/events/$eventId/edit': typeof AdminEventsEventIdEditRoute
+  '/admin/dashboard': typeof adminAdminDashboardIndexRoute
+  '/admin/dashboard/events/new': typeof adminAdminDashboardEventsNewRoute
+  '/admin/dashboard/events/$eventId/edit': typeof adminAdminDashboardEventsEventIdEditRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof userProtectedRouteRouteWithChildren
-  '/booking-success': typeof userBookingSuccessRoute
-  '/admin/dashboard': typeof AdminDashboardRoute
-  '/admin/login': typeof AdminLoginRoute
+  '/admin': typeof adminAdminRouteRouteWithChildren
+  '/admin/login': typeof adminAdminLoginRoute
   '/login': typeof userauthLoginRoute
   '/register': typeof userauthRegisterRoute
+  '/booking-success': typeof userProtectedBookingSuccessRoute
   '/bookings': typeof userProtectedBookingsRoute
   '/events/$eventId': typeof userEventsEventIdRoute
-  '/admin/events/new': typeof AdminEventsNewRoute
   '/events': typeof userEventsIndexRoute
-  '/admin/events/$eventId/edit': typeof AdminEventsEventIdEditRoute
+  '/admin/dashboard': typeof adminAdminDashboardIndexRoute
+  '/admin/dashboard/events/new': typeof adminAdminDashboardEventsNewRoute
+  '/admin/dashboard/events/$eventId/edit': typeof adminAdminDashboardEventsEventIdEditRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
+  '/(admin)/admin': typeof adminAdminRouteRouteWithChildren
   '/(user)': typeof userRouteWithChildren
   '/(user)/_protected': typeof userProtectedRouteRouteWithChildren
-  '/(user)/booking-success': typeof userBookingSuccessRoute
-  '/admin/dashboard': typeof AdminDashboardRoute
-  '/admin/login': typeof AdminLoginRoute
+  '/(admin)/admin/login': typeof adminAdminLoginRoute
   '/(user)/(auth)/login': typeof userauthLoginRoute
   '/(user)/(auth)/register': typeof userauthRegisterRoute
+  '/(user)/_protected/booking-success': typeof userProtectedBookingSuccessRoute
   '/(user)/_protected/bookings': typeof userProtectedBookingsRoute
   '/(user)/events/$eventId': typeof userEventsEventIdRoute
-  '/admin/events/new': typeof AdminEventsNewRoute
   '/(user)/events/': typeof userEventsIndexRoute
-  '/admin/events/$eventId/edit': typeof AdminEventsEventIdEditRoute
+  '/(admin)/admin/dashboard/': typeof adminAdminDashboardIndexRoute
+  '/(admin)/admin/dashboard/events/new': typeof adminAdminDashboardEventsNewRoute
+  '/(admin)/admin/dashboard/events/$eventId/edit': typeof adminAdminDashboardEventsEventIdEditRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/booking-success'
-    | '/admin/dashboard'
+    | '/admin'
     | '/admin/login'
     | '/login'
     | '/register'
+    | '/booking-success'
     | '/bookings'
     | '/events/$eventId'
-    | '/admin/events/new'
     | '/events'
-    | '/admin/events/$eventId/edit'
+    | '/admin/dashboard'
+    | '/admin/dashboard/events/new'
+    | '/admin/dashboard/events/$eventId/edit'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/booking-success'
-    | '/admin/dashboard'
+    | '/admin'
     | '/admin/login'
     | '/login'
     | '/register'
+    | '/booking-success'
     | '/bookings'
     | '/events/$eventId'
-    | '/admin/events/new'
     | '/events'
-    | '/admin/events/$eventId/edit'
+    | '/admin/dashboard'
+    | '/admin/dashboard/events/new'
+    | '/admin/dashboard/events/$eventId/edit'
   id:
     | '__root__'
     | '/'
+    | '/(admin)/admin'
     | '/(user)'
     | '/(user)/_protected'
-    | '/(user)/booking-success'
-    | '/admin/dashboard'
-    | '/admin/login'
+    | '/(admin)/admin/login'
     | '/(user)/(auth)/login'
     | '/(user)/(auth)/register'
+    | '/(user)/_protected/booking-success'
     | '/(user)/_protected/bookings'
     | '/(user)/events/$eventId'
-    | '/admin/events/new'
     | '/(user)/events/'
-    | '/admin/events/$eventId/edit'
+    | '/(admin)/admin/dashboard/'
+    | '/(admin)/admin/dashboard/events/new'
+    | '/(admin)/admin/dashboard/events/$eventId/edit'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  adminAdminRouteRoute: typeof adminAdminRouteRouteWithChildren
   userRoute: typeof userRouteWithChildren
-  AdminDashboardRoute: typeof AdminDashboardRoute
-  AdminLoginRoute: typeof AdminLoginRoute
-  AdminEventsNewRoute: typeof AdminEventsNewRoute
-  AdminEventsEventIdEditRoute: typeof AdminEventsEventIdEditRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  adminAdminRouteRoute: adminAdminRouteRouteWithChildren,
   userRoute: userRouteWithChildren,
-  AdminDashboardRoute: AdminDashboardRoute,
-  AdminLoginRoute: AdminLoginRoute,
-  AdminEventsNewRoute: AdminEventsNewRoute,
-  AdminEventsEventIdEditRoute: AdminEventsEventIdEditRoute,
 }
 
 export const routeTree = rootRoute
@@ -358,21 +394,26 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/(user)",
-        "/admin/dashboard",
-        "/admin/login",
-        "/admin/events/new",
-        "/admin/events/$eventId/edit"
+        "/(admin)/admin",
+        "/(user)"
       ]
     },
     "/": {
       "filePath": "index.tsx"
     },
+    "/(admin)/admin": {
+      "filePath": "(admin)/admin/route.tsx",
+      "children": [
+        "/(admin)/admin/login",
+        "/(admin)/admin/dashboard/",
+        "/(admin)/admin/dashboard/events/new",
+        "/(admin)/admin/dashboard/events/$eventId/edit"
+      ]
+    },
     "/(user)": {
       "filePath": "(user)/_protected",
       "children": [
         "/(user)/_protected",
-        "/(user)/booking-success",
         "/(user)/(auth)/login",
         "/(user)/(auth)/register",
         "/(user)/events/$eventId",
@@ -383,18 +424,13 @@ export const routeTree = rootRoute
       "filePath": "(user)/_protected/route.tsx",
       "parent": "/(user)",
       "children": [
+        "/(user)/_protected/booking-success",
         "/(user)/_protected/bookings"
       ]
     },
-    "/(user)/booking-success": {
-      "filePath": "(user)/booking-success.tsx",
-      "parent": "/(user)"
-    },
-    "/admin/dashboard": {
-      "filePath": "admin/dashboard.tsx"
-    },
-    "/admin/login": {
-      "filePath": "admin/login.tsx"
+    "/(admin)/admin/login": {
+      "filePath": "(admin)/admin/login.tsx",
+      "parent": "/(admin)/admin"
     },
     "/(user)/(auth)/login": {
       "filePath": "(user)/(auth)/login.tsx",
@@ -404,6 +440,10 @@ export const routeTree = rootRoute
       "filePath": "(user)/(auth)/register.tsx",
       "parent": "/(user)"
     },
+    "/(user)/_protected/booking-success": {
+      "filePath": "(user)/_protected/booking-success.tsx",
+      "parent": "/(user)/_protected"
+    },
     "/(user)/_protected/bookings": {
       "filePath": "(user)/_protected/bookings.tsx",
       "parent": "/(user)/_protected"
@@ -412,15 +452,21 @@ export const routeTree = rootRoute
       "filePath": "(user)/events/$eventId.tsx",
       "parent": "/(user)"
     },
-    "/admin/events/new": {
-      "filePath": "admin/events/new.tsx"
-    },
     "/(user)/events/": {
       "filePath": "(user)/events/index.tsx",
       "parent": "/(user)"
     },
-    "/admin/events/$eventId/edit": {
-      "filePath": "admin/events/$eventId.edit.tsx"
+    "/(admin)/admin/dashboard/": {
+      "filePath": "(admin)/admin/dashboard/index.tsx",
+      "parent": "/(admin)/admin"
+    },
+    "/(admin)/admin/dashboard/events/new": {
+      "filePath": "(admin)/admin/dashboard/events/new.tsx",
+      "parent": "/(admin)/admin"
+    },
+    "/(admin)/admin/dashboard/events/$eventId/edit": {
+      "filePath": "(admin)/admin/dashboard/events/$eventId.edit.tsx",
+      "parent": "/(admin)/admin"
     }
   }
 }

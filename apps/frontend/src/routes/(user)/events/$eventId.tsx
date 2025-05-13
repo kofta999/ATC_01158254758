@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { baseApiClient } from "@/hooks/use-api-client";
+import { baseApiClient } from "@/lib/base-api-client";
 import { router } from "@/main";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth } from "@/lib/hooks/use-auth";
 import { useState, useEffect } from "react"; // Import useEffect
 import { Card } from "@/components/card";
 import { PrimaryButton } from "@/components/primary-button";
@@ -93,7 +93,9 @@ function EventDetailsComponent() {
 
     if (!isAuthenticated) {
       // Preserve current path for redirect after login
-      navigate({ to: "/login", search: { redirect: Route.fullPath } });
+      //
+      console.log(Route);
+      navigate({ to: "/login", search: { redirect: location.pathname } });
       setIsBooking(false);
       return;
     }

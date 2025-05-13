@@ -17,7 +17,7 @@ const bookingSuccessSearchSchema = z.object({
   // bookingId: z.string().optional(),
 });
 
-export const Route = createFileRoute("/(user)/booking-success")({
+export const Route = createFileRoute("/(user)/_protected/booking-success")({
   validateSearch: bookingSuccessSearchSchema, // Validate and parse search params
   component: BookingSuccessComponent,
 });

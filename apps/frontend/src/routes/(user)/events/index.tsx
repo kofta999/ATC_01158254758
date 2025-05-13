@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { baseApiClient } from "@/hooks/use-api-client";
 import { router } from "@/main";
 import { Card } from "@/components/card";
 import { PrimaryButton } from "@/components/primary-button";
+import { baseApiClient } from "@/lib/base-api-client";
 
 export const Route = createFileRoute("/(user)/events/")({
   loader: async () => {
