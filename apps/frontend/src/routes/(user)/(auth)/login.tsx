@@ -2,7 +2,7 @@ import { PrimaryButton } from "@/components/primary-button";
 import { Card } from "@/components/card";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useAuth } from "@/lib/hooks/use-auth";
-import { LoginUserSchema } from "@/schemas";
+import { LoginUserSchema } from "@/lib/schemas";
 import { z } from "zod";
 import { router } from "@/main";
 
