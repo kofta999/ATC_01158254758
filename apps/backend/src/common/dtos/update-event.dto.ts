@@ -13,9 +13,10 @@ export const UpdateEventSchema = z
 		category: z.string().optional().openapi({ example: "Music" }),
 		date: z.string().optional().openapi({ example: "2024-07-20" }),
 		venue: z.string().optional().openapi({ example: "Central Park, New York" }),
-		price: z.number().optional().openapi({ example: 50 }),
-		image: z.string().optional().openapi({ example: "url-to-image" }),
+		price: z.coerce.number().optional().openapi({ example: 50 }),
 	})
 	.openapi("UpdateEvent");
 
-export type UpdateEventDTO = z.infer<typeof UpdateEventSchema>;
+export type UpdateEventDTO = z.infer<typeof UpdateEventSchema> & {
+	image?: string;
+};

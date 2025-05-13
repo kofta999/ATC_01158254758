@@ -5,7 +5,7 @@ import { UpdateEventSchema } from "@/common/dtos/update-event.dto";
 import { ErrorSchema } from "@/common/schemas/error-schema";
 import { IdSchema } from "@/common/schemas/id-schema";
 import jsonContent from "@/common/util/json-content";
-import { createRoute } from "@hono/zod-openapi";
+import { createRoute, z } from "@hono/zod-openapi";
 import { authMiddleware } from "../middleware/auth.middleware";
 import { requireRole } from "../middleware/require-role.middleware";
 
@@ -46,7 +46,16 @@ export const createEvent = createRoute({
 	tags,
 	summary: "Create a new event",
 	request: {
-		body: jsonContent(CreateEventSchema, "Event data"),
+		body: {
+			content: {
+				"multipart/form-data": {
+					schema: CreateEventSchema.extend({
+						imageFile: z.instanceof(File),
+					}),
+				},
+			},
+			description: "Event data",
+		},
 	},
 	responses: {
 		201: jsonContent(EventDetailsSchema, "Created event"),
@@ -64,7 +73,16 @@ export const updateEvent = createRoute({
 	summary: "Update an event",
 	request: {
 		params: IdSchema,
-		body: jsonContent(UpdateEventSchema, "Updated event data"),
+		body: {
+			content: {
+				"multipart/form-data": {
+					schema: UpdateEventSchema.extend({
+						imageFile: z.instanceof(File).optional(),
+					}),
+				},
+			},
+			description: "Event data",
+		},
 	},
 	responses: {
 		200: jsonContent(EventDetailsSchema, "Updated event"),
