@@ -20,7 +20,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 
 export default function RootLayout() {
   return (
-    <div className="font-display bg-background text-gray-800 min-h-screen flex flex-col">
+    <div className="font-display bg-background text-text min-h-screen flex flex-col">
       {/* Added default text color */}
       {/* Meta tags and link tags for favicon should ideally be in your public/index.html
           or managed with a library like React Helmet for better SEO and standards compliance.

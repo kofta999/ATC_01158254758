@@ -45,7 +45,7 @@ function BookingsErrorComponent({ error }: { error: Error }) {
         <h1 className="text-2xl md:text-3xl font-bold text-danger mb-4">
           {t("errorPage.title")}
         </h1>
-        <p className="text-base text-gray-800 mb-2">
+        <p className="text-base text-text mb-2">
           {t("errorPage.genericLoadError", { item: "bookings" })}
         </p>
         <p className="text-sm text-muted mb-6">
@@ -102,7 +102,7 @@ function BookingsComponent() {
   return (
     <div className="bg-background min-h-[calc(100vh-var(--header-height))] p-4 md:p-8">
       <header className="mb-8 text-center md:text-left">
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
+        <h1 className="text-2xl md:text-3xl font-bold text-text">
           {t("myBookings.pageTitle")}
         </h1>
         <p className="text-xl font-semibold text-muted">
@@ -129,7 +129,7 @@ function BookingsComponent() {
                 />
                 <div className="p-4 md:p-6 flex flex-col flex-grow">
                   <h2
-                    className="text-xl font-semibold text-gray-800 mb-2 truncate"
+                    className="text-xl font-semibold text-text mb-2 truncate"
                     title={bookedEvent.eventName}
                   >
                     {bookedEvent.eventName}
@@ -152,7 +152,7 @@ function BookingsComponent() {
                     {new Date(booking.createdAt).toLocaleDateString()}
                   </p>
 
-                  <div className="mt-auto pt-3 border-t border-gray-200 flex justify-between items-center gap-2">
+                  <div className="mt-auto pt-3 border-t border-divider flex justify-between items-center gap-2">
                     {/* Price */}
                     <p className="text-lg font-bold text-primary">
                       ${bookedEvent.price.toFixed(2)}
@@ -199,7 +199,7 @@ function BookingsComponent() {
               d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
             />
           </svg>
-          <p className="text-xl mt-4 font-semibold text-gray-800">
+          <p className="text-xl mt-4 font-semibold text-text">
             {t("myBookings.noBookingsTitle")}
           </p>
           <p className="text-base text-muted mb-6">

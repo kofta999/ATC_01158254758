@@ -107,7 +107,7 @@ function AdminDashboardComponent() {
   return (
     <div className="container mx-auto py-8 px-4">
       <div className="flex flex-col sm:flex-row justify-between items-center mb-10 gap-4">
-        <h1 className="text-3xl md:text-4xl font-bold text-gray-800 text-center sm:text-left">
+        <h1 className="text-3xl md:text-4xl font-bold text-text text-center sm:text-left">
           {t("admin.dashboardTitle")}
         </h1>
         <Link to="/admin/dashboard/events/new" className="w-full sm:w-auto">
@@ -133,7 +133,7 @@ function AdminDashboardComponent() {
 
       {Array.isArray(events) && events.length > 0 ? (
         <Card className="overflow-x-auto shadow-lg">
-          <table className="min-w-full divide-y divide-gray-200">
+          <table className="min-w-full divide-y divide-divider">
             {/* Using neutral gray for divider */}
             <thead className="bg-background">
               {/* Changed from bg-gray-50 */}
@@ -176,14 +176,14 @@ function AdminDashboardComponent() {
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-surface divide-y divide-gray-200">
+            <tbody className="bg-surface divide-y divide-divider">
               {/* Using neutral gray for divider */}
               {events.map((event) => (
                 <tr
                   key={event.eventId}
                   className="hover:bg-background transition-colors duration-150" /* Use bg-background for hover for slight contrast */
                 >
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-text">
                     {/* Changed from text-gray-900 */}
                     {event.eventName}
                   </td>
@@ -242,8 +242,8 @@ function AdminDashboardComponent() {
               d="M15.75 15.75l-2.489-2.489m0 0a3.375 3.375 0 10-4.773-4.773 3.375 3.375 0 004.774 4.774zM21 12a9 9 0 11-18 0 9 9 0 0118 0z"
             />
           </svg>
-          <p className="text-xl text-gray-800 font-semibold mb-2">
-            {/* Changed from text-gray-700 dark:text-gray-300 */}
+          <p className="text-xl text-text font-semibold mb-2">
+            {/* Changed from text-text dark:text-gray-300 */}
             {t("admin.noEventsTitle")}
           </p>
           <p className="text-muted mb-6">{t("admin.noEventsMessage")}</p>

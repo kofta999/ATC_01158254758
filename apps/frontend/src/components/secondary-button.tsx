@@ -12,7 +12,7 @@ export const SecondaryButton: React.FC<SecondaryButtonProps> = ({
 }) => {
   return (
     <button
-      className={`px-4 py-2 rounded-lg bg-white border border-primary text-primary hover:bg-primary/10 transition duration-300 ease-in-out cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:border-muted disabled:text-muted disabled:hover:bg-white ${className || ""}`}
+      className={`px-4 py-2 rounded-lg bg-surface border border-primary text-primary hover:bg-primary/10 transition duration-300 ease-in-out cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:border-muted disabled:text-muted disabled:hover:bg-surface ${className || ""}`}
       {...props}
     >
       {children}

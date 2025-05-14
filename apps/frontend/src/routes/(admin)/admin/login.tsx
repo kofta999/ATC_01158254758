@@ -26,7 +26,7 @@ export default function AdminLogin() {
   return (
     <div className="flex flex-grow items-center justify-center py-12 bg-background">
       <Card className="max-w-md w-full sm:w-96">
-        <h1 className="text-2xl md:text-3xl font-bold mb-6 text-center text-gray-800">
+        <h1 className="text-2xl md:text-3xl font-bold mb-6 text-center text-text">
           {t("auth.adminLoginTitle")}
         </h1>
         <form
@@ -58,7 +58,7 @@ export default function AdminLogin() {
           <div>
             <label
               htmlFor="email"
-              className="block text-sm font-medium text-gray-700 mb-1"
+              className="block text-sm font-medium text-text mb-1"
             >
               {t("auth.emailLabel")}
             </label>
@@ -75,7 +75,7 @@ export default function AdminLogin() {
           <div>
             <label
               htmlFor="password"
-              className="block text-sm font-medium text-gray-700 mb-1"
+              className="block text-sm font-medium text-text mb-1"
             >
               {t("auth.passwordLabel")}
             </label>

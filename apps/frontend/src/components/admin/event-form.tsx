@@ -132,7 +132,7 @@ export const EventForm: React.FC<EventFormProps> = ({
 
   return (
     <Card className="max-w-2xl mx-auto">
-      <h1 className="text-2xl md:text-3xl font-bold mb-6 text-gray-800">
+      <h1 className="text-2xl md:text-3xl font-bold mb-6 text-text">
         {formTitle}
       </h1>
       {/* Display submission error passed from parent */}
@@ -145,7 +145,7 @@ export const EventForm: React.FC<EventFormProps> = ({
         <div>
           <label
             htmlFor="eventName"
-            className="block text-sm font-medium text-gray-700 mb-1"
+            className="block text-sm font-medium text-text mb-1"
           >
             Event Name
           </label>
@@ -157,7 +157,7 @@ export const EventForm: React.FC<EventFormProps> = ({
         <div>
           <label
             htmlFor="description"
-            className="block text-sm font-medium text-gray-700 mb-1"
+            className="block text-sm font-medium text-text mb-1"
           >
             Description
           </label>
@@ -177,7 +177,7 @@ export const EventForm: React.FC<EventFormProps> = ({
           <div>
             <label
               htmlFor="category"
-              className="block text-sm font-medium text-gray-700 mb-1"
+              className="block text-sm font-medium text-text mb-1"
             >
               Category
             </label>
@@ -188,7 +188,7 @@ export const EventForm: React.FC<EventFormProps> = ({
           <div>
             <label
               htmlFor="date"
-              className="block text-sm font-medium text-gray-700 mb-1"
+              className="block text-sm font-medium text-text mb-1"
             >
               Date
             </label>
@@ -201,7 +201,7 @@ export const EventForm: React.FC<EventFormProps> = ({
           <div>
             <label
               htmlFor="venue"
-              className="block text-sm font-medium text-gray-700 mb-1"
+              className="block text-sm font-medium text-text mb-1"
             >
               Venue
             </label>
@@ -210,7 +210,7 @@ export const EventForm: React.FC<EventFormProps> = ({
           <div>
             <label
               htmlFor="price"
-              className="block text-sm font-medium text-gray-700 mb-1"
+              className="block text-sm font-medium text-text mb-1"
             >
               Price ($)
             </label>
@@ -225,7 +225,7 @@ export const EventForm: React.FC<EventFormProps> = ({
         <div>
           <label
             htmlFor="imageFile"
-            className="block text-sm font-medium text-gray-700 mb-1"
+            className="block text-sm font-medium text-text mb-1"
           >
             Image
           </label>

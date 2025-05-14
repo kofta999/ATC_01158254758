@@ -5,6 +5,7 @@ import { SecondaryButton } from "./secondary-button";
 import { useTranslation } from "react-i18next";
 import i18n from "@/i18n"; // Import the i18n instance
 import { useState } from "react";
+import ThemeToggle from "./theme-toggle";
 
 export const Header = () => {
   const { isAuthenticated, logout, user } = useAuth();
@@ -90,10 +91,13 @@ export const Header = () => {
           <li>
             <button
               onClick={toggleLanguage}
-              className="text-sm py-1.5 px-3 rounded-lg bg-white border border-primary text-primary hover:bg-primary/10 transition duration-300 ease-in-out cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              className="text-sm py-2 px-3 rounded-lg bg-surface border border-primary text-primary hover:bg-primary/10 transition duration-300 ease-in-out cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isEnglish ? "AR" : "EN"}
             </button>
+          </li>
+          <li>
+            <ThemeToggle />
           </li>
         </ul>
       </nav>

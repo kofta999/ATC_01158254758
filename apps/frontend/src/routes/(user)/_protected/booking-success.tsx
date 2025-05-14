@@ -80,7 +80,7 @@ function BookingSuccessComponent() {
           >
             <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
           </svg>
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-3">
+          <h1 className="text-2xl md:text-3xl font-bold text-text mb-3">
             {t("bookingSuccess.title")}
           </h1>
           <p className="text-base text-muted mb-2">
@@ -89,7 +89,7 @@ function BookingSuccessComponent() {
           <p className="text-xl font-semibold text-primary mb-1">{eventName}</p>
           <p className="text-sm text-muted mb-6">{t("bookingSuccess.datePrefix")} {formattedDate}</p>
 
-          <p className="text-sm text-gray-700 mb-6">
+          <p className="text-sm text-text mb-6">
             {t("bookingSuccess.emailConfirmation")}
             You can also view your booking in your account.
           </p>

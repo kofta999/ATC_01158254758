@@ -18,7 +18,7 @@ function LandingPage() {
         {/* Optional: Logo or illustrative image */}
         {/* <img src={heroImage} alt="Evently Hero" className="w-1/2 mx-auto mb-8" /> */}
 
-        <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-800 mb-6">
+        <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-text mb-6">
           {t("landingPage.title")}
         </h1>
         <p className="text-lg sm:text-xl text-muted max-w-xl mx-auto mb-10">
@@ -43,7 +43,7 @@ function LandingPage() {
       </section>
 
       <section className="w-full max-w-5xl mt-20 py-12">
-        <h2 className="text-3xl font-bold text-gray-800 mb-10 text-center">
+        <h2 className="text-3xl font-bold text-text mb-10 text-center">
           {t("landingPage.whyChooseTitle")}
         </h2>
         <div className="grid md:grid-cols-3 gap-8 text-left">

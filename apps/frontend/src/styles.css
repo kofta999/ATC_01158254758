@@ -1,13 +1,32 @@
 @import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  /* Custom Colors from Design System */
   --color-primary: #3b82f6;
   --color-primaryDark: #1e40af;
   --color-secondary: #f59e0b;
   --color-background: #f9fafb;
   --color-surface: #ffffff;
-  --color-muted: #6b7280;
+  --color-text: #1f2937; /* gray-800 */
+  --color-text-strong: #1f2937; /* gray-800 */
+  --color-muted: #6b7280; /* gray-500 */
+  --color-divider: #e5e7eb; /* divider */
   --color-danger: #ef4444;
   --color-success: #10b981;
+}
+
+@layer base {
+  @variant dark {
+    --color-primary: #60a5fa; /* blue-400 */
+    --color-primaryDark: #1e3a8a; /* blue-900 */
+    --color-secondary: #fbbf24; /* amber-400 */
+    --color-background: #111827; /* gray-900 */
+    --color-surface: #1f2937; /* gray-800 */
+    --color-text: #f3f4f6; /* gray-100 */
+    --color-text-strong: #e5e7eb; /* divider */
+    --color-muted: #d1d5db; /* gray-300 */
+    --color-divider: #374151; /* gray-700 */
+    --color-danger: #f87171; /* red-400 */
+    --color-success: #34d399; /* green-400 */
+  }
 }

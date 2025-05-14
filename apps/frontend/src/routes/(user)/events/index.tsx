@@ -28,7 +28,7 @@ function EventsErrorComponent({ error }: { error: Error }) {
         <h1 className="text-2xl md:text-3xl font-bold text-danger mb-4">
           {t("errorPage.title")}
         </h1>
-        <p className="text-base text-gray-800 mb-2">
+        <p className="text-base text-text mb-2">
           {t("errorPage.genericLoadError", { item: "events" })}
         </p>
         <p className="text-sm text-muted mb-6">
@@ -57,7 +57,7 @@ function EventsComponent() {
   return (
     <div className="bg-background min-h-screen p-4 md:p-8">
       <header className="mb-8 text-center md:text-left">
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
+        <h1 className="text-2xl md:text-3xl font-bold text-text">
           {t("events.pageTitle")}
         </h1>
         <p className="text-xl font-semibold text-muted">
@@ -90,7 +90,7 @@ function EventsComponent() {
               />
               <div className="p-4 md:p-6 flex flex-col flex-grow">
                 <h2
-                  className="text-xl font-semibold text-gray-800 mb-2 truncate"
+                  className="text-xl font-semibold text-text mb-2 truncate"
                   title={event.eventName}
                 >
                   {event.eventName}
@@ -106,7 +106,7 @@ function EventsComponent() {
                   <span className="font-medium">{t("myBookings.categoryPrefix")}:</span>{" "}
                   {event.category}
                 </p>
-                <div className="mt-auto pt-3 border-t border-gray-200">
+                <div className="mt-auto pt-3 border-t border-divider">
                   <p className="text-lg font-bold text-primary text-right">
                     $
                     {typeof event.price === "number"
@@ -135,7 +135,7 @@ function EventsComponent() {
               d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
             />
           </svg>
-          <p className="text-xl mt-4 font-semibold text-gray-800">
+          <p className="text-xl mt-4 font-semibold text-text">
             {t("events.noEventsTitle")}
           </p>
           <p className="text-base text-muted">

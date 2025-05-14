@@ -38,7 +38,7 @@ export default function Register() {
           <div>
             <label
               htmlFor="email"
-              className="block text-sm font-medium text-gray-700 mb-1"
+              className="block text-sm font-medium text-text mb-1"
             >
               {t("auth.emailLabel")}
             </label>
@@ -53,7 +53,7 @@ export default function Register() {
           <div>
             <label
               htmlFor="password"
-              className="block text-sm font-medium text-gray-700 mb-1"
+              className="block text-sm font-medium text-text mb-1"
             >
               {t("auth.passwordLabel")}
             </label>

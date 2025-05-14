@@ -43,7 +43,7 @@ function EventDetailsErrorComponent({ error }: { error: any }) {
         <h1 className="text-2xl md:text-3xl font-bold text-danger mb-4">
           {t("errorPage.title")}
         </h1>
-        <p className="text-base text-gray-800 mb-2">
+        <p className="text-base text-text mb-2">
           {t("errorPage.failedToLoadEvent", { eventId })}
         </p>
         <p className="text-sm text-muted mb-6">
@@ -161,7 +161,7 @@ function EventDetailsComponent() {
             )}
           </div>
           <div className="p-6 md:p-8">
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
+            <h1 className="text-3xl md:text-4xl font-bold text-text mb-4">
               {event.eventName}
             </h1>
 
@@ -170,7 +170,7 @@ function EventDetailsComponent() {
                 <h2 className="text-xl font-semibold text-muted mb-2">
                   {t("eventDetails.descriptionTitle")}
                 </h2>
-                <p className="text-base text-gray-800 whitespace-pre-wrap">
+                <p className="text-base text-text whitespace-pre-wrap">
                   {event.description || t("eventDetails.noDescription")}
                 </p>
               </div>
@@ -179,7 +179,7 @@ function EventDetailsComponent() {
                   <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider">
                     {t("eventDetails.dateTimeTitle")}
                   </h3>
-                  <p className="text-lg text-gray-800">
+                  <p className="text-lg text-text">
                     {new Date(event.date).toLocaleDateString(undefined, {
                       weekday: "long",
                       year: "numeric",
@@ -193,13 +193,13 @@ function EventDetailsComponent() {
                   <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider">
                     {t("eventDetails.venueTitle")}
                   </h3>
-                  <p className="text-lg text-gray-800">{event.venue}</p>
+                  <p className="text-lg text-text">{event.venue}</p>
                 </div>
                 <div>
                   <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider">
                     {t("eventDetails.categoryTitle")}
                   </h3>
-                  <p className="text-lg text-gray-800">{event.category}</p>
+                  <p className="text-lg text-text">{event.category}</p>
                 </div>
                 <div>
                   <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider">
@@ -215,7 +215,7 @@ function EventDetailsComponent() {
               </div>
             </div>
 
-            <div className="mt-8 pt-6 border-t border-gray-200 text-center">
+            <div className="mt-8 pt-6 border-t border-divider text-center">
               {isActuallyBooked ? (
                 <PrimaryButton
                   disabled
