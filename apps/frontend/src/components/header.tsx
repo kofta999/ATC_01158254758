@@ -2,10 +2,21 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { useAuth } from "@/lib/hooks/use-auth";
 import { PrimaryButton } from "./primary-button";
 import { SecondaryButton } from "./secondary-button";
+import { useTranslation } from "react-i18next";
+import i18n from "@/i18n"; // Import the i18n instance
+import { useState } from "react";
 
 export const Header = () => {
   const { isAuthenticated, logout, user } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
+  const [isEnglish, setIsEnglish] = useState(i18n.language === "en");
+
+  const toggleLanguage = () => {
+    const newLanguage = isEnglish ? "ar" : "en";
+    i18n.changeLanguage(newLanguage);
+    setIsEnglish(!isEnglish);
+  };
 
   const handleLogout = async () => {
     await logout(true); // Pass true to redirect to login after logout
@@ -18,8 +29,9 @@ export const Header = () => {
           to="/"
           className="text-xl font-bold text-primary hover:text-primaryDark transition duration-300 ease-in-out"
         >
-          Evently
+          {t("appTitle")}
         </Link>
+
         <ul className="flex items-center gap-3 sm:gap-4 text-sm">
           <li>
             <Link
@@ -29,7 +41,7 @@ export const Header = () => {
                 className: "!text-primary font-semibold bg-primary/10",
               }}
             >
-              Events
+              {t("navigation.events")}
             </Link>
           </li>
           {isAuthenticated && user && user.role === "USER" && (
@@ -41,7 +53,7 @@ export const Header = () => {
                   className: "!text-primary font-semibold bg-primary/10",
                 }}
               >
-                My Bookings
+                {t("navigation.myBookings")}
               </Link>
             </li>
           )}
@@ -54,7 +66,7 @@ export const Header = () => {
                   className: "!text-primary font-semibold bg-primary/10",
                 }}
               >
-                Dashboard
+                {t("navigation.dashboard")}
               </Link>
             </li>
           )}
@@ -64,16 +76,24 @@ export const Header = () => {
                 onClick={handleLogout}
                 className="text-sm py-1.5 px-3"
               >
-                Logout
+                {t("navigation.logout")}
               </SecondaryButton>
             ) : (
               <PrimaryButton
                 onClick={() => navigate({ to: "/login" })}
                 className="text-sm py-1.5 px-3"
               >
-                Login
+                {t("navigation.login")}
               </PrimaryButton>
             )}
+          </li>
+          <li>
+            <button
+              onClick={toggleLanguage}
+              className="text-sm py-1.5 px-3 rounded-lg bg-white border border-primary text-primary hover:bg-primary/10 transition duration-300 ease-in-out cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isEnglish ? "AR" : "EN"}
+            </button>
           </li>
         </ul>
       </nav>
