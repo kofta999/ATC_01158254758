@@ -3,6 +3,7 @@ import { router } from "@/main";
 import { Card } from "@/components/card";
 import { PrimaryButton } from "@/components/primary-button";
 import { baseApiClient } from "@/lib/base-api-client";
+import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/(user)/events/")({
   loader: async () => {
@@ -20,14 +21,15 @@ export const Route = createFileRoute("/(user)/events/")({
 });
 
 function EventsErrorComponent({ error }: { error: Error }) {
+  const { t } = useTranslation();
   return (
     <div className="p-4 md:p-6 bg-background min-h-screen flex flex-col items-center justify-center">
       <Card className="max-w-lg w-full text-center">
         <h1 className="text-2xl md:text-3xl font-bold text-danger mb-4">
-          Oops! Something went wrong.
+          {t("errorPage.title")}
         </h1>
         <p className="text-base text-gray-800 mb-2">
-          We couldn't load the events.
+          {t("errorPage.genericLoadError", { item: "events" })}
         </p>
         <p className="text-sm text-muted mb-6">
           {error.message || "An unknown error occurred."}
@@ -41,7 +43,7 @@ function EventsErrorComponent({ error }: { error: Error }) {
             // For now, invalidate is likely sufficient.
           }}
         >
-          Try Again
+          {t("errorPage.tryAgainButton")}
         </PrimaryButton>
       </Card>
     </div>
@@ -50,15 +52,16 @@ function EventsErrorComponent({ error }: { error: Error }) {
 
 function EventsComponent() {
   const events = Route.useLoaderData(); // `events` will have the inferred type from the loader
+  const { t } = useTranslation();
 
   return (
     <div className="bg-background min-h-screen p-4 md:p-8">
       <header className="mb-8 text-center md:text-left">
         <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
-          Upcoming Events
+          {t("events.pageTitle")}
         </h1>
         <p className="text-xl font-semibold text-muted">
-          Discover and book your next experience
+          {t("events.pageSubtitle")}
         </p>
       </header>
 
@@ -74,7 +77,7 @@ function EventsComponent() {
             >
               {event.isBooked && (
                 <span className="absolute top-2 right-2 bg-success text-white text-xs font-semibold px-2 py-1 rounded-full z-10 shadow">
-                  Booked
+                  {t("events.bookedStatus")}
                 </span>
               )}
               <img
@@ -97,10 +100,10 @@ function EventsComponent() {
                   {new Date(event.date).toLocaleDateString()}
                 </p>
                 <p className="text-sm text-muted mb-1">
-                  <span className="font-medium">Venue:</span> {event.venue}
+                  <span className="font-medium">{t("myBookings.venuePrefix")}:</span> {event.venue}
                 </p>
                 <p className="text-sm text-muted mb-3">
-                  <span className="font-medium">Category:</span>{" "}
+                  <span className="font-medium">{t("myBookings.categoryPrefix")}:</span>{" "}
                   {event.category}
                 </p>
                 <div className="mt-auto pt-3 border-t border-gray-200">
@@ -133,10 +136,10 @@ function EventsComponent() {
             />
           </svg>
           <p className="text-xl mt-4 font-semibold text-gray-800">
-            No events found at the moment.
+            {t("events.noEventsTitle")}
           </p>
           <p className="text-base text-muted">
-            Please check back later for new and exciting events!
+            {t("events.noEventsMessage")}
           </p>
         </Card>
       )}

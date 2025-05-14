@@ -6,6 +6,7 @@ import { useState, useEffect } from "react"; // Import useEffect
 import { Card } from "@/components/card";
 import { PrimaryButton } from "@/components/primary-button";
 import { SecondaryButton } from "@/components/secondary-button";
+import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/(user)/events/$eventId")({
   loader: async ({ params }) => {
@@ -34,14 +35,16 @@ export const Route = createFileRoute("/(user)/events/$eventId")({
 
 function EventDetailsErrorComponent({ error }: { error: any }) {
   const { eventId } = Route.useParams();
+  const { t } = useTranslation();
+
   return (
     <div className="p-4 md:p-8 bg-background min-h-screen flex flex-col items-center justify-center">
       <Card className="max-w-xl w-full text-center">
         <h1 className="text-2xl md:text-3xl font-bold text-danger mb-4">
-          Oops! Something Went Wrong
+          {t("errorPage.title")}
         </h1>
         <p className="text-base text-gray-800 mb-2">
-          We couldn't load the details for event ID: {eventId}.
+          {t("errorPage.failedToLoadEvent", { eventId })}
         </p>
         <p className="text-sm text-muted mb-6">
           {error?.message || "An unknown error occurred."}
@@ -52,13 +55,13 @@ function EventDetailsErrorComponent({ error }: { error: any }) {
             // Using classes similar to PrimaryButton for this Link for now
             className="px-4 py-2 rounded-lg bg-primary text-white hover:bg-primaryDark transition duration-300 ease-in-out w-full sm:w-auto"
           >
-            Back to Events
+            {t("errorPage.backButton", { item: "events" })}
           </Link>
           <SecondaryButton
             onClick={() => router.invalidate()}
             className="w-full sm:w-auto"
           >
-            Try Again
+            {t("errorPage.tryAgainButton")}
           </SecondaryButton>
         </div>
       </Card>
@@ -70,6 +73,7 @@ function EventDetailsComponent() {
   const event = Route.useLoaderData();
   const { isAuthenticated, apiClient } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const [isBooking, setIsBooking] = useState(false);
   const [bookingMessage, setBookingMessage] = useState<{
@@ -136,7 +140,7 @@ function EventDetailsComponent() {
       <div className="max-w-4xl mx-auto">
         <div className="mb-6">
           <Link to="/events" className="text-primary hover:underline text-sm">
-            &larr; Back to All Events
+            {t("eventDetails.backLink")}
           </Link>
         </div>
 
@@ -152,7 +156,7 @@ function EventDetailsComponent() {
             />
             {isActuallyBooked && (
               <div className="absolute top-4 right-4 bg-success text-white text-sm font-semibold px-3 py-1 rounded-lg shadow-lg z-10">
-                ✓ Booked
+                {t("events.bookedStatus")}
               </div>
             )}
           </div>
@@ -164,16 +168,16 @@ function EventDetailsComponent() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-x-8 gap-y-6 mb-6">
               <div className="md:col-span-2">
                 <h2 className="text-xl font-semibold text-muted mb-2">
-                  Event Description
+                  {t("eventDetails.descriptionTitle")}
                 </h2>
                 <p className="text-base text-gray-800 whitespace-pre-wrap">
-                  {event.description || "No description provided."}
+                  {event.description || t("eventDetails.noDescription")}
                 </p>
               </div>
               <div className="md:col-span-1 space-y-4">
                 <div>
                   <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider">
-                    Date & Time
+                    {t("eventDetails.dateTimeTitle")}
                   </h3>
                   <p className="text-lg text-gray-800">
                     {new Date(event.date).toLocaleDateString(undefined, {
@@ -187,19 +191,19 @@ function EventDetailsComponent() {
                 </div>
                 <div>
                   <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider">
-                    Venue
+                    {t("eventDetails.venueTitle")}
                   </h3>
                   <p className="text-lg text-gray-800">{event.venue}</p>
                 </div>
                 <div>
                   <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider">
-                    Category
+                    {t("eventDetails.categoryTitle")}
                   </h3>
                   <p className="text-lg text-gray-800">{event.category}</p>
                 </div>
                 <div>
                   <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider">
-                    Price
+                    {t("eventDetails.priceTitle")}
                   </h3>
                   <p className="text-2xl font-bold text-primary">
                     $
@@ -217,7 +221,7 @@ function EventDetailsComponent() {
                   disabled
                   className="px-8 py-3 text-lg shadow-md bg-success hover:bg-green-600 disabled:bg-success disabled:hover:bg-success"
                 >
-                  Already Booked
+                  {t("eventDetails.alreadyBookedButton")}
                 </PrimaryButton>
               ) : (
                 <PrimaryButton
@@ -225,7 +229,7 @@ function EventDetailsComponent() {
                   disabled={isBooking}
                   className="px-8 py-3 text-lg shadow-md hover:shadow-lg"
                 >
-                  {isBooking ? "Booking..." : "Book This Event"}
+                  {isBooking ? t("eventDetails.bookingButtonLoading") : t("eventDetails.bookButton")}
                 </PrimaryButton>
               )}
               {bookingMessage && (
@@ -237,7 +241,7 @@ function EventDetailsComponent() {
               )}
               {!bookingMessage && !isActuallyBooked && (
                 <p className="text-sm text-muted mt-3">
-                  Secure your spot now! Limited availability.
+                  {t("eventDetails.bookingCTA")}
                 </p>
               )}
             </div>
