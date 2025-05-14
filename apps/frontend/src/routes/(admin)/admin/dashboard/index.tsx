@@ -12,11 +12,12 @@ import { useEffect } from "react";
 import { router } from "@/main";
 import { baseApiClient } from "@/lib/base-api-client";
 import { useAuth } from "@/lib/hooks/use-auth";
+import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/(admin)/admin/dashboard/")({
   beforeLoad: ({ context, location }) => {
     const auth = context.auth;
-    console.log(auth)
+    console.log(auth);
 
     if (!auth?.isAuthenticated || !auth.user) {
       // Also check if auth.user exists
@@ -49,18 +50,19 @@ export const Route = createFileRoute("/(admin)/admin/dashboard/")({
 
 function AdminDashboardErrorComponent({}: { error: Error }) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   return (
     <div className="flex flex-grow items-center justify-center p-6">
       {/* Use flex-grow for centering in available space */}
       <Card className="text-center max-w-lg w-full p-6 md:p-8">
         <h2 className="text-2xl md:text-3xl font-bold text-danger mb-4">
-          Error Loading Dashboard
+          {t("errorPage.title")}
         </h2>
         {/* Matched text color to design system */}
         <PrimaryButton
           onClick={() => navigate({ to: Route.fullPath, replace: true })}
         >
-          Try Again
+          {t("errorPage.tryAgainButton")}
         </PrimaryButton>
       </Card>
     </div>
@@ -71,6 +73,7 @@ function AdminDashboardComponent() {
   const events = Route.useLoaderData();
   const navigate = useNavigate();
   const { isAuthenticated, user, apiClient } = useAuth();
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (!isAuthenticated || user?.role !== "ADMIN") {
@@ -79,11 +82,7 @@ function AdminDashboardComponent() {
   }, [isAuthenticated, user, navigate]);
 
   const handleDelete = async (eventId: number) => {
-    if (
-      !window.confirm(
-        "Are you sure you want to delete this event? This action cannot be undone.",
-      )
-    ) {
+    if (!window.confirm(t("admin.deleteConfirmation"))) {
       return;
     }
     try {
@@ -97,11 +96,11 @@ function AdminDashboardComponent() {
           .catch(() => ({ message: "Failed to delete event." }));
         throw new Error(errorData.message || `Server error: ${res.status}`);
       }
-      alert("Event deleted successfully!");
+      alert(t("admin.deleteSuccess"));
       await router.invalidate();
     } catch (error: any) {
       console.error("Failed to delete event:", error);
-      alert(`Error deleting event: ${error.message}`);
+      alert(t("admin.deleteError", { message: error.message }));
     }
   };
 
@@ -109,7 +108,7 @@ function AdminDashboardComponent() {
     <div className="container mx-auto py-8 px-4">
       <div className="flex flex-col sm:flex-row justify-between items-center mb-10 gap-4">
         <h1 className="text-3xl md:text-4xl font-bold text-gray-800 text-center sm:text-left">
-          Events Management
+          {t("admin.dashboardTitle")}
         </h1>
         <Link to="/admin/dashboard/events/new" className="w-full sm:w-auto">
           <PrimaryButton className="text-base w-full">
@@ -127,7 +126,7 @@ function AdminDashboardComponent() {
                 d="M12 4.5v15m7.5-7.5h-15"
               />
             </svg>
-            Create New Event
+            {t("admin.createNewEventButton")}
           </PrimaryButton>
         </Link>
       </div>
@@ -143,37 +142,37 @@ function AdminDashboardComponent() {
                   scope="col"
                   className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider"
                 >
-                  Event Name
+                  {t("admin.tableHeaders.eventName")}
                 </th>
                 <th
                   scope="col"
                   className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider"
                 >
-                  Category
+                  {t("admin.tableHeaders.category")}
                 </th>
                 <th
                   scope="col"
                   className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider"
                 >
-                  Date
+                  {t("admin.tableHeaders.date")}
                 </th>
                 <th
                   scope="col"
                   className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider"
                 >
-                  Venue
+                  {t("admin.tableHeaders.venue")}
                 </th>
                 <th
                   scope="col"
                   className="px-6 py-3 text-right text-xs font-medium text-muted uppercase tracking-wider"
                 >
-                  Price
+                  {t("admin.tableHeaders.price")}
                 </th>
                 <th
                   scope="col"
                   className="px-6 py-3 text-center text-xs font-medium text-muted uppercase tracking-wider"
                 >
-                  Actions
+                  {t("admin.tableHeaders.actions")}
                 </th>
               </tr>
             </thead>
@@ -212,14 +211,14 @@ function AdminDashboardComponent() {
                       params={{ eventId: event.eventId.toString() }}
                     >
                       <SecondaryButton className="text-xs py-1 px-2 leading-tight">
-                        Edit
+                        {t("admin.editButton")}
                       </SecondaryButton>
                     </Link>
                     <DangerButton
                       onClick={() => handleDelete(event.eventId)}
                       className="text-xs py-1 px-2 leading-tight"
                     >
-                      Delete
+                      {t("admin.deleteButton")}
                     </DangerButton>
                   </td>
                 </tr>
@@ -245,11 +244,9 @@ function AdminDashboardComponent() {
           </svg>
           <p className="text-xl text-gray-800 font-semibold mb-2">
             {/* Changed from text-gray-700 dark:text-gray-300 */}
-            No events found.
+            {t("admin.noEventsTitle")}
           </p>
-          <p className="text-muted mb-6">
-            Get started by creating your first event.
-          </p>
+          <p className="text-muted mb-6">{t("admin.noEventsMessage")}</p>
           <Link to="/admin/dashboard/events/new">
             <PrimaryButton className="text-base">
               <svg
@@ -266,7 +263,7 @@ function AdminDashboardComponent() {
                   d="M12 4.5v15m7.5-7.5h-15"
                 />
               </svg>
-              Create Event
+              {t("admin.createEventButton")}
             </PrimaryButton>
           </Link>
         </Card>
