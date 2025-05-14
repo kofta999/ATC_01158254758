@@ -2,21 +2,36 @@
 
 ### 1. **Colors**
 
-```js
-// tailwind.config.js
-theme: {
-  extend: {
-    colors: {
-      primary: '#3B82F6',       // blue-500
-      primaryDark: '#1E40AF',   // blue-900
-      secondary: '#F59E0B',     // amber-500
-      background: '#F9FAFB',    // gray-50
-      surface: '#FFFFFF',       // white
-      muted: '#6B7280',         // gray-500
-      danger: '#EF4444',        // red-500
-      success: '#10B981',       // green-500
-    },
-  },
+```css
+/* styles.css (with Tailwind v4) */
+@theme {
+  --color-primary: #3b82f6;
+  --color-primaryDark: #1e40af;
+  --color-secondary: #f59e0b;
+  --color-background: #f9fafb;
+  --color-surface: #ffffff;
+  --color-text: #1f2937; /* gray-800 */
+  --color-text-strong: #1f2937; /* gray-800 */
+  --color-muted: #6b7280; /* gray-500 */
+  --color-divider: #e5e7eb; /* divider */
+  --color-danger: #ef4444;
+  --color-success: #10b981;
+}
+
+@layer base {
+  @variant dark {
+    --color-primary: #60a5fa; /* blue-400 */
+    --color-primaryDark: #1e3a8a; /* blue-900 */
+    --color-secondary: #fbbf24; /* amber-400 */
+    --color-background: #111827; /* gray-900 */
+    --color-surface: #1f2937; /* gray-800 */
+    --color-text: #f3f4f6; /* gray-100 */
+    --color-text-strong: #e5e7eb; /* divider */
+    --color-muted: #d1d5db; /* gray-300 */
+    --color-divider: #374151; /* gray-700 */
+    --color-danger: #f87171; /* red-400 */
+    --color-success: #34d399; /* green-400 */
+  }
 }
 ```
 
@@ -28,7 +43,7 @@ theme: {
 | ----------- | ---------------------------------- |
 | Headings    | `text-2xl md:text-3xl font-bold`   |
 | Subheadings | `text-xl font-semibold text-muted` |
-| Body Text   | `text-base text-gray-800`          |
+| Body Text   | `text-base text-text`              |
 | Small Text  | `text-sm text-muted`               |
 | Links       | `text-primary hover:underline`     |
 
@@ -46,7 +61,7 @@ theme: {
 
 <!-- Secondary -->
 <button
-  class="px-4 py-2 rounded-lg bg-white border border-primary text-primary hover:bg-primary/10"
+  class="px-4 py-2 rounded-lg bg-surface border border-primary text-primary hover:bg-primary/10"
 >
   Learn More
 </button>
@@ -72,7 +87,7 @@ theme: {
 ### 5. **Forms**
 
 ```html
-<label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+<label class="block text-sm font-medium text-text mb-1">Email</label>
 <input
   type="email"
   class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:outline-none"
@@ -92,7 +107,7 @@ theme: {
 ### 6. **Navigation (User & Admin)**
 
 ```html
-<nav class="flex items-center justify-between px-4 py-3 bg-white shadow">
+<nav class="flex items-center justify-between px-4 py-3 bg-surface shadow">
   <h1 class="text-xl font-bold text-primary">Evently</h1>
   <ul class="flex gap-4 text-sm text-muted">
     <li><a href="#" class="hover:text-primary">Home</a></li>
