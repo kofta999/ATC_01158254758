@@ -1,6 +1,6 @@
 import { type AppRouteHandler, TYPES } from "@/common/types";
 import type { EventApiPort } from "@/ports/input/event.port";
-import { put } from "@vercel/blob";
+import { del, put } from "@vercel/blob";
 import { inject, injectable } from "inversify";
 import type {
 	CreateEventRoute,
@@ -69,6 +69,11 @@ export class EventController {
 		const { id } = c.req.valid("param");
 
 		const deletedEvent = await this.eventService.deleteEvent(id);
+
+		// Del only works with vercel-hosted blobs
+		if (deletedEvent.image.includes("vercel")) {
+			await del(deletedEvent.image);
+		}
 
 		return c.json(deletedEvent, 200);
 	};
