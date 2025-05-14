@@ -1,5 +1,6 @@
 import { type AppRouteHandler, TYPES } from "@/common/types";
 import type { EventApiPort } from "@/ports/input/event.port";
+import { del, put } from "@vercel/blob";
 import { inject, injectable } from "inversify";
 import type {
 	CreateEventRoute,
@@ -27,18 +28,39 @@ export class EventController {
 	};
 
 	createEvent: AppRouteHandler<CreateEventRoute> = async (c) => {
-		const eventData = c.req.valid("json");
+		const eventData = c.req.valid("form");
 
-		const newEvent = await this.eventService.createEvent(eventData);
+		const blob = await put(eventData.imageFile.name, eventData.imageFile, {
+			access: "public",
+			addRandomSuffix: true,
+		});
+
+		const newEvent = await this.eventService.createEvent({
+			...eventData,
+			image: blob.url,
+		});
 
 		return c.json(newEvent, 201);
 	};
 
 	updateEvent: AppRouteHandler<UpdateEventRoute> = async (c) => {
 		const { id } = c.req.valid("param");
-		const eventData = c.req.valid("json");
+		const eventData = c.req.valid("form");
+		let image = undefined;
 
-		const updatedEvent = await this.eventService.updateEvent(id, eventData);
+		if (eventData.imageFile) {
+			const blob = await put(eventData.imageFile.name, eventData.imageFile, {
+				access: "public",
+				addRandomSuffix: true,
+			});
+
+			image = blob.url;
+		}
+
+		const updatedEvent = await this.eventService.updateEvent(id, {
+			...eventData,
+			image,
+		});
 
 		return c.json(updatedEvent, 200);
 	};
@@ -47,6 +69,11 @@ export class EventController {
 		const { id } = c.req.valid("param");
 
 		const deletedEvent = await this.eventService.deleteEvent(id);
+
+		// Del only works with vercel-hosted blobs
+		if (deletedEvent.image.includes("vercel")) {
+			await del(deletedEvent.image);
+		}
 
 		return c.json(deletedEvent, 200);
 	};

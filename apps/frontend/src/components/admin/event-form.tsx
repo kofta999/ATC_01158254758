@@ -14,6 +14,7 @@ export interface EventFormData {
   venue: string;
   price: number;
   image: string; // URL or placeholder
+  imageFile?: File;
 }
 
 interface EventFormProps {
@@ -22,12 +23,14 @@ interface EventFormProps {
   isSubmitting?: boolean;
   submitButtonText?: string;
   formTitle: string;
+  submissionError?: string | null; // Prop to receive and display errors from parent
 }
 
 export const EventForm: React.FC<EventFormProps> = ({
   initialData,
   onSubmit,
   isSubmitting = false,
+  submissionError, // Receive submission error
   submitButtonText = "Submit",
   formTitle,
 }) => {
@@ -40,7 +43,9 @@ export const EventForm: React.FC<EventFormProps> = ({
     price: initialData?.price || 0,
     image: initialData?.image || "",
   }));
-  const [submitError, setSubmitError] = useState<string | null>(null);
+
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [_, setSubmitError] = useState<string | null>(null);
 
   // Update form if initialData changes (e.g., when data loads for an edit form)
   useEffect(() => {
@@ -52,8 +57,9 @@ export const EventForm: React.FC<EventFormProps> = ({
         date: initialData.date || "", // Ensure date format is YYYY-MM-DD
         venue: initialData.venue || "",
         price: initialData.price || 0,
-        image: initialData.image || "",
+        image: initialData?.image || "",
       });
+      setImageFile(null); // Clear file when initial data loads
     }
   }, [initialData]);
 
@@ -63,17 +69,31 @@ export const EventForm: React.FC<EventFormProps> = ({
     >,
   ) => {
     const { name, value, type } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === "number" ? parseFloat(value) || 0 : value,
-    }));
+
+    if (type === "file") {
+      const files = (e.target as HTMLInputElement).files;
+      if (files && files.length > 0) {
+        setImageFile(files[0]);
+      } else {
+        setImageFile(null);
+      }
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: type === "number" ? parseFloat(value) || 0 : value,
+      }));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSubmitError(null);
     try {
-      await onSubmit(formData);
+      if (imageFile) {
+        await onSubmit({ ...formData, imageFile });
+      } else {
+        await onSubmit({ ...formData });
+      }
     } catch (error: any) {
       console.error("Form submission error:", error);
       setSubmitError(error.message || "An error occurred. Please try again.");
@@ -100,14 +120,25 @@ export const EventForm: React.FC<EventFormProps> = ({
     required: required,
   });
 
+  // Helper for file input props
+  const fileInputProps = (name: keyof EventFormData) => ({
+    id: name,
+    name: name,
+    type: "file" as "file", // Explicitly type as file
+    onChange: handleChange,
+    className:
+      "w-full px-3 py-2 border rounded-lg file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20",
+  });
+
   return (
     <Card className="max-w-2xl mx-auto">
       <h1 className="text-2xl md:text-3xl font-bold mb-6 text-gray-800">
         {formTitle}
       </h1>
-      {submitError && (
+      {/* Display submission error passed from parent */}
+      {submissionError && (
         <div className="mb-4 p-3 bg-danger/10 border border-danger text-danger rounded-lg text-sm">
-          {submitError}
+          {submissionError}
         </div>
       )}
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -193,14 +224,30 @@ export const EventForm: React.FC<EventFormProps> = ({
 
         <div>
           <label
-            htmlFor="image"
+            htmlFor="imageFile"
             className="block text-sm font-medium text-gray-700 mb-1"
           >
-            Image URL
+            Image
           </label>
           <input
-            {...inputProps("image", "url", "https://example.com/image.jpg")}
+            {...fileInputProps("imageFile")}
+            accept="image/*" // Accept image files
           />
+          {imageFile && (
+            <p className="mt-1 text-sm text-gray-600">
+              Selected file: {imageFile.name}
+            </p>
+          )}
+          {/* Display existing image if in initialData and no file selected */}
+          {!imageFile && initialData?.image && (
+            <div className="mt-2">
+              <img
+                src={initialData.image}
+                alt="Current event image"
+                className="max-h-40 rounded-lg object-cover"
+              />
+            </div>
+          )}
         </div>
 
         <div className="pt-2 flex items-center gap-4">

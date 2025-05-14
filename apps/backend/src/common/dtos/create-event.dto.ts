@@ -9,9 +9,10 @@ export const CreateEventSchema = z
 		category: z.string().openapi({ example: "Music" }),
 		date: z.string().openapi({ example: "2024-07-20" }),
 		venue: z.string().openapi({ example: "Central Park, New York" }),
-		price: z.number().openapi({ example: 50 }),
-		image: z.string().openapi({ example: "url-to-image" }),
+		price: z.coerce.number().openapi({ example: 50 }),
 	})
 	.openapi("CreateEvent");
 
-export type CreateEventDTO = z.infer<typeof CreateEventSchema>;
+export type CreateEventDTO = z.infer<typeof CreateEventSchema> & {
+	image: string;
+};

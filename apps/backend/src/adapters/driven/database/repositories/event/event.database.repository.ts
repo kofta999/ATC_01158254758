@@ -3,7 +3,7 @@ import { ResourceAlreadyExists } from "@/common/errors/resource-already-exists";
 import { TYPES } from "@/common/types";
 import { Event } from "@/core/domain/entities/event";
 import type { EventRepositoryPort } from "@/ports/output/repositories/event.repository.port";
-import { eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { inject, injectable } from "inversify";
 import type { DrizzleDataSource } from "../../data-sources/drizzle/drizzle.data-source";
 import { eventTable } from "../../data-sources/drizzle/schema";
@@ -19,6 +19,7 @@ export class EventDatabaseRepository implements EventRepositoryPort {
 	async getAll(): Promise<Event[]> {
 		const events = await this.db.query.eventTable.findMany({
 			with: { bookings: true },
+			orderBy: desc(eventTable.date),
 		});
 
 		return events.map(
