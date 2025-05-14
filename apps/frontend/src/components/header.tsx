@@ -4,7 +4,7 @@ import { PrimaryButton } from "./primary-button";
 import { SecondaryButton } from "./secondary-button";
 
 export const Header = () => {
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, logout, user } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -32,10 +32,9 @@ export const Header = () => {
               Events
             </Link>
           </li>
-          {isAuthenticated && (
+          {isAuthenticated && user && user.role === "USER" && (
             <li>
               <Link
-                // TODO: Add correct link
                 to="/bookings"
                 className="text-muted hover:text-primary transition duration-300 ease-in-out px-2 py-1 sm:px-3 rounded-md"
                 activeProps={{
@@ -43,6 +42,19 @@ export const Header = () => {
                 }}
               >
                 My Bookings
+              </Link>
+            </li>
+          )}
+          {isAuthenticated && user && user.role === "ADMIN" && (
+            <li>
+              <Link
+                to="/admin/dashboard"
+                className="text-muted hover:text-primary transition duration-300 ease-in-out px-2 py-1 sm:px-3 rounded-md"
+                activeProps={{
+                  className: "!text-primary font-semibold bg-primary/10",
+                }}
+              >
+                Dashboard
               </Link>
             </li>
           )}
