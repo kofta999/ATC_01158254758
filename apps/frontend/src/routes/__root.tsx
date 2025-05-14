@@ -28,7 +28,10 @@ export default function RootLayout() {
           <link rel="icon" type="image/png" href="/images/favicon.png" />
       */}
       <Header />
-      <main className="flex-grow container mx-auto px-4 py-6 md:py-8 w-full">
+      <main
+        id="main"
+        className="flex-grow container mx-auto px-4 py-6 md:py-8 w-full"
+      >
         {/* Adjusted padding slightly */}
         <Outlet />
       </main>

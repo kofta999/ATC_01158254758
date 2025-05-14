@@ -4,6 +4,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { router } from "@/main";
 import { RegisterUserSchema } from "@/lib/schemas";
 import { useAuth } from "@/lib/hooks/use-auth";
+import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/(user)/(auth)/register")({
   component: Register,
@@ -11,11 +12,12 @@ export const Route = createFileRoute("/(user)/(auth)/register")({
 
 export default function Register() {
   const auth = useAuth();
+  const { t } = useTranslation();
 
   return (
     <div className="flex flex-grow items-center justify-center py-6">
       <Card className="max-w-lg w-96">
-        <h1 className="text-2xl font-bold mb-4">Register</h1>
+        <h1 className="text-2xl font-bold mb-4">{t("auth.registerTitle")}</h1>
         <form
           className="flex flex-col gap-4"
           onSubmit={async (e) => {
@@ -38,7 +40,7 @@ export default function Register() {
               htmlFor="email"
               className="block text-sm font-medium text-gray-700 mb-1"
             >
-              Email
+              {t("auth.emailLabel")}
             </label>
             <input
               type="email"
@@ -53,7 +55,7 @@ export default function Register() {
               htmlFor="password"
               className="block text-sm font-medium text-gray-700 mb-1"
             >
-              Password
+              {t("auth.passwordLabel")}
             </label>
             <input
               type="password"
@@ -63,11 +65,11 @@ export default function Register() {
               placeholder="********"
             />
           </div>
-          <PrimaryButton type="submit">Register</PrimaryButton>
+          <PrimaryButton type="submit">{t("auth.registerButton")}</PrimaryButton>
         </form>
         <div className="mt-4 text-sm">
           <Link to="/login" className="text-primary hover:underline">
-            Already have an account? Login
+            {t("auth.alreadyAccountPrompt")} {t("auth.loginLink")}
           </Link>
         </div>
       </Card>

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useAuth } from "@/lib/hooks/use-auth";
 import type { InferRequestType } from "@repo/areeb-backend";
 import type { baseApiClient } from "@/lib/base-api-client";
+import { useTranslation } from "react-i18next";
 
 export type CreateEventFormData = InferRequestType<
   typeof baseApiClient.events.$post
@@ -24,6 +25,7 @@ export const Route = createFileRoute("/(admin)/admin/dashboard/events/new")({
 
 function CreateEventPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { apiClient } = useAuth(); // Get token for authorization header
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [_, setSubmissionError] = useState<string | null>(null); // Use submissionError state
@@ -45,7 +47,7 @@ function CreateEventPage() {
       navigate({ to: "/admin/dashboard", replace: true });
     } catch (error: any) {
       console.error("Failed to create event:", error);
-      setSubmissionError(error.message || "An unexpected error occurred.");
+      setSubmissionError(error.message || t("eventDetails.bookingErrorMessage"));
     } finally {
       setIsSubmitting(false);
     }
@@ -57,8 +59,8 @@ function CreateEventPage() {
         // @ts-expect-error Because file need to optional
         onSubmit={handleCreateEvent}
         isSubmitting={isSubmitting}
-        submitButtonText="Create Event"
-        formTitle="Create New Event"
+        submitButtonText={t("admin.createEventButton")}
+        formTitle={t("admin.createEventTitle")}
         // submissionError={submissionError} // Pass error down
       />
     </div>

@@ -9,6 +9,7 @@ import { useState } from "react";
 import { baseApiClient } from "@/lib/base-api-client";
 import { useAuth } from "@/lib/hooks/use-auth";
 import type { InferRequestType } from "@repo/areeb-backend";
+import { useTranslation } from "react-i18next";
 
 export type EditEventFormData = InferRequestType<
   (typeof baseApiClient.events)[":id"]["$put"]
@@ -51,6 +52,7 @@ export const Route = createFileRoute(
 
 function EditEventPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { eventId } = useParams({
     from: "/(admin)/admin/dashboard/events/$eventId/edit",
   });
@@ -84,12 +86,11 @@ function EditEventPage() {
         }
         throw new Error(errorMsg);
       }
-
-      alert("Event updated successfully!");
+      alert(t("admin.deleteSuccess"));
       navigate({ to: "/admin/dashboard", replace: true });
     } catch (error: any) {
       console.error("Failed to update event:", error);
-      setSubmissionError(error.message || "An unexpected error occurred.");
+      setSubmissionError(error.message || t("eventDetails.bookingErrorMessage"));
       setIsSubmitting(false);
     }
   };
@@ -99,7 +100,7 @@ function EditEventPage() {
     // which would render the route's errorComponent.
     return (
       <div className="container mx-auto py-8 px-4 text-danger">
-        Event data could not be loaded.
+        {t("admin.failedToLoadError")}
       </div>
     );
   }
@@ -110,8 +111,8 @@ function EditEventPage() {
         initialData={initialEventData}
         onSubmit={handleUpdateEvent}
         isSubmitting={isSubmitting}
-        submitButtonText="Update Event"
-        formTitle={`Edit Event: ${initialEventData.eventName || ""}`}
+        submitButtonText={t("admin.updateEventButton")}
+        formTitle={`${t("admin.editEventTitle")} ${initialEventData.eventName || ""}`}
       />
     </div>
   );

@@ -7,6 +7,7 @@ import { z } from "zod";
 import Confetti from "react-confetti";
 import useWindowSize from "react-use/lib/useWindowSize"; // react-confetti often needs window size
 import { router } from "@/main";
+import { useTranslation } from "react-i18next";
 
 // Define search params schema for type safety
 // These parameters will be passed from the event details page after successful booking
@@ -24,6 +25,7 @@ export const Route = createFileRoute("/(user)/_protected/booking-success")({
 
 function BookingSuccessComponent() {
   const { eventName, eventDate } = Route.useSearch();
+  const { t } = useTranslation();
   const { width, height } = useWindowSize(); // For react-confetti
   const [showConfetti, setShowConfetti] = React.useState(false);
 
@@ -79,16 +81,16 @@ function BookingSuccessComponent() {
             <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
           </svg>
           <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-3">
-            Booking Confirmed!
+            {t("bookingSuccess.title")}
           </h1>
           <p className="text-base text-muted mb-2">
-            Congratulations! You're all set for:
+            {t("bookingSuccess.subtitle")}
           </p>
           <p className="text-xl font-semibold text-primary mb-1">{eventName}</p>
-          <p className="text-sm text-muted mb-6">Date: {formattedDate}</p>
+          <p className="text-sm text-muted mb-6">{t("bookingSuccess.datePrefix")} {formattedDate}</p>
 
           <p className="text-sm text-gray-700 mb-6">
-            You'll receive a confirmation email shortly with all the details.
+            {t("bookingSuccess.emailConfirmation")}
             You can also view your booking in your account.
           </p>
 
@@ -97,19 +99,19 @@ function BookingSuccessComponent() {
               onClick={() => router.navigate({ to: "/bookings" })}
               className="w-full sm:w-auto"
             >
-              View My Bookings
+              {t("bookingSuccess.viewBookingsButton")}
             </PrimaryButton>
             <SecondaryButton
               onClick={() => router.navigate({ to: "/events" })}
               className="w-full sm:w-auto"
             >
-              Explore More Events
+              {t("bookingSuccess.exploreEventsButton")}
             </SecondaryButton>
           </div>
         </div>
       </Card>
       <p className="text-xs text-muted mt-8 z-10">
-        Thank you for choosing Evently!
+        {t("bookingSuccess.thankYouMessage")}
       </p>
     </div>
   );

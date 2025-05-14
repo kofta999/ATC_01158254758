@@ -5,6 +5,7 @@ import { useAuth } from "@/lib/hooks/use-auth";
 import { LoginUserSchema } from "@/lib/schemas";
 import { z } from "zod";
 import { router } from "@/main";
+import { useTranslation } from "react-i18next";
 
 // Define the expected search parameters for this route
 const loginSearchSchema = z.object({
@@ -19,13 +20,14 @@ export const Route = createFileRoute("/(user)/(auth)/login")({
 export default function Login() {
   const auth = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   // Access validated search params
   const { redirect } = Route.useSearch();
 
   return (
     <div className="flex flex-grow items-center justify-center py-6">
       <Card className="max-w-lg w-96">
-        <h1 className="text-2xl font-bold mb-4">Login</h1>
+        <h1 className="text-2xl font-bold mb-4">{t("auth.loginTitle")}</h1>
         <form
           className="flex flex-col gap-4"
           onSubmit={async (e) => {
@@ -64,7 +66,7 @@ export default function Login() {
               htmlFor="email"
               className="block text-sm font-medium text-gray-700 mb-1"
             >
-              Email
+              {t("auth.emailLabel")}
             </label>
             <input
               type="email"
@@ -80,7 +82,7 @@ export default function Login() {
               htmlFor="password"
               className="block text-sm font-medium text-gray-700 mb-1"
             >
-              Password
+              {t("auth.passwordLabel")}
             </label>
             <input
               type="password"
@@ -91,11 +93,11 @@ export default function Login() {
               required
             />
           </div>
-          <PrimaryButton type="submit">Login</PrimaryButton>
+          <PrimaryButton type="submit">{t("auth.loginButton")}</PrimaryButton>
         </form>
         <div className="mt-4 text-sm">
           <Link to="/register" className="text-primary hover:underline">
-            Don't have an account? Register
+            {t("auth.noAccountPrompt")} {t("auth.registerLink")}
           </Link>
         </div>
       </Card>

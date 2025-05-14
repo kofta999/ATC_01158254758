@@ -5,6 +5,7 @@ import { Card } from "@/components/card";
 import { PrimaryButton } from "@/components/primary-button";
 import { DangerButton } from "@/components/danger-button"; // Import DangerButton
 import { useAuth } from "@/lib/hooks/use-auth"; // Import useAuth to access apiClient
+import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/(user)/_protected/bookings")({
   loader: async ({ context }) => {
@@ -36,21 +37,22 @@ export const Route = createFileRoute("/(user)/_protected/bookings")({
 });
 
 function BookingsErrorComponent({ error }: { error: Error }) {
+  const { t } = useTranslation();
   console.error("Rendering BookingsErrorComponent:", error);
   return (
     <div className="p-4 md:p-6 bg-background min-h-[calc(100vh-var(--header-height))] flex flex-col items-center justify-center">
       <Card className="max-w-lg w-full text-center">
         <h1 className="text-2xl md:text-3xl font-bold text-danger mb-4">
-          Oops! Something went wrong.
+          {t("errorPage.title")}
         </h1>
         <p className="text-base text-gray-800 mb-2">
-          We couldn't load your bookings.
+          {t("errorPage.genericLoadError", { item: "bookings" })}
         </p>
         <p className="text-sm text-muted mb-6">
           Error: {error.message || "An unknown error occurred."}
         </p>
         <PrimaryButton onClick={() => router.invalidate()}>
-          Try Again
+          {t("errorPage.tryAgainButton")}
         </PrimaryButton>
       </Card>
     </div>
@@ -60,10 +62,11 @@ function BookingsErrorComponent({ error }: { error: Error }) {
 function BookingsComponent() {
   const bookings = Route.useLoaderData();
   const { apiClient } = useAuth();
+  const { t } = useTranslation();
   const [cancellingId, setCancellingId] = useState<number | null>(null);
 
   const handleCancelBooking = async (bookingId: number) => {
-    if (!window.confirm("Are you sure you want to cancel this booking?")) {
+    if (!window.confirm(t("myBookings.cancelConfirmation"))) {
       return;
     }
 
@@ -84,11 +87,13 @@ function BookingsComponent() {
         throw new Error(errorMsg);
       }
 
-      alert("Booking cancelled successfully!"); // Simple feedback
+      alert(t("myBookings.cancelSuccess")); // Simple feedback
       await router.invalidate();
     } catch (error: any) {
       console.error("Failed to cancel booking:", error);
-      alert(`Error cancelling booking: ${error.message || "Unknown error"}`);
+      alert(
+        t("myBookings.cancelError", { message: error.message || "Unknown error" }),
+      );
     } finally {
       setCancellingId(null);
     }
@@ -98,10 +103,10 @@ function BookingsComponent() {
     <div className="bg-background min-h-[calc(100vh-var(--header-height))] p-4 md:p-8">
       <header className="mb-8 text-center md:text-left">
         <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
-          My Bookings
+          {t("myBookings.pageTitle")}
         </h1>
         <p className="text-xl font-semibold text-muted">
-          Your booked events and experiences
+          {t("myBookings.pageSubtitle")}
         </p>
       </header>
 
@@ -131,19 +136,19 @@ function BookingsComponent() {
                   </h2>
                   {/* ... other event details ... */}
                   <p className="text-sm text-muted mb-1">
-                    <span className="font-medium">Event Date:</span>{" "}
+                    <span className="font-medium">{t("myBookings.eventDatePrefix")}</span>{" "}
                     {new Date(bookedEvent.date).toLocaleDateString()}
                   </p>
                   <p className="text-sm text-muted mb-1">
-                    <span className="font-medium">Venue:</span>{" "}
+                    <span className="font-medium">{t("myBookings.venuePrefix")}:</span>{" "}
                     {bookedEvent.venue}
                   </p>
                   <p className="text-sm text-muted mb-3">
-                    <span className="font-medium">Category:</span>{" "}
+                    <span className="font-medium">{t("myBookings.categoryPrefix")}:</span>{" "}
                     {bookedEvent.category}
                   </p>
                   <p className="text-xs text-gray-400 mb-3">
-                    Booked on:{" "}
+                    {t("myBookings.bookedOnPrefix")} {" "}
                     {new Date(booking.createdAt).toLocaleDateString()}
                   </p>
 
@@ -160,7 +165,7 @@ function BookingsComponent() {
                         className="text-sm text-primary hover:underline whitespace-nowrap px-3 py-1 rounded hover:bg-primary/10 transition-colors"
                         aria-label={`View details for ${bookedEvent.eventName}`}
                       >
-                        View Event
+                        {t("myBookings.viewEventButton")}
                       </Link>
                       <DangerButton
                         onClick={() => handleCancelBooking(booking.bookingId)}
@@ -168,7 +173,7 @@ function BookingsComponent() {
                         className="text-sm px-3 py-1" // Smaller padding
                         aria-label={`Cancel booking for ${bookedEvent.eventName}`}
                       >
-                        {isCancelling ? "Cancelling..." : "Cancel"}
+                        {isCancelling ? t("myBookings.cancellingButton") : t("myBookings.cancelButton")}
                       </DangerButton>
                     </div>
                   </div>
@@ -195,13 +200,13 @@ function BookingsComponent() {
             />
           </svg>
           <p className="text-xl mt-4 font-semibold text-gray-800">
-            You haven't booked any events yet.
+            {t("myBookings.noBookingsTitle")}
           </p>
           <p className="text-base text-muted mb-6">
-            Find an event you're interested in and book it!
+            {t("myBookings.noBookingsMessage")}
           </p>
           <PrimaryButton onClick={() => router.navigate({ to: "/events" })}>
-            Explore Events
+            {t("myBookings.exploreEventsButton")}
           </PrimaryButton>
         </Card>
       )}

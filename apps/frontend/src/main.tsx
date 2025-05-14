@@ -5,6 +5,7 @@ import { routeTree } from "./routeTree.gen";
 import "./styles.css";
 import reportWebVitals from "./reportWebVitals.ts";
 import { useAuth, AuthProvider } from "@/lib/hooks/use-auth.tsx";
+import "./i18n";
 
 // Update AuthContextType in use-auth.tsx to include the user
 // For now, let's assume AuthContextType might look like this for the router:
