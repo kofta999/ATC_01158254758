@@ -1,12 +1,13 @@
 import type { CreateEventDTO } from "@/common/dtos/create-event.dto";
+import { EventIsBookedError } from "@/common/errors/event-is-booked";
 import { ResourceAlreadyExists } from "@/common/errors/resource-already-exists";
-import { TYPES } from "@/common/types";
+import { type DrizzlePgTransaction, TYPES } from "@/common/types";
 import { Event } from "@/core/domain/entities/event";
 import type {
 	EventRepositoryPort,
 	GetAllOptions,
 } from "@/ports/output/repositories/event.repository.port";
-import { desc, eq } from "drizzle-orm";
+import { desc, eq, sql } from "drizzle-orm";
 import { inject, injectable } from "inversify";
 import type { DrizzleDataSource } from "../../data-sources/drizzle/drizzle.data-source";
 import { eventTable } from "../../data-sources/drizzle/schema";
@@ -23,7 +24,6 @@ export class EventDatabaseRepository implements EventRepositoryPort {
 		const category = options?.category;
 
 		const events = await this.db.query.eventTable.findMany({
-			with: { bookings: true },
 			orderBy: desc(eventTable.date),
 			where: category ? (f, { eq }) => eq(f.category, category) : undefined,
 		});
@@ -39,7 +39,7 @@ export class EventDatabaseRepository implements EventRepositoryPort {
 					venue: event.venue,
 					price: event.price,
 					image: event.image,
-					isBooked: event.bookings.length > 0,
+					availableTickets: event.availableTickets,
 				}),
 		);
 	}
@@ -47,7 +47,6 @@ export class EventDatabaseRepository implements EventRepositoryPort {
 	async getById(eventId: number): Promise<Event | null> {
 		const event = await this.db.query.eventTable.findFirst({
 			where: (f, { eq }) => eq(f.eventId, eventId),
-			with: { bookings: true },
 		});
 
 		if (!event) {
@@ -63,7 +62,7 @@ export class EventDatabaseRepository implements EventRepositoryPort {
 			venue: event.venue,
 			price: event.price,
 			image: event.image,
-			isBooked: event.bookings.length > 0,
+			availableTickets: event.availableTickets,
 		});
 	}
 
@@ -78,6 +77,7 @@ export class EventDatabaseRepository implements EventRepositoryPort {
 				venue: event.venue,
 				price: event.price,
 				image: event.image,
+				availableTickets: event.availableTickets,
 			})
 			.returning();
 
@@ -90,7 +90,7 @@ export class EventDatabaseRepository implements EventRepositoryPort {
 			venue: newEvent[0].venue,
 			price: newEvent[0].price,
 			image: newEvent[0].image,
-			isBooked: false, // A new event cannot be booked yet
+			availableTickets: newEvent[0].availableTickets,
 		});
 	}
 
@@ -98,7 +98,6 @@ export class EventDatabaseRepository implements EventRepositoryPort {
 		eventId: number,
 		updatedEventData: Event,
 	): Promise<Event | null> {
-		// Create a partial object for update, excluding 'isBooked' as it's derived
 		const eventDataForUpdate: Partial<typeof eventTable.$inferInsert> = {
 			eventName: updatedEventData.eventName,
 			description: updatedEventData.description,
@@ -123,14 +122,18 @@ export class EventDatabaseRepository implements EventRepositoryPort {
 	}
 
 	async delete(eventId: number): Promise<Event | null> {
-		// Fetch the event first to return its state before deletion, including isBooked.
-		const eventToDelete = await this.getById(eventId);
+		const eventToDelete = await this.db.query.eventTable.findFirst({
+			where: (f, { eq }) => eq(f.eventId, eventId),
+			with: { bookings: true },
+		});
+
 		if (!eventToDelete) {
 			return null;
 		}
 
-		if (eventToDelete.isBooked) {
-			return eventToDelete;
+		if (eventToDelete.bookings.length > 0) {
+			// Need to throw here because that's a critical error
+			throw new EventIsBookedError(eventToDelete.eventId);
 		}
 
 		const deletedDbResult = await this.db
@@ -142,11 +145,36 @@ export class EventDatabaseRepository implements EventRepositoryPort {
 			// This case should ideally not be reached if eventToDelete was found
 			return null;
 		}
+
 		// Return the state of the event *before* it was deleted
-		return eventToDelete;
+		return new Event(eventToDelete);
 	}
 
 	async invalidateCache(eventId?: number): Promise<void> {
 		return;
+	}
+
+	async decreaseTickets(
+		eventId: number,
+		transaction?: DrizzlePgTransaction,
+	): Promise<void> {
+		const db = transaction ?? this.db;
+
+		await db
+			.update(eventTable)
+			.set({ availableTickets: sql`${eventTable.availableTickets} - 1` })
+			.where(eq(eventTable.eventId, eventId));
+	}
+
+	async increaseTickets(
+		eventId: number,
+		transaction?: DrizzlePgTransaction,
+	): Promise<void> {
+		const db = transaction ?? this.db;
+
+		await db
+			.update(eventTable)
+			.set({ availableTickets: sql`${eventTable.availableTickets} + 1` })
+			.where(eq(eventTable.eventId, eventId));
 	}
 }

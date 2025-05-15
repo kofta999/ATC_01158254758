@@ -47,6 +47,8 @@ const ns1 = {
 		noEventsMessage: "Please check back later for new and exciting events!",
 		categoryFilterLabel: "Category:",
 		allCategories: "All Categories",
+		hurryUpMessage: "Hurry up! Only {{availableTickets}} tickets left!",
+		noTicketsAvailable: "No more tickets available",
 		categories: {
 			Music: "Music",
 			Sports: "Sports",

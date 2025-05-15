@@ -2,6 +2,7 @@ import { eventCategories } from "@/core/domain/value-objects/event-category";
 import { userRole } from "@/core/domain/value-objects/user-role";
 import { sql } from "drizzle-orm";
 import {
+	check,
 	date,
 	integer,
 	pgEnum,
@@ -30,16 +31,23 @@ export const userTable = pgTable(
 	(table) => [unique("user_email_key").on(table.email)],
 );
 
-export const eventTable = pgTable("event", {
-	eventId: serial("event_id").primaryKey().notNull(),
-	eventName: varchar("event_name").notNull(),
-	description: varchar("description").notNull(),
-	category: eventCategoryEnum("category").notNull(),
-	date: date("date").notNull(),
-	venue: varchar("venue").notNull(),
-	price: integer("price").notNull(),
-	image: varchar("image").notNull(),
-});
+export const eventTable = pgTable(
+	"event",
+	{
+		eventId: serial("event_id").primaryKey().notNull(),
+		eventName: varchar("event_name").notNull(),
+		description: varchar("description").notNull(),
+		category: eventCategoryEnum("category").notNull(),
+		date: date("date").notNull(),
+		venue: varchar("venue").notNull(),
+		price: integer("price").notNull(),
+		image: varchar("image").notNull(),
+		availableTickets: integer("available_tickets").notNull(),
+	},
+	(table) => [
+		check("available_tickets_check", sql`${table.availableTickets} >= 0`),
+	],
+);
 
 export const bookingTable = pgTable(
 	"booking",

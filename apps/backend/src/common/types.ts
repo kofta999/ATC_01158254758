@@ -1,6 +1,10 @@
-import type { userRoleEnum } from "@/adapters/driven/database/data-sources/drizzle/schema";
+import * as relations from "@/adapters/driven/database/data-sources/drizzle/relations";
+import * as schema from "@/adapters/driven/database/data-sources/drizzle/schema";
 import type { UserRole } from "@/core/domain/value-objects/user-role";
 import type { OpenAPIHono, RouteConfig, RouteHandler } from "@hono/zod-openapi";
+import type { ExtractTablesWithRelations } from "drizzle-orm";
+import type { NodePgQueryResultHKT } from "drizzle-orm/node-postgres";
+import type { PgTransaction } from "drizzle-orm/pg-core";
 import type { Env } from "hono";
 import type { PinoLogger } from "hono-pino";
 
@@ -43,3 +47,11 @@ export const TYPES = {
 	// Constants
 	JWT_SECRET: Symbol.for("JWT_SECRET"),
 };
+
+const dbSchema = { ...schema, ...relations };
+
+export type DrizzlePgTransaction = PgTransaction<
+	NodePgQueryResultHKT,
+	typeof dbSchema,
+	ExtractTablesWithRelations<typeof dbSchema>
+>;

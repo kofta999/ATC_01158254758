@@ -1,4 +1,4 @@
-import { TYPES } from "@/common/types";
+import { type DrizzlePgTransaction, TYPES } from "@/common/types";
 import { Event } from "@/core/domain/entities/event";
 import type { CachePort } from "@/ports/output/cache/cache.port";
 import type {
@@ -27,7 +27,7 @@ export class EventCacheRepository implements EventRepositoryPort {
 		return this.cache.generateKey(this.CACHE_KEY_PREFIX, "all*");
 	}
 
-	async create(eventData: Omit<Event, "eventId" | "isBooked">): Promise<Event> {
+	async create(eventData: Omit<Event, "eventId" >): Promise<Event> {
 		await this.invalidateCache();
 
 		const newEvent = await this.repository.create(eventData);
@@ -95,5 +95,19 @@ export class EventCacheRepository implements EventRepositoryPort {
 		return eventId
 			? this.cache.del(this.getEventCacheKey(eventId))
 			: this.cache.delByPattern(this.getAllEventsCacheKey());
+	}
+
+	decreaseTickets(
+		eventId: number,
+		transaction?: DrizzlePgTransaction,
+	): Promise<void> {
+		return this.repository.decreaseTickets(eventId, transaction);
+	}
+
+	increaseTickets(
+		eventId: number,
+		transaction?: DrizzlePgTransaction,
+	): Promise<void> {
+		return this.repository.increaseTickets(eventId, transaction);
 	}
 }

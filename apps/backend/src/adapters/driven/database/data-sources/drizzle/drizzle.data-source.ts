@@ -27,6 +27,7 @@ if (env.DATABASE_URL) {
 export const db = drizzle({
 	schema: { ...schema, ...relations },
 	connection: config,
+	logger: env.NODE_ENV === "development",
 });
 
 export type DrizzleDataSource = typeof db;

@@ -15,7 +15,7 @@ export const Route = createFileRoute("/(user)/events/")({
     category: z.enum(eventCategories).optional().catch(undefined), // Make redirect optional
   }),
   loaderDeps: ({ search }) => ({ category: search.category }),
-  loader: async ({ deps: { category } }) => {
+  loader: async ({ context, deps: { category } }) => {
     const res = await baseApiClient.events.$get({ query: { category } });
     if (!res.ok) {
       const errorText = await res.text();
@@ -23,7 +23,20 @@ export const Route = createFileRoute("/(user)/events/")({
       throw new Error(`Failed to load events: ${res.status} ${errorText}`);
     }
     const events = await res.json(); // Type will be inferred if baseApiClient is strongly typed
-    return events;
+    const bookedEvents = new Set();
+
+    if (context.auth && context.auth.user && context.auth.isAuthenticated) {
+      const res = await context.auth.apiClient.bookings.$get();
+
+      if (res.ok) {
+        const booked = await res.json();
+        booked.map((b) => {
+          bookedEvents.add(b.booking.eventId);
+        });
+      }
+    }
+
+    return { events, bookedEvents };
   },
   component: EventsComponent,
   errorComponent: EventsErrorComponent,
@@ -60,7 +73,7 @@ function EventsErrorComponent({ error }: { error: Error }) {
 }
 
 function EventsComponent() {
-  const events = Route.useLoaderData(); // `events` will have the inferred type from the loader
+  const { events, bookedEvents } = Route.useLoaderData(); // `events` will have the inferred type from the loader
   const { t, i18n } = useTranslation();
   const [selectedCategory, setSelectedCategory] = useState<string | undefined>(
     undefined,
@@ -109,7 +122,7 @@ function EventsComponent() {
               params={{ eventId: String(event.eventId) }}
               className="relative bg-surface rounded-2xl shadow-md overflow-hidden flex flex-col transition duration-300 ease-in-out hover:shadow-lg focus:outline-none focus:ring-primary focus:ring-opacity-50"
             >
-              {event.isBooked && (
+              {bookedEvents.has(event.eventId) && (
                 <span className="absolute top-2 right-2 bg-success text-white text-xs font-semibold px-2 py-1 rounded-full z-10 shadow">
                   {t("events.bookedStatus")}
                 </span>
@@ -147,6 +160,22 @@ function EventsComponent() {
                   </span>{" "}
                   {event.category}
                 </p>
+                {event.availableTickets !== undefined &&
+                  event.availableTickets < 10 &&
+                  event.availableTickets !== 0 && (
+                    <p className="text-sm text-warning mb-3">
+                      {t("events.hurryUpMessage", {
+                        availableTickets: event.availableTickets,
+                      })}
+                    </p>
+                  )}
+
+                {event.availableTickets !== undefined &&
+                  event.availableTickets === 0 && (
+                    <p className="text-sm text-danger mb-3">
+                      {t("events.noTicketsAvailable")}
+                    </p>
+                  )}
                 <div className="mt-auto pt-3 border-t border-divider">
                   <p className="text-lg font-bold text-primary text-right">
                     $

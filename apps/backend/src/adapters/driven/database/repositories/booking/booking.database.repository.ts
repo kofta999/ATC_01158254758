@@ -1,5 +1,5 @@
 import type { BookingDetailsDTO } from "@/common/dtos/booking-details.dto";
-import { TYPES } from "@/common/types";
+import { type DrizzlePgTransaction, TYPES } from "@/common/types";
 import { Booking } from "@/core/domain/entities/booking";
 import { Event } from "@/core/domain/entities/event";
 import type { BookingRepositoryPort } from "@/ports/output/repositories/booking.repository.port";
@@ -30,19 +30,23 @@ export class BookingDatabaseRepository implements BookingRepositoryPort {
 				eventId: booking.eventId,
 				createdAt: new Date(booking.createdAt),
 			}),
-			bookedEvent: new Event({ ...booking.event, isBooked: true }),
+			bookedEvent: new Event({ ...booking.event  }),
 		}));
 	}
 
-	async exists(eventId: number): Promise<boolean> {
+	async exists(userId: number, eventId: number): Promise<boolean> {
 		const booking = await this.db.query.bookingTable.findFirst({
-			where: (f, { eq }) => eq(f.eventId, eventId),
+			where: (f, { eq }) => and(eq(f.eventId, eventId), eq(f.userId, userId)),
 		});
 		return !!booking;
 	}
 
-	async create(booking: Omit<Booking, "bookingId">): Promise<Booking> {
-		const newBooking = await this.db
+	async create(
+		booking: Omit<Booking, "bookingId">,
+		transaction?: DrizzlePgTransaction,
+	): Promise<Booking> {
+		const db = transaction ?? this.db;
+		const newBooking = await db
 			.insert(bookingTable)
 			.values({
 				userId: booking.userId,
@@ -58,7 +62,11 @@ export class BookingDatabaseRepository implements BookingRepositoryPort {
 		});
 	}
 
-	async delete(userId: number, bookingId: number): Promise<Booking | null> {
+	async delete(
+		userId: number,
+		bookingId: number,
+		transaction?: DrizzlePgTransaction,
+	): Promise<Booking | null> {
 		const deletedBooking = await this.db
 			.delete(bookingTable)
 			.where(

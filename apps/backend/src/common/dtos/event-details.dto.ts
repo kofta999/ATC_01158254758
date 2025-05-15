@@ -13,7 +13,7 @@ export const EventDetailsSchema = z
 		venue: z.string().openapi({ example: "Central Park, New York" }),
 		price: z.number().openapi({ example: 50 }),
 		image: z.string().openapi({ example: "url-to-image" }),
-		isBooked: z.boolean().openapi({ example: false }),
+		availableTickets: z.coerce.number().openapi({ example: 100 }),
 	})
 	.openapi("EventDetails");
 

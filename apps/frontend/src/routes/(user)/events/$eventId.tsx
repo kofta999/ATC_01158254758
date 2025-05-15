@@ -2,14 +2,14 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { baseApiClient } from "@/lib/base-api-client";
 import { router } from "@/main";
 import { useAuth } from "@/lib/hooks/use-auth";
-import { useState, useEffect } from "react"; // Import useEffect
+import { useState } from "react";
 import { Card } from "@/components/card";
 import { PrimaryButton } from "@/components/primary-button";
 import { SecondaryButton } from "@/components/secondary-button";
 import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/(user)/events/$eventId")({
-  loader: async ({ params }) => {
+  loader: async ({ context, params }) => {
     const { eventId } = params;
     const res = await baseApiClient.events[":id"].$get({
       param: { id: parseInt(eventId) },
@@ -27,7 +27,21 @@ export const Route = createFileRoute("/(user)/events/$eventId")({
     }
 
     const event = await res.json();
-    return event;
+
+    const bookedEvents = new Set();
+
+    if (context.auth && context.auth.user && context.auth.isAuthenticated) {
+      const res = await context.auth.apiClient.bookings.$get();
+
+      if (res.ok) {
+        const booked = await res.json();
+        booked.map((b) => {
+          bookedEvents.add(b.booking.eventId);
+        });
+      }
+    }
+
+    return { event, bookedEvents };
   },
   component: EventDetailsComponent,
   errorComponent: EventDetailsErrorComponent,
@@ -52,7 +66,6 @@ function EventDetailsErrorComponent({ error }: { error: any }) {
         <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
           <Link
             to="/events"
-            // Using classes similar to PrimaryButton for this Link for now
             className="px-4 py-2 rounded-lg bg-primary text-white hover:bg-primaryDark transition duration-300 ease-in-out w-full sm:w-auto"
           >
             {t("errorPage.backButton", { item: "events" })}
@@ -70,7 +83,7 @@ function EventDetailsErrorComponent({ error }: { error: any }) {
 }
 
 function EventDetailsComponent() {
-  const event = Route.useLoaderData();
+  const { event, bookedEvents } = Route.useLoaderData();
   const { isAuthenticated, apiClient } = useAuth();
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -80,25 +93,12 @@ function EventDetailsComponent() {
     type: "success" | "error";
     text: string;
   } | null>(null);
-  // Initialize isActuallyBooked with the loaded event's booking status
-  const [isActuallyBooked, setIsActuallyBooked] = useState(event.isBooked);
-
-  // Effect to update isActuallyBooked if the event data from loader changes
-  // (e.g., due to router.invalidate() and re-fetch)
-  useEffect(() => {
-    setIsActuallyBooked(event.isBooked);
-  }, [event.isBooked]);
 
   const handleBooking = async () => {
-    if (isActuallyBooked) return; // Prevent booking if already booked
-
     setIsBooking(true);
     setBookingMessage(null);
 
     if (!isAuthenticated) {
-      // Preserve current path for redirect after login
-      //
-      console.log(Route);
       navigate({ to: "/login", search: { redirect: location.pathname } });
       setIsBooking(false);
       return;
@@ -110,19 +110,16 @@ function EventDetailsComponent() {
       });
 
       if (!response.ok) {
-        let errorText = `Server error: ${response.status}`;
-
-        throw new Error(errorText);
+        throw new Error(`Server error: ${response.status}`);
       }
 
-      // Navigate to the booking success page with event details
       navigate({
         to: "/booking-success",
         search: {
           eventName: event.eventName,
-          eventDate: event.date, // Assuming event.date is an ISO string
+          eventDate: event.date,
         },
-        replace: true, // Replace current history entry so back button goes to events list
+        replace: true,
       });
     } catch (error: any) {
       console.error("Booking failed:", error);
@@ -149,17 +146,20 @@ function EventDetailsComponent() {
             <img
               src={
                 event.image ||
-                `https://ui-avatars.com/api/?name=${encodeURIComponent(event.eventName)}&background=random&size=1200x400&font-size=0.33`
+                `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                  event.eventName,
+                )}&background=random&size=1200x400&font-size=0.33`
               }
               alt={event.eventName}
               className="w-full h-64 md:h-96 object-cover"
             />
-            {isActuallyBooked && (
+            {bookedEvents.has(event.eventId) && (
               <div className="absolute top-4 right-4 bg-success text-white text-sm font-semibold px-3 py-1 rounded-lg shadow-lg z-10">
                 {t("events.bookedStatus")}
               </div>
             )}
           </div>
+
           <div className="p-6 md:p-8">
             <h1 className="text-3xl md:text-4xl font-bold text-text mb-4">
               {event.eventName}
@@ -186,7 +186,6 @@ function EventDetailsComponent() {
                       month: "long",
                       day: "numeric",
                     })}
-                    {/* Consider adding time if available in event.date or a separate field */}
                   </p>
                 </div>
                 <div>
@@ -215,8 +214,25 @@ function EventDetailsComponent() {
               </div>
             </div>
 
+            {/* Warnings Section */}
+            {event.availableTickets !== undefined && (
+              <div className="mb-6">
+                {event.availableTickets === 0 ? (
+                  <p className="text-danger font-medium text-center">
+                    {t("events.noTicketsAvailable")}
+                  </p>
+                ) : event.availableTickets < 10 ? (
+                  <p className="text-warning font-medium text-center">
+                    {t("events.hurryUpMessage", {
+                      availableTickets: event.availableTickets,
+                    })}
+                  </p>
+                ) : null}
+              </div>
+            )}
+
             <div className="mt-8 pt-6 border-t border-divider text-center">
-              {isActuallyBooked ? (
+              {bookedEvents.has(event.eventId) ? (
                 <PrimaryButton
                   disabled
                   className="px-8 py-3 text-lg shadow-md bg-success hover:bg-green-600 disabled:bg-success disabled:hover:bg-success"
@@ -226,20 +242,26 @@ function EventDetailsComponent() {
               ) : (
                 <PrimaryButton
                   onClick={handleBooking}
-                  disabled={isBooking}
+                  disabled={isBooking || event.availableTickets === 0}
                   className="px-8 py-3 text-lg shadow-md hover:shadow-lg"
                 >
-                  {isBooking ? t("eventDetails.bookingButtonLoading") : t("eventDetails.bookButton")}
+                  {isBooking
+                    ? t("eventDetails.bookingButtonLoading")
+                    : t("eventDetails.bookButton")}
                 </PrimaryButton>
               )}
               {bookingMessage && (
                 <p
-                  className={`mt-4 text-sm ${bookingMessage.type === "success" ? "text-success" : "text-danger"}`}
+                  className={`mt-4 text-sm ${
+                    bookingMessage.type === "success"
+                      ? "text-success"
+                      : "text-danger"
+                  }`}
                 >
                   {bookingMessage.text}
                 </p>
               )}
-              {!bookingMessage && !isActuallyBooked && (
+              {!bookingMessage && !bookedEvents.has(event.eventId) && (
                 <p className="text-sm text-muted mt-3">
                   {t("eventDetails.bookingCTA")}
                 </p>

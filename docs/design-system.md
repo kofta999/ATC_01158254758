@@ -15,6 +15,7 @@
   --color-muted: #6b7280; /* gray-500 */
   --color-divider: #e5e7eb; /* divider */
   --color-danger: #ef4444;
+  --color-warning: #f59e0b;
   --color-success: #10b981;
 }
 
@@ -30,6 +31,7 @@
     --color-muted: #d1d5db; /* gray-300 */
     --color-divider: #374151; /* gray-700 */
     --color-danger: #f87171; /* red-400 */
+    --color-warning: #fcd34d; /* amber-300 */
     --color-success: #34d399; /* green-400 */
   }
 }
