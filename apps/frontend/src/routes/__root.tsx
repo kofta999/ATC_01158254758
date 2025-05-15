@@ -3,7 +3,6 @@ import { Outlet, createRootRouteWithContext } from "@tanstack/react-router";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
-import { useTranslation } from "react-i18next";
 import i18n from "@/i18n";
 
 type RouterContext = {
