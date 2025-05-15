@@ -43,6 +43,8 @@ const ns1 = {
 		bookedStatus: "Booked",
 		noEventsTitle: "No events found at the moment.",
 		noEventsMessage: "Please check back later for new and exciting events!",
+		categoryFilterLabel: "Category:", // Added translation
+		allCategories: "All Categories", // Added translation
 	},
 	eventDetails: {
 		backLink: "← Back to All Events",

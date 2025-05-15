@@ -8,21 +8,21 @@ import { Card } from "@/components/card";
 import { PrimaryButton } from "@/components/primary-button";
 import { SecondaryButton } from "@/components/secondary-button";
 import { DangerButton } from "@/components/danger-button";
-import { useEffect } from "react";
-import { router } from "@/main";
+import { useEffect, useState } from "react";
 import { baseApiClient } from "@/lib/base-api-client";
 import { useAuth } from "@/lib/hooks/use-auth";
 import { useTranslation } from "react-i18next";
+import { CategoryFilter } from "@/components/category-filter";
+import { z } from "zod";
+import { eventCategories } from "@repo/areeb-backend/consts/event-categories";
+import { router } from "@/main";
 
 export const Route = createFileRoute("/(admin)/admin/dashboard/")({
   beforeLoad: ({ context, location }) => {
     const auth = context.auth;
-    console.log(auth);
 
     if (!auth?.isAuthenticated || !auth.user) {
-      // Also check if auth.user exists
       throw redirect({
-        // Use TanStack Router's redirect utility
         to: "/admin/login",
         search: {
           redirect: location.href,
@@ -35,8 +35,12 @@ export const Route = createFileRoute("/(admin)/admin/dashboard/")({
       throw redirect({ to: "/" });
     }
   },
-  loader: async () => {
-    const res = await baseApiClient.events.$get();
+  validateSearch: z.object({
+    category: z.enum(eventCategories).optional().catch(undefined),
+  }),
+  loaderDeps: ({ search }) => ({ category: search.category }),
+  loader: async ({ deps: { category } }) => {
+    const res = await baseApiClient.events.$get({ query: { category } });
     if (!res.ok) {
       const errorText = await res.text();
       console.error("Failed to fetch events for admin dashboard:", errorText);
@@ -53,12 +57,10 @@ function AdminDashboardErrorComponent({}: { error: Error }) {
   const { t } = useTranslation();
   return (
     <div className="flex flex-grow items-center justify-center p-6">
-      {/* Use flex-grow for centering in available space */}
       <Card className="text-center max-w-lg w-full p-6 md:p-8">
         <h2 className="text-2xl md:text-3xl font-bold text-danger mb-4">
           {t("errorPage.title")}
         </h2>
-        {/* Matched text color to design system */}
         <PrimaryButton
           onClick={() => navigate({ to: Route.fullPath, replace: true })}
         >
@@ -74,6 +76,9 @@ function AdminDashboardComponent() {
   const navigate = useNavigate();
   const { isAuthenticated, user, apiClient } = useAuth();
   const { t } = useTranslation();
+  const [selectedCategory, setSelectedCategory] = useState<string | undefined>(
+    undefined,
+  );
 
   useEffect(() => {
     if (!isAuthenticated || user?.role !== "ADMIN") {
@@ -104,9 +109,18 @@ function AdminDashboardComponent() {
     }
   };
 
+  const handleCategoryChange = (category: string | undefined) => {
+    setSelectedCategory(category);
+    router.navigate({
+      to: "/admin/dashboard",
+      search: (old) => ({ ...old, category: category || undefined }),
+      replace: true,
+    });
+  };
+
   return (
     <div className="container mx-auto py-8 px-4">
-      <div className="flex flex-col sm:flex-row justify-between items-center mb-10 gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-center mb-4 gap-4">
         <h1 className="text-3xl md:text-4xl font-bold text-text text-center sm:text-left">
           {t("admin.dashboardTitle")}
         </h1>
@@ -131,12 +145,17 @@ function AdminDashboardComponent() {
         </Link>
       </div>
 
+      <div className="max-w-md mb-8">
+        <CategoryFilter
+          selectedCategory={selectedCategory}
+          onCategoryChange={handleCategoryChange}
+        />
+      </div>
+
       {Array.isArray(events) && events.length > 0 ? (
         <Card className="overflow-x-auto shadow-lg">
           <table className="min-w-full divide-y divide-divider">
-            {/* Using neutral gray for divider */}
             <thead className="bg-background">
-              {/* Changed from bg-gray-50 */}
               <tr>
                 <th
                   scope="col"
@@ -177,30 +196,24 @@ function AdminDashboardComponent() {
               </tr>
             </thead>
             <tbody className="bg-surface divide-y divide-divider">
-              {/* Using neutral gray for divider */}
               {events.map((event) => (
                 <tr
                   key={event.eventId}
-                  className="hover:bg-background transition-colors duration-150" /* Use bg-background for hover for slight contrast */
+                  className="hover:bg-background transition-colors duration-150"
                 >
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-text">
-                    {/* Changed from text-gray-900 */}
                     {event.eventName}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-muted">
-                    {/* Changed from text-gray-400 */}
                     {event.category}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-muted">
-                    {/* Changed from text-gray-400 */}
                     {new Date(event.date).toLocaleDateString()}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-muted">
-                    {/* Changed from text-gray-400 */}
                     {event.venue}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-muted text-right">
-                    {/* Changed from text-gray-400 */}
                     {typeof event.price === "number"
                       ? `$${event.price.toFixed(2)}`
                       : "N/A"}
@@ -234,7 +247,7 @@ function AdminDashboardComponent() {
             viewBox="0 0 24 24"
             strokeWidth={1.5}
             stroke="currentColor"
-            className="mx-auto h-16 w-16 text-muted mb-4" /* Changed from text-gray-400 */
+            className="mx-auto h-16 w-16 text-muted mb-4"
           >
             <path
               strokeLinecap="round"
@@ -243,7 +256,6 @@ function AdminDashboardComponent() {
             />
           </svg>
           <p className="text-xl text-text font-semibold mb-2">
-            {/* Changed from text-text dark:text-gray-300 */}
             {t("admin.noEventsTitle")}
           </p>
           <p className="text-muted mb-6">{t("admin.noEventsMessage")}</p>

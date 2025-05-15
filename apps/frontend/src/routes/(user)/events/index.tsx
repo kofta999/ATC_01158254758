@@ -4,10 +4,18 @@ import { Card } from "@/components/card";
 import { PrimaryButton } from "@/components/primary-button";
 import { baseApiClient } from "@/lib/base-api-client";
 import { useTranslation } from "react-i18next";
+import { useState } from "react";
+import { CategoryFilter } from "@/components/category-filter";
+import { z } from "zod";
+import { eventCategories } from "@repo/areeb-backend/consts/event-categories";
 
 export const Route = createFileRoute("/(user)/events/")({
-  loader: async () => {
-    const res = await baseApiClient.events.$get();
+  validateSearch: z.object({
+    category: z.enum(eventCategories).optional().catch(undefined), // Make redirect optional
+  }),
+  loaderDeps: ({ search }) => ({ category: search.category }),
+  loader: async ({ deps: { category } }) => {
+    const res = await baseApiClient.events.$get({ query: { category } });
     if (!res.ok) {
       const errorText = await res.text();
       console.error("Failed to fetch events:", res.status, errorText);
@@ -53,6 +61,19 @@ function EventsErrorComponent({ error }: { error: Error }) {
 function EventsComponent() {
   const events = Route.useLoaderData(); // `events` will have the inferred type from the loader
   const { t } = useTranslation();
+  const [selectedCategory, setSelectedCategory] = useState<string | undefined>(
+    undefined,
+  );
+
+  const handleCategoryChange = (category: string | undefined) => {
+    setSelectedCategory(category);
+    // Programmatically navigate to update the search params
+    router.navigate({
+      to: "/events",
+      search: (old) => ({ ...old, category: category || undefined }),
+      replace: true,
+    });
+  };
 
   return (
     <div className="bg-background min-h-screen p-4 md:p-8">
@@ -65,6 +86,13 @@ function EventsComponent() {
         </p>
       </header>
 
+      <div className="max-w-md">
+        <CategoryFilter
+          selectedCategory={selectedCategory}
+          onCategoryChange={handleCategoryChange}
+        />
+      </div>
+
       {/* Ensure events is an array and has items before mapping */}
       {Array.isArray(events) && events.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -73,7 +101,7 @@ function EventsComponent() {
               key={event.eventId}
               to="/events/$eventId"
               params={{ eventId: String(event.eventId) }}
-              className="relative bg-surface rounded-2xl shadow-md overflow-hidden flex flex-col transition duration-300 ease-in-out hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50"
+              className="relative bg-surface rounded-2xl shadow-md overflow-hidden flex flex-col transition duration-300 ease-in-out hover:shadow-lg focus:outline-none focus:ring-primary focus:ring-opacity-50"
             >
               {event.isBooked && (
                 <span className="absolute top-2 right-2 bg-success text-white text-xs font-semibold px-2 py-1 rounded-full z-10 shadow">
@@ -83,7 +111,9 @@ function EventsComponent() {
               <img
                 src={
                   event.image ||
-                  `https://ui-avatars.com/api/?name=${encodeURIComponent(event.eventName)}&background=random&size=400x200`
+                  `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                    event.eventName,
+                  )}&background=random&size=400x200`
                 }
                 alt={event.eventName}
                 className="w-full h-48 object-cover"
@@ -100,10 +130,15 @@ function EventsComponent() {
                   {new Date(event.date).toLocaleDateString()}
                 </p>
                 <p className="text-sm text-muted mb-1">
-                  <span className="font-medium">{t("myBookings.venuePrefix")}:</span> {event.venue}
+                  <span className="font-medium">
+                    {t("myBookings.venuePrefix")}:
+                  </span>{" "}
+                  {event.venue}
                 </p>
                 <p className="text-sm text-muted mb-3">
-                  <span className="font-medium">{t("myBookings.categoryPrefix")}:</span>{" "}
+                  <span className="font-medium">
+                    {t("myBookings.categoryPrefix")}:
+                  </span>{" "}
                   {event.category}
                 </p>
                 <div className="mt-auto pt-3 border-t border-divider">
@@ -138,9 +173,7 @@ function EventsComponent() {
           <p className="text-xl mt-4 font-semibold text-text">
             {t("events.noEventsTitle")}
           </p>
-          <p className="text-base text-muted">
-            {t("events.noEventsMessage")}
-          </p>
+          <p className="text-base text-muted">{t("events.noEventsMessage")}</p>
         </Card>
       )}
     </div>

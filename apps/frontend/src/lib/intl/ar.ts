@@ -44,6 +44,8 @@ const ns1 = {
 		noEventsTitle: "لم يتم العثور على فعاليات في الوقت الحالي.",
 		noEventsMessage:
 			"يرجى التحقق مرة أخرى في وقت لاحق لمعرفة الفعاليات الجديدة والمثيرة!",
+		categoryFilterLabel: "التصنيف:", // Added translation
+		allCategories: "جميع التصنيفات", // Added translation
 	},
 	eventDetails: {
 		backLink: "← العودة إلى جميع الفعاليات",
