@@ -42,8 +42,8 @@
   ],
   "exports": {
     ".": {
-      "types": "./dist/hc.d.ts",
-      "import": "./dist/hc.js"
+      "types": "./dist/src/hc.d.ts",
+      "import": "./dist/src/hc.js"
     }
   },
   "packageManager": "bun@1.2.0"

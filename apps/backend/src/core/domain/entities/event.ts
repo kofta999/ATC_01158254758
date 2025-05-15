@@ -1,8 +1,10 @@
+import type { EventCategory } from "../value-objects/event-category";
+
 export class Event {
 	eventId: number;
 	eventName: string;
 	description: string;
-	category: string;
+	category: EventCategory;
 	date: string;
 	venue: string;
 	price: number;
@@ -23,7 +25,7 @@ export class Event {
 		eventId: number;
 		eventName: string;
 		description: string;
-		category: string;
+		category: EventCategory;
 		date: string;
 		venue: string;
 		price: number;

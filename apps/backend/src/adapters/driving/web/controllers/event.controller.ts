@@ -15,7 +15,11 @@ export class EventController {
 	constructor(@inject(TYPES.EventApiPort) private eventService: EventApiPort) {}
 
 	getAllEvents: AppRouteHandler<GetAllEventsRoute> = async (c) => {
-		const events = await this.eventService.getEventList();
+		const { category } = c.req.valid("query");
+
+		const events = await this.eventService.getEventList(
+			category && { filter: { category } },
+		);
 		return c.json(events, 200);
 	};
 
