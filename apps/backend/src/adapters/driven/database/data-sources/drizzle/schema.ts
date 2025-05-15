@@ -1,4 +1,4 @@
-import { eventCategory } from "@/core/domain/value-objects/event-category";
+import { eventCategories } from "@/core/domain/value-objects/event-category";
 import { userRole } from "@/core/domain/value-objects/user-role";
 import { sql } from "drizzle-orm";
 import {
@@ -12,7 +12,7 @@ import {
 	varchar,
 } from "drizzle-orm/pg-core";
 
-export const eventCategoryEnum = pgEnum("event_category", eventCategory);
+export const eventCategoryEnum = pgEnum("event_category", eventCategories);
 
 export const userRoleEnum = pgEnum("userrole", userRole);
 

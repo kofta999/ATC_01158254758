@@ -1,4 +1,4 @@
-export const eventCategory = [
+export const eventCategories = [
 	"Music",
 	"Sports",
 	"Conference",
@@ -21,4 +21,4 @@ export const eventCategory = [
 	"Holiday & Celebration",
 ] as const;
 
-export type EventCategory = (typeof eventCategory)[number];
+export type EventCategory = (typeof eventCategories)[number];

@@ -7,6 +7,7 @@ import type {
 	DeleteEventRoute,
 	GetAllEventsRoute,
 	GetEventByIdRoute,
+	GetEventCategoriesRoute,
 	UpdateEventRoute,
 } from "../routes/event.routes";
 

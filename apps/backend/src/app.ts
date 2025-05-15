@@ -29,10 +29,10 @@ function initializeRouters() {
 
 	const eventRouter = createRouter()
 		.openapi(eventRoutes.getAllEvents, eventController.getAllEvents)
-		.openapi(eventRoutes.getEventById, eventController.getEventById)
 		.openapi(eventRoutes.createEvent, eventController.createEvent)
 		.openapi(eventRoutes.updateEvent, eventController.updateEvent)
-		.openapi(eventRoutes.deleteEvent, eventController.deleteEvent);
+		.openapi(eventRoutes.deleteEvent, eventController.deleteEvent)
+		.openapi(eventRoutes.getEventById, eventController.getEventById);
 
 	const bookingRouter = createRouter()
 		.openapi(bookingRoutes.createBooking, bookingController.createBooking)
