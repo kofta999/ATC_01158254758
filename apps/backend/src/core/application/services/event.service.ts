@@ -64,10 +64,6 @@ export class EventService implements EventApiPort {
 			throw new ResourceNotFoundError("Event", eventId);
 		}
 
-		if (maybeEvent.isBooked) {
-			throw new EventIsBookedError(maybeEvent.eventId);
-		}
-
 		return maybeEvent;
 	}
 }

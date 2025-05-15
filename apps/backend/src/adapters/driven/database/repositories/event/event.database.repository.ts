@@ -1,4 +1,5 @@
 import type { CreateEventDTO } from "@/common/dtos/create-event.dto";
+import { EventIsBookedError } from "@/common/errors/event-is-booked";
 import { ResourceAlreadyExists } from "@/common/errors/resource-already-exists";
 import { type DrizzlePgTransaction, TYPES } from "@/common/types";
 import { Event } from "@/core/domain/entities/event";
@@ -39,7 +40,6 @@ export class EventDatabaseRepository implements EventRepositoryPort {
 					price: event.price,
 					image: event.image,
 					availableTickets: event.availableTickets,
-					isBooked: event.availableTickets === 0,
 				}),
 		);
 	}
@@ -63,7 +63,6 @@ export class EventDatabaseRepository implements EventRepositoryPort {
 			price: event.price,
 			image: event.image,
 			availableTickets: event.availableTickets,
-			isBooked: event.availableTickets === 0,
 		});
 	}
 
@@ -92,7 +91,6 @@ export class EventDatabaseRepository implements EventRepositoryPort {
 			price: newEvent[0].price,
 			image: newEvent[0].image,
 			availableTickets: newEvent[0].availableTickets,
-			isBooked: false, // A new event cannot be booked yet
 		});
 	}
 
@@ -100,7 +98,6 @@ export class EventDatabaseRepository implements EventRepositoryPort {
 		eventId: number,
 		updatedEventData: Event,
 	): Promise<Event | null> {
-		// Create a partial object for update, excluding 'isBooked' as it's derived
 		const eventDataForUpdate: Partial<typeof eventTable.$inferInsert> = {
 			eventName: updatedEventData.eventName,
 			description: updatedEventData.description,
@@ -125,14 +122,18 @@ export class EventDatabaseRepository implements EventRepositoryPort {
 	}
 
 	async delete(eventId: number): Promise<Event | null> {
-		// Fetch the event first to return its state before deletion, including isBooked.
-		const eventToDelete = await this.getById(eventId);
+		const eventToDelete = await this.db.query.eventTable.findFirst({
+			where: (f, { eq }) => eq(f.eventId, eventId),
+			with: { bookings: true },
+		});
+
 		if (!eventToDelete) {
 			return null;
 		}
 
-		if (eventToDelete.isBooked) {
-			return eventToDelete;
+		if (eventToDelete.bookings.length > 0) {
+			// Need to throw here because that's a critical error
+			throw new EventIsBookedError(eventToDelete.eventId);
 		}
 
 		const deletedDbResult = await this.db
@@ -144,8 +145,9 @@ export class EventDatabaseRepository implements EventRepositoryPort {
 			// This case should ideally not be reached if eventToDelete was found
 			return null;
 		}
+
 		// Return the state of the event *before* it was deleted
-		return eventToDelete;
+		return new Event(eventToDelete);
 	}
 
 	async invalidateCache(eventId?: number): Promise<void> {

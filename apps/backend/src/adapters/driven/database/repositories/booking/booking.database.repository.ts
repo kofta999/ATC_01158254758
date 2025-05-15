@@ -30,7 +30,7 @@ export class BookingDatabaseRepository implements BookingRepositoryPort {
 				eventId: booking.eventId,
 				createdAt: new Date(booking.createdAt),
 			}),
-			bookedEvent: new Event({ ...booking.event, isBooked: true }),
+			bookedEvent: new Event({ ...booking.event  }),
 		}));
 	}
 

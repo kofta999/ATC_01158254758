@@ -27,7 +27,7 @@ export class EventCacheRepository implements EventRepositoryPort {
 		return this.cache.generateKey(this.CACHE_KEY_PREFIX, "all*");
 	}
 
-	async create(eventData: Omit<Event, "eventId" | "isBooked">): Promise<Event> {
+	async create(eventData: Omit<Event, "eventId" >): Promise<Event> {
 		await this.invalidateCache();
 
 		const newEvent = await this.repository.create(eventData);

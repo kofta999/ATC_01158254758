@@ -11,7 +11,6 @@ const EventCardSchema = z
 		price: z.number().openapi({ example: 50 }),
 		image: z.string().openapi({ example: "url-to-image" }),
 		availableTickets: z.coerce.number().openapi({ example: 100 }),
-		isBooked: z.boolean().openapi({ example: false }),
 	})
 	.openapi("EventCard");
 

@@ -9,7 +9,7 @@ export type GetAllOptions = {
 export interface EventRepositoryPort {
 	getAll(options?: GetAllOptions): Promise<Event[]>;
 	getById(eventId: number): Promise<Event | null>;
-	create(event: Omit<Event, "eventId" | "isBooked">): Promise<Event>;
+	create(event: Omit<Event, "eventId" >): Promise<Event>;
 	update(eventId: number, updatedEvent: Partial<Event>): Promise<Event | null>;
 	delete(eventId: number): Promise<Event | null>;
 	decreaseTickets(
