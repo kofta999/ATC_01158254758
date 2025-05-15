@@ -1,7 +1,10 @@
 import { TYPES } from "@/common/types";
 import { Event } from "@/core/domain/entities/event";
 import type { CachePort } from "@/ports/output/cache/cache.port";
-import type { EventRepositoryPort } from "@/ports/output/repositories/event.repository.port";
+import type {
+	EventRepositoryPort,
+	GetAllOptions,
+} from "@/ports/output/repositories/event.repository.port";
 import { inject, injectable } from "inversify";
 import { EventDatabaseRepository } from "./event.database.repository";
 
@@ -21,7 +24,7 @@ export class EventCacheRepository implements EventRepositoryPort {
 	}
 
 	private getAllEventsCacheKey() {
-		return this.cache.generateKey(this.CACHE_KEY_PREFIX, "all");
+		return this.cache.generateKey(this.CACHE_KEY_PREFIX, "all*");
 	}
 
 	async create(eventData: Omit<Event, "eventId" | "isBooked">): Promise<Event> {
@@ -70,21 +73,27 @@ export class EventCacheRepository implements EventRepositoryPort {
 		return eventToDelete;
 	}
 
-	async getAll(): Promise<Event[]> {
-		const cached = await this.cache.get<Event[]>(this.getAllEventsCacheKey());
+	async getAll(options?: GetAllOptions): Promise<Event[]> {
+		const key = options?.category
+			? this.cache.generateKey(this.CACHE_KEY_PREFIX, "all", options.category)
+			: this.cache.generateKey(this.CACHE_KEY_PREFIX, "all");
+
+		const cached = await this.cache.get<Event[]>(key);
 
 		if (cached && cached.length > 0) {
 			return cached.map((ev) => new Event(ev));
 		}
 
-		const events = await this.repository.getAll();
-		await this.cache.set(this.getAllEventsCacheKey(), events);
+		const events = await this.repository.getAll(options);
+
+		await this.cache.set(key, events);
+
 		return events;
 	}
 
 	invalidateCache(eventId?: number): Promise<void> {
-		return this.cache.del(
-			eventId ? this.getEventCacheKey(eventId) : this.getAllEventsCacheKey(),
-		);
+		return eventId
+			? this.cache.del(this.getEventCacheKey(eventId))
+			: this.cache.delByPattern(this.getAllEventsCacheKey());
 	}
 }
