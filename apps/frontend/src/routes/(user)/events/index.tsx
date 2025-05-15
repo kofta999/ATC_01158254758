@@ -147,6 +147,14 @@ function EventsComponent() {
                   </span>{" "}
                   {event.category}
                 </p>
+                {event.availableTickets !== undefined &&
+                  event.availableTickets < 10 && (
+                    <p className="text-sm text-warning mb-3">
+                      {t("events.hurryUpMessage", {
+                        availableTickets: event.availableTickets,
+                      })}
+                    </p>
+                  )}
                 <div className="mt-auto pt-3 border-t border-divider">
                   <p className="text-lg font-bold text-primary text-right">
                     $

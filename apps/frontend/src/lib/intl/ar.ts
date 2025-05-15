@@ -42,6 +42,7 @@ const ns1 = {
 		pageSubtitle: "اكتشف واحجز تجربتك القادمة",
 		bookedStatus: "محجوز",
 		noEventsTitle: "لم يتم العثور على فعاليات في الوقت الحالي.",
+		hurryUpMessage: "أسرع! لم يتبق سوى {{availableTickets}} تذكرة!",
 		noEventsMessage:
 			"يرجى التحقق مرة أخرى في وقت لاحق لمعرفة الفعاليات الجديدة والمثيرة!",
 		categoryFilterLabel: "التصنيف:",
