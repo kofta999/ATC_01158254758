@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { baseApiClient } from "@/lib/base-api-client";
 import { router } from "@/main";
 import { useAuth } from "@/lib/hooks/use-auth";
-import { useState, useEffect } from "react"; // Import useEffect
+import { useState, useEffect } from "react";
 import { Card } from "@/components/card";
 import { PrimaryButton } from "@/components/primary-button";
 import { SecondaryButton } from "@/components/secondary-button";
@@ -52,7 +52,6 @@ function EventDetailsErrorComponent({ error }: { error: any }) {
         <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
           <Link
             to="/events"
-            // Using classes similar to PrimaryButton for this Link for now
             className="px-4 py-2 rounded-lg bg-primary text-white hover:bg-primaryDark transition duration-300 ease-in-out w-full sm:w-auto"
           >
             {t("errorPage.backButton", { item: "events" })}
@@ -80,25 +79,19 @@ function EventDetailsComponent() {
     type: "success" | "error";
     text: string;
   } | null>(null);
-  // Initialize isActuallyBooked with the loaded event's booking status
   const [isActuallyBooked, setIsActuallyBooked] = useState(event.isBooked);
 
-  // Effect to update isActuallyBooked if the event data from loader changes
-  // (e.g., due to router.invalidate() and re-fetch)
   useEffect(() => {
     setIsActuallyBooked(event.isBooked);
   }, [event.isBooked]);
 
   const handleBooking = async () => {
-    if (isActuallyBooked) return; // Prevent booking if already booked
+    if (isActuallyBooked) return;
 
     setIsBooking(true);
     setBookingMessage(null);
 
     if (!isAuthenticated) {
-      // Preserve current path for redirect after login
-      //
-      console.log(Route);
       navigate({ to: "/login", search: { redirect: location.pathname } });
       setIsBooking(false);
       return;
@@ -110,19 +103,16 @@ function EventDetailsComponent() {
       });
 
       if (!response.ok) {
-        let errorText = `Server error: ${response.status}`;
-
-        throw new Error(errorText);
+        throw new Error(`Server error: ${response.status}`);
       }
 
-      // Navigate to the booking success page with event details
       navigate({
         to: "/booking-success",
         search: {
           eventName: event.eventName,
-          eventDate: event.date, // Assuming event.date is an ISO string
+          eventDate: event.date,
         },
-        replace: true, // Replace current history entry so back button goes to events list
+        replace: true,
       });
     } catch (error: any) {
       console.error("Booking failed:", error);
@@ -149,7 +139,9 @@ function EventDetailsComponent() {
             <img
               src={
                 event.image ||
-                `https://ui-avatars.com/api/?name=${encodeURIComponent(event.eventName)}&background=random&size=1200x400&font-size=0.33`
+                `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                  event.eventName,
+                )}&background=random&size=1200x400&font-size=0.33`
               }
               alt={event.eventName}
               className="w-full h-64 md:h-96 object-cover"
@@ -160,6 +152,7 @@ function EventDetailsComponent() {
               </div>
             )}
           </div>
+
           <div className="p-6 md:p-8">
             <h1 className="text-3xl md:text-4xl font-bold text-text mb-4">
               {event.eventName}
@@ -186,7 +179,6 @@ function EventDetailsComponent() {
                       month: "long",
                       day: "numeric",
                     })}
-                    {/* Consider adding time if available in event.date or a separate field */}
                   </p>
                 </div>
                 <div>
@@ -215,6 +207,23 @@ function EventDetailsComponent() {
               </div>
             </div>
 
+            {/* Warnings Section */}
+            {event.availableTickets !== undefined && (
+              <div className="mb-6">
+                {event.availableTickets === 0 ? (
+                  <p className="text-danger font-medium text-center">
+                    {t("events.noTicketsAvailable")}
+                  </p>
+                ) : event.availableTickets < 10 ? (
+                  <p className="text-warning font-medium text-center">
+                    {t("events.hurryUpMessage", {
+                      availableTickets: event.availableTickets,
+                    })}
+                  </p>
+                ) : null}
+              </div>
+            )}
+
             <div className="mt-8 pt-6 border-t border-divider text-center">
               {isActuallyBooked ? (
                 <PrimaryButton
@@ -226,15 +235,21 @@ function EventDetailsComponent() {
               ) : (
                 <PrimaryButton
                   onClick={handleBooking}
-                  disabled={isBooking}
+                  disabled={isBooking || event.availableTickets === 0}
                   className="px-8 py-3 text-lg shadow-md hover:shadow-lg"
                 >
-                  {isBooking ? t("eventDetails.bookingButtonLoading") : t("eventDetails.bookButton")}
+                  {isBooking
+                    ? t("eventDetails.bookingButtonLoading")
+                    : t("eventDetails.bookButton")}
                 </PrimaryButton>
               )}
               {bookingMessage && (
                 <p
-                  className={`mt-4 text-sm ${bookingMessage.type === "success" ? "text-success" : "text-danger"}`}
+                  className={`mt-4 text-sm ${
+                    bookingMessage.type === "success"
+                      ? "text-success"
+                      : "text-danger"
+                  }`}
                 >
                   {bookingMessage.text}
                 </p>
