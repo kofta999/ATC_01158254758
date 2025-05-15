@@ -2,14 +2,14 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { baseApiClient } from "@/lib/base-api-client";
 import { router } from "@/main";
 import { useAuth } from "@/lib/hooks/use-auth";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Card } from "@/components/card";
 import { PrimaryButton } from "@/components/primary-button";
 import { SecondaryButton } from "@/components/secondary-button";
 import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/(user)/events/$eventId")({
-  loader: async ({ params }) => {
+  loader: async ({ context, params }) => {
     const { eventId } = params;
     const res = await baseApiClient.events[":id"].$get({
       param: { id: parseInt(eventId) },
@@ -27,7 +27,21 @@ export const Route = createFileRoute("/(user)/events/$eventId")({
     }
 
     const event = await res.json();
-    return event;
+
+    const bookedEvents = new Set();
+
+    if (context.auth && context.auth.user && context.auth.isAuthenticated) {
+      const res = await context.auth.apiClient.bookings.$get();
+
+      if (res.ok) {
+        const booked = await res.json();
+        booked.map((b) => {
+          bookedEvents.add(b.booking.eventId);
+        });
+      }
+    }
+
+    return { event, bookedEvents };
   },
   component: EventDetailsComponent,
   errorComponent: EventDetailsErrorComponent,
@@ -69,7 +83,7 @@ function EventDetailsErrorComponent({ error }: { error: any }) {
 }
 
 function EventDetailsComponent() {
-  const event = Route.useLoaderData();
+  const { event, bookedEvents } = Route.useLoaderData();
   const { isAuthenticated, apiClient } = useAuth();
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -79,15 +93,8 @@ function EventDetailsComponent() {
     type: "success" | "error";
     text: string;
   } | null>(null);
-  const [isActuallyBooked, setIsActuallyBooked] = useState(event.isBooked);
-
-  useEffect(() => {
-    setIsActuallyBooked(event.isBooked);
-  }, [event.isBooked]);
 
   const handleBooking = async () => {
-    if (isActuallyBooked) return;
-
     setIsBooking(true);
     setBookingMessage(null);
 
@@ -146,7 +153,7 @@ function EventDetailsComponent() {
               alt={event.eventName}
               className="w-full h-64 md:h-96 object-cover"
             />
-            {isActuallyBooked && (
+            {bookedEvents.has(event.eventId) && (
               <div className="absolute top-4 right-4 bg-success text-white text-sm font-semibold px-3 py-1 rounded-lg shadow-lg z-10">
                 {t("events.bookedStatus")}
               </div>
@@ -225,7 +232,7 @@ function EventDetailsComponent() {
             )}
 
             <div className="mt-8 pt-6 border-t border-divider text-center">
-              {isActuallyBooked ? (
+              {bookedEvents.has(event.eventId) ? (
                 <PrimaryButton
                   disabled
                   className="px-8 py-3 text-lg shadow-md bg-success hover:bg-green-600 disabled:bg-success disabled:hover:bg-success"
@@ -254,7 +261,7 @@ function EventDetailsComponent() {
                   {bookingMessage.text}
                 </p>
               )}
-              {!bookingMessage && !isActuallyBooked && (
+              {!bookingMessage && !bookedEvents.has(event.eventId) && (
                 <p className="text-sm text-muted mt-3">
                   {t("eventDetails.bookingCTA")}
                 </p>
