@@ -9,11 +9,8 @@ export const eventRelations = relations(eventTable, ({ many }) => ({
 	bookings: many(bookingTable),
 }));
 
-export const bookingRelations = relations(bookingTable, ({ one }) => ({
-	user: one(userTable, {
-		fields: [bookingTable.userId],
-		references: [userTable.userId],
-	}),
+export const bookingRelations = relations(bookingTable, ({ one, many }) => ({
+	user: many(userTable),
 	event: one(eventTable, {
 		fields: [bookingTable.eventId],
 		references: [eventTable.eventId],

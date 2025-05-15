@@ -38,6 +38,7 @@ describe("Event service", () => {
 					venue: "Test Venue 1",
 					price: 100,
 					image: "test-image-1.jpg",
+					availableTickets: 100,
 					isBooked: false,
 				}),
 				new Event({
@@ -49,6 +50,7 @@ describe("Event service", () => {
 					venue: "Test Venue 2",
 					price: 200,
 					image: "test-image-2.jpg",
+					availableTickets: 50,
 					isBooked: true,
 				}),
 			];
@@ -76,6 +78,7 @@ describe("Event service", () => {
 				venue: "Test Venue",
 				price: 100,
 				image: "test-image.jpg",
+				availableTickets: 100,
 				isBooked: false,
 			};
 			const mockEventEntity = new Event(mockEventData);
@@ -110,9 +113,10 @@ describe("Event service", () => {
 				venue: "New Venue",
 				price: 300,
 				image: "new-image.jpg",
+				availableTickets: 100,
 			};
 			const expectedCreatedEvent = new Event({
-				eventId: 3, // Assuming an ID is assigned by the repository
+				eventId: 3,
 				...createEventDTO,
 				isBooked: false, // New events are not booked
 			});
@@ -147,7 +151,8 @@ describe("Event service", () => {
 				venue: "Updated Venue",
 				price: 400,
 				image: "updated-image.jpg",
-				isBooked: true, // Example status after update, repo re-fetches
+				availableTickets: 50,
+				isBooked: true,
 			});
 			mockEventRepo.update.mockResolvedValueOnce(expectedUpdatedEvent);
 
@@ -190,6 +195,7 @@ describe("Event service", () => {
 				venue: "Test Venue",
 				price: 100,
 				image: "test-image.jpg",
+				availableTickets: 100,
 				isBooked: false,
 			});
 			mockEventRepo.delete.mockResolvedValueOnce(eventToBeDeleted);

@@ -9,6 +9,7 @@ export class Event {
 	venue: string;
 	price: number;
 	image: string;
+	availableTickets: number;
 	isBooked: boolean;
 
 	constructor({
@@ -20,6 +21,7 @@ export class Event {
 		venue,
 		price,
 		image,
+		availableTickets,
 		isBooked,
 	}: {
 		eventId: number;
@@ -30,6 +32,7 @@ export class Event {
 		venue: string;
 		price: number;
 		image: string;
+		availableTickets: number;
 		isBooked: boolean;
 	}) {
 		this.eventId = eventId;
@@ -40,6 +43,7 @@ export class Event {
 		this.venue = venue;
 		this.price = price;
 		this.image = image;
+		this.availableTickets = availableTickets;
 		this.isBooked = isBooked;
 	}
 }

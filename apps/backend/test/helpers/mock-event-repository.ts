@@ -12,7 +12,9 @@ export interface MockEventRepository extends EventRepositoryPort {
 		(eventId: number, updatedEvent: UpdateEventDTO) => Promise<Event | null>
 	>;
 	delete: Mock<(eventId: number) => Promise<Event | null>>;
-  invalidateCache: Mock<(eventId: number) => Promise<void>>;
+	invalidateCache: Mock<(eventId: number) => Promise<void>>;
+	decreaseTickets: Mock<(eventId: number) => Promise<void>>;
+	increaseTickets: Mock<(eventId: number) => Promise<void>>;
 }
 
 export function createMockEventRepository(): MockEventRepository {
@@ -24,6 +26,8 @@ export function createMockEventRepository(): MockEventRepository {
 			Promise.resolve(null),
 		),
 		delete: mock((eventId: number) => Promise.resolve(null)),
-		invalidateCache: mock((eventId: number) => Promise.resolve())
+		invalidateCache: mock((eventId: number) => Promise.resolve()),
+		decreaseTickets: mock((eventId: number) => Promise.resolve()),
+		increaseTickets: mock((eventId: number) => Promise.resolve()),
 	};
 }

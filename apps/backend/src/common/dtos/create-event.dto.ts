@@ -11,6 +11,7 @@ export const CreateEventSchema = z
 		date: z.string().openapi({ example: "2024-07-20" }),
 		venue: z.string().openapi({ example: "Central Park, New York" }),
 		price: z.coerce.number().openapi({ example: 50 }),
+		availableTickets: z.coerce.number().openapi({ example: 100 }),
 	})
 	.openapi("CreateEvent");
 

@@ -1,12 +1,12 @@
 import type { CreateEventDTO } from "@/common/dtos/create-event.dto";
 import { ResourceAlreadyExists } from "@/common/errors/resource-already-exists";
-import { TYPES } from "@/common/types";
+import { type DrizzlePgTransaction, TYPES } from "@/common/types";
 import { Event } from "@/core/domain/entities/event";
 import type {
 	EventRepositoryPort,
 	GetAllOptions,
 } from "@/ports/output/repositories/event.repository.port";
-import { desc, eq } from "drizzle-orm";
+import { desc, eq, sql } from "drizzle-orm";
 import { inject, injectable } from "inversify";
 import type { DrizzleDataSource } from "../../data-sources/drizzle/drizzle.data-source";
 import { eventTable } from "../../data-sources/drizzle/schema";
@@ -23,7 +23,6 @@ export class EventDatabaseRepository implements EventRepositoryPort {
 		const category = options?.category;
 
 		const events = await this.db.query.eventTable.findMany({
-			with: { bookings: true },
 			orderBy: desc(eventTable.date),
 			where: category ? (f, { eq }) => eq(f.category, category) : undefined,
 		});
@@ -39,7 +38,8 @@ export class EventDatabaseRepository implements EventRepositoryPort {
 					venue: event.venue,
 					price: event.price,
 					image: event.image,
-					isBooked: event.bookings.length > 0,
+					availableTickets: event.availableTickets,
+					isBooked: event.availableTickets === 0,
 				}),
 		);
 	}
@@ -47,7 +47,6 @@ export class EventDatabaseRepository implements EventRepositoryPort {
 	async getById(eventId: number): Promise<Event | null> {
 		const event = await this.db.query.eventTable.findFirst({
 			where: (f, { eq }) => eq(f.eventId, eventId),
-			with: { bookings: true },
 		});
 
 		if (!event) {
@@ -63,7 +62,8 @@ export class EventDatabaseRepository implements EventRepositoryPort {
 			venue: event.venue,
 			price: event.price,
 			image: event.image,
-			isBooked: event.bookings.length > 0,
+			availableTickets: event.availableTickets,
+			isBooked: event.availableTickets === 0,
 		});
 	}
 
@@ -78,6 +78,7 @@ export class EventDatabaseRepository implements EventRepositoryPort {
 				venue: event.venue,
 				price: event.price,
 				image: event.image,
+				availableTickets: event.availableTickets,
 			})
 			.returning();
 
@@ -90,6 +91,7 @@ export class EventDatabaseRepository implements EventRepositoryPort {
 			venue: newEvent[0].venue,
 			price: newEvent[0].price,
 			image: newEvent[0].image,
+			availableTickets: newEvent[0].availableTickets,
 			isBooked: false, // A new event cannot be booked yet
 		});
 	}
@@ -148,5 +150,29 @@ export class EventDatabaseRepository implements EventRepositoryPort {
 
 	async invalidateCache(eventId?: number): Promise<void> {
 		return;
+	}
+
+	async decreaseTickets(
+		eventId: number,
+		transaction?: DrizzlePgTransaction,
+	): Promise<void> {
+		const db = transaction ?? this.db;
+
+		await db
+			.update(eventTable)
+			.set({ availableTickets: sql`${eventTable.availableTickets} - 1` })
+			.where(eq(eventTable.eventId, eventId));
+	}
+
+	async increaseTickets(
+		eventId: number,
+		transaction?: DrizzlePgTransaction,
+	): Promise<void> {
+		const db = transaction ?? this.db;
+
+		await db
+			.update(eventTable)
+			.set({ availableTickets: sql`${eventTable.availableTickets} + 1` })
+			.where(eq(eventTable.eventId, eventId));
 	}
 }

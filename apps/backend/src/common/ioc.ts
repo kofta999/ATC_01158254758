@@ -4,7 +4,7 @@ import {
 	db,
 } from "@/adapters/driven/database/data-sources/drizzle/drizzle.data-source";
 import { PostgresDataSource } from "@/adapters/driven/database/data-sources/postgres/postgres.data-source";
-import { BookingRepositoryAdapter } from "@/adapters/driven/database/repositories/booking/booking.repository";
+import { BookingRepositoryAdapter } from "@/adapters/driven/database/repositories/booking/booking.repository.adapter";
 import { EventRepositoryAdapter } from "@/adapters/driven/database/repositories/event/event.repository.adapter";
 import { UserRepositoryAdapter } from "@/adapters/driven/database/repositories/user/user.repository.adapter";
 import { BcryptPasswordAdapter } from "@/adapters/driven/security/bcrypt-password.adapter";

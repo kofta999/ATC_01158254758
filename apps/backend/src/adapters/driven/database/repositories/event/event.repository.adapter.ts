@@ -1,3 +1,4 @@
+import type { DrizzlePgTransaction } from "@/common/types";
 import type { Event } from "@/core/domain/entities/event";
 import type {
 	EventRepositoryPort,
@@ -35,5 +36,19 @@ export class EventRepositoryAdapter implements EventRepositoryPort {
 
 	invalidateCache(eventId?: number): Promise<void> {
 		return this.repository.invalidateCache(eventId);
+	}
+
+	decreaseTickets(
+		eventId: number,
+		transaction?: DrizzlePgTransaction,
+	): Promise<void> {
+		return this.repository.decreaseTickets(eventId, transaction);
+	}
+
+	increaseTickets(
+		eventId: number,
+		transaction?: DrizzlePgTransaction,
+	): Promise<void> {
+		return this.repository.increaseTickets(eventId, transaction);
 	}
 }
