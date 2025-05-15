@@ -8,6 +8,7 @@ import { useState } from "react";
 import { CategoryFilter } from "@/components/category-filter";
 import { z } from "zod";
 import { eventCategories } from "@repo/areeb-backend/consts/event-categories";
+import clsx from "clsx";
 
 export const Route = createFileRoute("/(user)/events/")({
   validateSearch: z.object({
@@ -60,7 +61,7 @@ function EventsErrorComponent({ error }: { error: Error }) {
 
 function EventsComponent() {
   const events = Route.useLoaderData(); // `events` will have the inferred type from the loader
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [selectedCategory, setSelectedCategory] = useState<string | undefined>(
     undefined,
   );
@@ -77,7 +78,12 @@ function EventsComponent() {
 
   return (
     <div className="bg-background min-h-screen p-4 md:p-8">
-      <header className="mb-8 text-center md:text-left">
+      <header
+        className={clsx(
+          "mb-8 text-center ",
+          i18n.language == "ar" ? "md:text-right" : "md:text-left",
+        )}
+      >
         <h1 className="text-2xl md:text-3xl font-bold text-text">
           {t("events.pageTitle")}
         </h1>

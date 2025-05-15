@@ -1,3 +1,5 @@
+import type { EventCategory } from "@repo/areeb-backend/consts/event-categories";
+
 const ns1 = {
 	appTitle: "Evently",
 	navigation: {
@@ -43,8 +45,30 @@ const ns1 = {
 		bookedStatus: "Booked",
 		noEventsTitle: "No events found at the moment.",
 		noEventsMessage: "Please check back later for new and exciting events!",
-		categoryFilterLabel: "Category:", // Added translation
-		allCategories: "All Categories", // Added translation
+		categoryFilterLabel: "Category:",
+		allCategories: "All Categories",
+		categories: {
+			Music: "Music",
+			Sports: "Sports",
+			Conference: "Conference",
+			"Food & Drink": "Food & Drink",
+			"Arts & Culture": "Arts & Culture",
+			Business: "Business",
+			"Health & Wellness": "Health & Wellness",
+			"Film & Media": "Film & Media",
+			Community: "Community",
+			"Tours & Sightseeing": "Tours & Sightseeing",
+			Technology: "Technology",
+			"Charity & Causes": "Charity & Causes",
+			"Workshops & Classes": "Workshops & Classes",
+			"Hobbies & Skills": "Hobbies & Skills",
+			Literature: "Literature",
+			Gaming: "Gaming",
+			Seasonal: "Seasonal",
+			"Business & Entrepreneurship": "Business & Entrepreneurship",
+			"Sports & Fitness": "Sports & Fitness",
+			"Holiday & Celebration": "Holiday & Celebration",
+		} satisfies Record<EventCategory, string>,
 	},
 	eventDetails: {
 		backLink: "← Back to All Events",
@@ -75,10 +99,10 @@ const ns1 = {
 	myBookings: {
 		pageTitle: "My Bookings",
 		pageSubtitle: "Your booked events and experiences",
-		eventDatePrefix: "Event Date:",
-		venuePrefix: "Venue:",
-		categoryPrefix: "Category:",
-		bookedOnPrefix: "Booked on:",
+		eventDatePrefix: "Event Date",
+		venuePrefix: "Venue",
+		categoryPrefix: "Category",
+		bookedOnPrefix: "Booked on",
 		priceLabel: "Price",
 		viewEventButton: "View Event",
 		cancelButton: "Cancel",

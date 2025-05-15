@@ -19,7 +19,7 @@ export function CategoryFilter({
       </label>
       <select
         id="category"
-        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm dark:bg-surface dark:border-divider dark:text-text"
+        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm dark:bg-surface dark:border-divider dark:text-text p-2"
         value={selectedCategory || ""}
         onChange={(e) =>
           onCategoryChange(e.target.value === "" ? undefined : e.target.value)
@@ -28,7 +28,7 @@ export function CategoryFilter({
         <option value="">{t("events.allCategories")}</option>
         {eventCategories.map((category) => (
           <option key={category} value={category}>
-            {category}
+            {t(`events.categories.${category}`)}
           </option>
         ))}
       </select>

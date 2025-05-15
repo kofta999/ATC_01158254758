@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PrimaryButton } from "@/components/primary-button";
 import { useTranslation } from "react-i18next";
+import clsx from "clsx";
 // You might want to add a hero image or illustration later
 // import heroImage from "../assets/evently-hero.svg"; // Example path
 
@@ -9,7 +10,7 @@ export const Route = createFileRoute("/")({
 });
 
 function LandingPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   return (
     <div className="flex flex-col flex-grow items-center justify-center text-center bg-background px-4 py-12">
@@ -46,7 +47,12 @@ function LandingPage() {
         <h2 className="text-3xl font-bold text-text mb-10 text-center">
           {t("landingPage.whyChooseTitle")}
         </h2>
-        <div className="grid md:grid-cols-3 gap-8 text-left">
+        <div
+          className={clsx(
+            "grid md:grid-cols-3 gap-8",
+            i18n.language == "ar" ? "text-right" : "text-left",
+          )}
+        >
           <div className="bg-surface p-6 rounded-2xl shadow-md">
             <h3 className="text-xl font-semibold text-primary mb-3">
               {t("landingPage.wideVarietyTitle")}

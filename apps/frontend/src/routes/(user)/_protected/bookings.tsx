@@ -6,6 +6,7 @@ import { PrimaryButton } from "@/components/primary-button";
 import { DangerButton } from "@/components/danger-button"; // Import DangerButton
 import { useAuth } from "@/lib/hooks/use-auth"; // Import useAuth to access apiClient
 import { useTranslation } from "react-i18next";
+import clsx from "clsx";
 
 export const Route = createFileRoute("/(user)/_protected/bookings")({
   loader: async ({ context }) => {
@@ -62,7 +63,7 @@ function BookingsErrorComponent({ error }: { error: Error }) {
 function BookingsComponent() {
   const bookings = Route.useLoaderData();
   const { apiClient } = useAuth();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [cancellingId, setCancellingId] = useState<number | null>(null);
 
   const handleCancelBooking = async (bookingId: number) => {
@@ -92,7 +93,9 @@ function BookingsComponent() {
     } catch (error: any) {
       console.error("Failed to cancel booking:", error);
       alert(
-        t("myBookings.cancelError", { message: error.message || "Unknown error" }),
+        t("myBookings.cancelError", {
+          message: error.message || "Unknown error",
+        }),
       );
     } finally {
       setCancellingId(null);
@@ -101,7 +104,12 @@ function BookingsComponent() {
 
   return (
     <div className="bg-background min-h-[calc(100vh-var(--header-height))] p-4 md:p-8">
-      <header className="mb-8 text-center md:text-left">
+      <header
+        className={clsx(
+          "mb-8 text-center",
+          i18n.language == "ar" ? "md:text-right" : "md:text-left",
+        )}
+      >
         <h1 className="text-2xl md:text-3xl font-bold text-text">
           {t("myBookings.pageTitle")}
         </h1>
@@ -136,19 +144,25 @@ function BookingsComponent() {
                   </h2>
                   {/* ... other event details ... */}
                   <p className="text-sm text-muted mb-1">
-                    <span className="font-medium">{t("myBookings.eventDatePrefix")}</span>{" "}
+                    <span className="font-medium">
+                      {t("myBookings.eventDatePrefix")}:
+                    </span>{" "}
                     {new Date(bookedEvent.date).toLocaleDateString()}
                   </p>
                   <p className="text-sm text-muted mb-1">
-                    <span className="font-medium">{t("myBookings.venuePrefix")}:</span>{" "}
+                    <span className="font-medium">
+                      {t("myBookings.venuePrefix")}:
+                    </span>{" "}
                     {bookedEvent.venue}
                   </p>
                   <p className="text-sm text-muted mb-3">
-                    <span className="font-medium">{t("myBookings.categoryPrefix")}:</span>{" "}
+                    <span className="font-medium">
+                      {t("myBookings.categoryPrefix")}:
+                    </span>{" "}
                     {bookedEvent.category}
                   </p>
                   <p className="text-xs text-gray-400 mb-3">
-                    {t("myBookings.bookedOnPrefix")} {" "}
+                    {t("myBookings.bookedOnPrefix")}:{" "}
                     {new Date(booking.createdAt).toLocaleDateString()}
                   </p>
 
@@ -173,7 +187,9 @@ function BookingsComponent() {
                         className="text-sm px-3 py-1" // Smaller padding
                         aria-label={`Cancel booking for ${bookedEvent.eventName}`}
                       >
-                        {isCancelling ? t("myBookings.cancellingButton") : t("myBookings.cancelButton")}
+                        {isCancelling
+                          ? t("myBookings.cancellingButton")
+                          : t("myBookings.cancelButton")}
                       </DangerButton>
                     </div>
                   </div>

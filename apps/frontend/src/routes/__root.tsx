@@ -3,6 +3,8 @@ import { Outlet, createRootRouteWithContext } from "@tanstack/react-router";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
+import { useTranslation } from "react-i18next";
+import i18n from "@/i18n";
 
 type RouterContext = {
   auth: AuthContextType | undefined;
@@ -31,6 +33,7 @@ export default function RootLayout() {
       <main
         id="main"
         className="flex-grow container mx-auto px-4 py-6 md:py-8 w-full"
+        dir={i18n.dir()}
       >
         {/* Adjusted padding slightly */}
         <Outlet />

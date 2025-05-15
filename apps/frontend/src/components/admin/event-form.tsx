@@ -2,6 +2,11 @@ import React, { useState, useEffect } from "react";
 import { Card } from "@/components/card";
 import { PrimaryButton } from "@/components/primary-button";
 import { Link } from "@tanstack/react-router";
+import {
+  eventCategories,
+  type EventCategory,
+} from "@repo/areeb-backend/consts/event-categories"; // Import eventCategories
+import { useTranslation } from "react-i18next";
 
 // Define the shape of the form data. This should align with CreateEventDTO and UpdateEventDTO.
 // For simplicity, let's assume a combined type or use a base type.
@@ -9,7 +14,7 @@ import { Link } from "@tanstack/react-router";
 export interface EventFormData {
   eventName: string;
   description: string;
-  category: string;
+  category: EventCategory;
   date: string; // Expecting YYYY-MM-DD format for date input
   venue: string;
   price: number;
@@ -34,10 +39,11 @@ export const EventForm: React.FC<EventFormProps> = ({
   submitButtonText = "Submit",
   formTitle,
 }) => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState<EventFormData>(() => ({
     eventName: initialData?.eventName || "",
     description: initialData?.description || "",
-    category: initialData?.category || "",
+    category: initialData?.category || eventCategories[0] || "", // Default to first category
     date: initialData?.date || "",
     venue: initialData?.venue || "",
     price: initialData?.price || 0,
@@ -53,7 +59,7 @@ export const EventForm: React.FC<EventFormProps> = ({
       setFormData({
         eventName: initialData.eventName || "",
         description: initialData.description || "",
-        category: initialData.category || "",
+        category: initialData.category || eventCategories[0] || "", // Default to first category
         date: initialData.date || "", // Ensure date format is YYYY-MM-DD
         venue: initialData.venue || "",
         price: initialData.price || 0,
@@ -181,9 +187,20 @@ export const EventForm: React.FC<EventFormProps> = ({
             >
               Category
             </label>
-            <input
-              {...inputProps("category", "text", "e.g., Music, Technology")}
-            />
+            <select
+              id="category"
+              name="category"
+              value={formData.category}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:outline-none"
+              required
+            >
+              {eventCategories.map((category) => (
+                <option key={category} value={category}>
+                  {t(`events.categories.${category}`)}
+                </option>
+              ))}
+            </select>
           </div>
           <div>
             <label

@@ -16,6 +16,7 @@ import { CategoryFilter } from "@/components/category-filter";
 import { z } from "zod";
 import { eventCategories } from "@repo/areeb-backend/consts/event-categories";
 import { router } from "@/main";
+import { clsx } from "clsx";
 
 export const Route = createFileRoute("/(admin)/admin/dashboard/")({
   beforeLoad: ({ context, location }) => {
@@ -75,7 +76,7 @@ function AdminDashboardComponent() {
   const events = Route.useLoaderData();
   const navigate = useNavigate();
   const { isAuthenticated, user, apiClient } = useAuth();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [selectedCategory, setSelectedCategory] = useState<string | undefined>(
     undefined,
   );
@@ -159,31 +160,46 @@ function AdminDashboardComponent() {
               <tr>
                 <th
                   scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider"
+                  className={clsx(
+                    "px-6 py-3 text-xs font-medium text-muted uppercase tracking-wider",
+                    i18n.language === "ar" ? "text-right" : "text-left",
+                  )}
                 >
                   {t("admin.tableHeaders.eventName")}
                 </th>
                 <th
                   scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider"
+                  className={clsx(
+                    "px-6 py-3 text-xs font-medium text-muted uppercase tracking-wider",
+                    i18n.language === "ar" ? "text-right" : "text-left",
+                  )}
                 >
                   {t("admin.tableHeaders.category")}
                 </th>
                 <th
                   scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider"
+                  className={clsx(
+                    "px-6 py-3 text-xs font-medium text-muted uppercase tracking-wider",
+                    i18n.language === "ar" ? "text-right" : "text-left",
+                  )}
                 >
                   {t("admin.tableHeaders.date")}
                 </th>
                 <th
                   scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider"
+                  className={clsx(
+                    "px-6 py-3 text-xs font-medium text-muted uppercase tracking-wider",
+                    i18n.language === "ar" ? "text-right" : "text-left",
+                  )}
                 >
                   {t("admin.tableHeaders.venue")}
                 </th>
                 <th
                   scope="col"
-                  className="px-6 py-3 text-right text-xs font-medium text-muted uppercase tracking-wider"
+                  className={clsx(
+                    "px-6 py-3 text-xs font-medium text-muted uppercase tracking-wider",
+                    i18n.language === "ar" ? "text-right" : "text-left",
+                  )}
                 >
                   {t("admin.tableHeaders.price")}
                 </th>
