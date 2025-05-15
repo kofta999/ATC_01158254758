@@ -1,7 +1,7 @@
 import { HonoJwtAdapter } from "@/adapters/driven/security/hono-jwt.adapter";
 import { UnauthorizedError } from "@/common/errors/unauthorized";
 import { mainContainer } from "@/common/ioc";
-import type { AppBindings, JwtAuthPayload, UserRole } from "@/common/types";
+import type { AppBindings, JwtAuthPayload } from "@/common/types";
 import { createMiddleware } from "hono/factory";
 
 export const authMiddleware = createMiddleware<AppBindings>(async (c, next) => {

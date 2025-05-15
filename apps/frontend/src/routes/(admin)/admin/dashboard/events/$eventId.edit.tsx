@@ -90,7 +90,9 @@ function EditEventPage() {
       navigate({ to: "/admin/dashboard", replace: true });
     } catch (error: any) {
       console.error("Failed to update event:", error);
-      setSubmissionError(error.message || t("eventDetails.bookingErrorMessage"));
+      setSubmissionError(
+        error.message || t("eventDetails.bookingErrorMessage"),
+      );
       setIsSubmitting(false);
     }
   };

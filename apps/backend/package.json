@@ -42,8 +42,12 @@
   ],
   "exports": {
     ".": {
-      "types": "./dist/hc.d.ts",
-      "import": "./dist/hc.js"
+      "types": "./dist/src/hc.d.ts",
+      "import": "./dist/src/hc.js"
+    },
+    "./consts/event-categories": {
+      "types": "./dist/src/core/domain/value-objects/event-category.d.ts",
+      "import": "./dist/src/core/domain/value-objects/event-category.js"
     }
   },
   "packageManager": "bun@1.2.0"

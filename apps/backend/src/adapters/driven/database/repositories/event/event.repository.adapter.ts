@@ -1,5 +1,8 @@
 import type { Event } from "@/core/domain/entities/event";
-import type { EventRepositoryPort } from "@/ports/output/repositories/event.repository.port";
+import type {
+	EventRepositoryPort,
+	GetAllOptions,
+} from "@/ports/output/repositories/event.repository.port";
 import { inject, injectable } from "inversify";
 import { EventCacheRepository } from "./event.cache.repository";
 
@@ -26,8 +29,8 @@ export class EventRepositoryAdapter implements EventRepositoryPort {
 		return this.repository.delete(eventId);
 	}
 
-	getAll(): Promise<Event[]> {
-		return this.repository.getAll();
+	getAll(options?: GetAllOptions): Promise<Event[]> {
+		return this.repository.getAll(options);
 	}
 
 	invalidateCache(eventId?: number): Promise<void> {

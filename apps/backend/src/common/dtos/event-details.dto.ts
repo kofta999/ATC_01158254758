@@ -1,3 +1,4 @@
+import { eventCategories } from "@/core/domain/value-objects/event-category";
 import { z } from "@hono/zod-openapi";
 
 export const EventDetailsSchema = z
@@ -7,7 +8,7 @@ export const EventDetailsSchema = z
 		description: z
 			.string()
 			.openapi({ example: "A vibrant music festival featuring top artists." }),
-		category: z.string().openapi({ example: "Music" }),
+		category: z.enum(eventCategories).openapi({ example: "Music" }),
 		date: z.string().openapi({ example: "2024-07-20" }),
 		venue: z.string().openapi({ example: "Central Park, New York" }),
 		price: z.number().openapi({ example: 50 }),

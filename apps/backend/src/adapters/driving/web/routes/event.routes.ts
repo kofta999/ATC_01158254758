@@ -5,6 +5,7 @@ import { UpdateEventSchema } from "@/common/dtos/update-event.dto";
 import { ErrorSchema } from "@/common/schemas/error-schema";
 import { IdSchema } from "@/common/schemas/id-schema";
 import jsonContent from "@/common/util/json-content";
+import { eventCategories } from "@/core/domain/value-objects/event-category";
 import { createRoute, z } from "@hono/zod-openapi";
 import { authMiddleware } from "../middleware/auth.middleware";
 import { requireRole } from "../middleware/require-role.middleware";
@@ -15,6 +16,14 @@ export const getAllEvents = createRoute({
 	path: "/",
 	method: "get",
 	tags,
+	request: {
+		query: z.object({
+			category: z
+				.enum(eventCategories)
+				.optional()
+				.openapi({ example: "Music" }),
+		}),
+	},
 	summary: "Get all events",
 	responses: {
 		200: jsonContent(EventListSchema, "List of events"),

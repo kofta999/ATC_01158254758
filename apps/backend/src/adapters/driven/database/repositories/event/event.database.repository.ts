@@ -2,7 +2,10 @@ import type { CreateEventDTO } from "@/common/dtos/create-event.dto";
 import { ResourceAlreadyExists } from "@/common/errors/resource-already-exists";
 import { TYPES } from "@/common/types";
 import { Event } from "@/core/domain/entities/event";
-import type { EventRepositoryPort } from "@/ports/output/repositories/event.repository.port";
+import type {
+	EventRepositoryPort,
+	GetAllOptions,
+} from "@/ports/output/repositories/event.repository.port";
 import { desc, eq } from "drizzle-orm";
 import { inject, injectable } from "inversify";
 import type { DrizzleDataSource } from "../../data-sources/drizzle/drizzle.data-source";
@@ -16,10 +19,13 @@ export class EventDatabaseRepository implements EventRepositoryPort {
 		this.db = db;
 	}
 
-	async getAll(): Promise<Event[]> {
+	async getAll(options?: GetAllOptions): Promise<Event[]> {
+		const category = options?.category;
+
 		const events = await this.db.query.eventTable.findMany({
 			with: { bookings: true },
 			orderBy: desc(eventTable.date),
+			where: category ? (f, { eq }) => eq(f.category, category) : undefined,
 		});
 
 		return events.map(

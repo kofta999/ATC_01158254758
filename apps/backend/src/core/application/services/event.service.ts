@@ -7,7 +7,10 @@ import { ResourceAlreadyExists } from "@/common/errors/resource-already-exists";
 import { ResourceNotFoundError } from "@/common/errors/resource-not-found";
 import { TYPES } from "@/common/types";
 import type { Event } from "@/core/domain/entities/event";
-import type { EventApiPort } from "@/ports/input/event.port";
+import type {
+	EventApiPort,
+	GetEventListOptions,
+} from "@/ports/input/event.port";
 import type { EventRepositoryPort } from "@/ports/output/repositories/event.repository.port";
 import { inject, injectable } from "inversify";
 
@@ -18,8 +21,10 @@ export class EventService implements EventApiPort {
 		private eventRepository: EventRepositoryPort,
 	) {}
 
-	getEventList(): Promise<EventListDTO> {
-		return this.eventRepository.getAll();
+	getEventList(options?: GetEventListOptions): Promise<EventListDTO> {
+		return this.eventRepository.getAll({
+			category: options?.filter.category,
+		});
 	}
 
 	async getEventDetails(eventId: number): Promise<EventDetailsDTO> {

@@ -1,4 +1,4 @@
-import type { UserRole } from "@/common/types";
+import type { UserRole } from "../value-objects/user-role";
 
 export class User {
 	userId?: number;

@@ -1,3 +1,5 @@
+import { eventCategories } from "@/core/domain/value-objects/event-category";
+import { userRole } from "@/core/domain/value-objects/user-role";
 import { sql } from "drizzle-orm";
 import {
 	date,
@@ -10,7 +12,9 @@ import {
 	varchar,
 } from "drizzle-orm/pg-core";
 
-export const userrole = pgEnum("userrole", ["USER", "ADMIN"]);
+export const eventCategoryEnum = pgEnum("event_category", eventCategories);
+
+export const userRoleEnum = pgEnum("userrole", userRole);
 
 export const userTable = pgTable(
 	"user",
@@ -18,7 +22,7 @@ export const userTable = pgTable(
 		userId: serial("user_id").primaryKey().notNull(),
 		email: varchar().notNull(),
 		password: varchar().notNull(),
-		role: userrole().notNull(),
+		role: userRoleEnum().notNull(),
 		createdAt: timestamp("created_at", { mode: "string" })
 			.default(sql`CURRENT_TIMESTAMP`)
 			.notNull(),
@@ -30,7 +34,7 @@ export const eventTable = pgTable("event", {
 	eventId: serial("event_id").primaryKey().notNull(),
 	eventName: varchar("event_name").notNull(),
 	description: varchar("description").notNull(),
-	category: varchar("category").notNull(),
+	category: eventCategoryEnum("category").notNull(),
 	date: date("date").notNull(),
 	venue: varchar("venue").notNull(),
 	price: integer("price").notNull(),
