@@ -148,11 +148,19 @@ function EventsComponent() {
                   {event.category}
                 </p>
                 {event.availableTickets !== undefined &&
-                  event.availableTickets < 10 && (
+                  event.availableTickets < 10 &&
+                  event.availableTickets !== 0 && (
                     <p className="text-sm text-warning mb-3">
                       {t("events.hurryUpMessage", {
                         availableTickets: event.availableTickets,
                       })}
+                    </p>
+                  )}
+
+                {event.availableTickets !== undefined &&
+                  event.availableTickets === 0 && (
+                    <p className="text-sm text-danger mb-3">
+                      {t("events.noTicketsAvailable")}
                     </p>
                   )}
                 <div className="mt-auto pt-3 border-t border-divider">

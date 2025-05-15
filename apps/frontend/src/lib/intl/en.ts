@@ -48,6 +48,7 @@ const ns1 = {
 		categoryFilterLabel: "Category:",
 		allCategories: "All Categories",
 		hurryUpMessage: "Hurry up! Only {{availableTickets}} tickets left!",
+		noTicketsAvailable: "No more tickets available",
 		categories: {
 			Music: "Music",
 			Sports: "Sports",

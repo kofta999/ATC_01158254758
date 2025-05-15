@@ -43,6 +43,7 @@ const ns1 = {
 		bookedStatus: "محجوز",
 		noEventsTitle: "لم يتم العثور على فعاليات في الوقت الحالي.",
 		hurryUpMessage: "أسرع! لم يتبق سوى {{availableTickets}} تذكرة!",
+		noTicketsAvailable: "لا توجد تذاكر متاحة",
 		noEventsMessage:
 			"يرجى التحقق مرة أخرى في وقت لاحق لمعرفة الفعاليات الجديدة والمثيرة!",
 		categoryFilterLabel: "التصنيف:",
