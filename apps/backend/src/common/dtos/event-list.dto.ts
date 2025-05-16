@@ -1,5 +1,6 @@
 import { eventCategories } from "@/core/domain/value-objects/event-category";
 import { z } from "@hono/zod-openapi";
+import { PaginatedSchema } from "../schemas/paginated-schema";
 
 const EventCardSchema = z
 	.object({
@@ -14,6 +15,8 @@ const EventCardSchema = z
 	})
 	.openapi("EventCard");
 
-export const EventListSchema = z.array(EventCardSchema).openapi("EventList");
+export const EventListSchema = PaginatedSchema.extend({
+	data: z.array(EventCardSchema),
+}).openapi("EventList");
 
 export type EventListDTO = z.infer<typeof EventListSchema>;

@@ -1,13 +1,12 @@
 import type { CreateEventDTO } from "@/common/dtos/create-event.dto";
 import { EventIsBookedError } from "@/common/errors/event-is-booked";
-import { ResourceAlreadyExists } from "@/common/errors/resource-already-exists";
 import { type DrizzlePgTransaction, TYPES } from "@/common/types";
 import { Event } from "@/core/domain/entities/event";
 import type {
 	EventRepositoryPort,
 	GetAllOptions,
 } from "@/ports/output/repositories/event.repository.port";
-import { desc, eq, sql } from "drizzle-orm";
+import { count, desc, eq, sql } from "drizzle-orm";
 import { inject, injectable } from "inversify";
 import type { DrizzleDataSource } from "../../data-sources/drizzle/drizzle.data-source";
 import { eventTable } from "../../data-sources/drizzle/schema";
@@ -20,12 +19,32 @@ export class EventDatabaseRepository implements EventRepositoryPort {
 		this.db = db;
 	}
 
+	async count(options?: GetAllOptions): Promise<number> {
+		const category = options?.category;
+
+		if (category) {
+			const res = await this.db
+				.select({ c: count() })
+				.from(eventTable)
+				.where(eq(eventTable.category, category))
+				.limit(options.limit)
+				.offset(options.offset);
+
+			return res[0].c;
+		}
+
+		const res = await this.db.select({ c: count() }).from(eventTable);
+		return res[0].c;
+	}
+
 	async getAll(options?: GetAllOptions): Promise<Event[]> {
 		const category = options?.category;
 
 		const events = await this.db.query.eventTable.findMany({
 			orderBy: desc(eventTable.date),
 			where: category ? (f, { eq }) => eq(f.category, category) : undefined,
+			offset: options?.offset,
+			limit: options?.limit,
 		});
 
 		return events.map(

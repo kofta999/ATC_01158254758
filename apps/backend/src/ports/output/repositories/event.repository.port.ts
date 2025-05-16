@@ -4,12 +4,15 @@ import type { EventCategory } from "@/core/domain/value-objects/event-category";
 
 export type GetAllOptions = {
 	category?: EventCategory;
+	offset: number;
+	limit: number;
 };
 
 export interface EventRepositoryPort {
-	getAll(options?: GetAllOptions): Promise<Event[]>;
+	getAll(options: GetAllOptions): Promise<Event[]>;
+	count(options: GetAllOptions): Promise<number>;
 	getById(eventId: number): Promise<Event | null>;
-	create(event: Omit<Event, "eventId" >): Promise<Event>;
+	create(event: Omit<Event, "eventId">): Promise<Event>;
 	update(eventId: number, updatedEvent: Partial<Event>): Promise<Event | null>;
 	delete(eventId: number): Promise<Event | null>;
 	decreaseTickets(

@@ -15,11 +15,15 @@ export class EventController {
 	constructor(@inject(TYPES.EventApiPort) private eventService: EventApiPort) {}
 
 	getAllEvents: AppRouteHandler<GetAllEventsRoute> = async (c) => {
-		const { category } = c.req.valid("query");
+		const { category, page, perPage } = c.req.valid("query");
 
-		const events = await this.eventService.getEventList(
-			category && { filter: { category } },
-		);
+		const events = await this.eventService.getEventList({
+			pagination: {
+				page,
+				limit: perPage,
+			},
+			...(category && { filter: { category } }),
+		});
 		return c.json(events, 200);
 	};
 

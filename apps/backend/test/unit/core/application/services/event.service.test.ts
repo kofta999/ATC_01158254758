@@ -1,6 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, jest } from "bun:test";
 import type { CreateEventDTO } from "@/common/dtos/create-event.dto";
-import type { EventDetailsDTO } from "@/common/dtos/event-details.dto";
 import type { UpdateEventDTO } from "@/common/dtos/update-event.dto";
 import { ResourceNotFoundError } from "@/common/errors/resource-not-found";
 import { EventService } from "@/core/application/services/event.service";
@@ -39,7 +38,6 @@ describe("Event service", () => {
 					price: 100,
 					image: "test-image-1.jpg",
 					availableTickets: 100,
-					
 				}),
 				new Event({
 					eventId: 2,
@@ -51,15 +49,26 @@ describe("Event service", () => {
 					price: 200,
 					image: "test-image-2.jpg",
 					availableTickets: 50,
-					
 				}),
 			];
 
 			mockEventRepo.getAll.mockResolvedValueOnce(mockEvents);
 
-			const events = await service.getEventList();
+			const pagination = { limit: mockEvents.length, page: 1 };
+			const events = await service.getEventList({
+				pagination,
+			});
 
-			expect(events).toEqual(mockEvents);
+			expect(events).toEqual({
+				data: mockEvents,
+				meta: {
+					totalItems: mockEvents.length,
+					totalPages: 1,
+					currentPage: 1,
+					hasNextPage: false,
+					hasPreviousPage: false,
+				},
+			});
 			expect(mockEventRepo.getAll).toHaveBeenCalledTimes(1);
 		});
 	});
@@ -77,7 +86,6 @@ describe("Event service", () => {
 				price: 100,
 				image: "test-image.jpg",
 				availableTickets: 100,
-				
 			};
 			const mockEventEntity = new Event(mockEventData);
 			mockEventRepo.getById.mockResolvedValueOnce(mockEventEntity);
@@ -115,7 +123,7 @@ describe("Event service", () => {
 			const expectedCreatedEvent = new Event({
 				eventId: 3,
 				...createEventDTO,
-				 // New events are not booked
+				// New events are not booked
 			});
 			mockEventRepo.create.mockResolvedValueOnce(expectedCreatedEvent);
 
@@ -148,7 +156,6 @@ describe("Event service", () => {
 				price: 400,
 				image: "updated-image.jpg",
 				availableTickets: 50,
-				
 			});
 			mockEventRepo.update.mockResolvedValueOnce(expectedUpdatedEvent);
 
@@ -191,7 +198,6 @@ describe("Event service", () => {
 				price: 100,
 				image: "test-image.jpg",
 				availableTickets: 100,
-				
 			});
 			mockEventRepo.delete.mockResolvedValueOnce(eventToBeDeleted);
 
