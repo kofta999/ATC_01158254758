@@ -48,7 +48,7 @@ export function Pagination({ currentPage, totalPages, to }: PaginationProps) {
   const pageNumbers = getPageNumbers();
 
   return (
-    <div className="flex items-center justify-center mt-8">
+    <div className="flex items-center justify-center mt-8" dir="ltr">
       <nav
         className="inline-flex -space-x-px rounded-md shadow-sm"
         aria-label="Pagination"
