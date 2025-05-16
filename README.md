@@ -8,10 +8,20 @@ This repository contains a full-stack event booking system built with a modern w
 
 ---
 
-## 🌍 Access the Platform
+### 🌍 Access the Platform
 
 - **Frontend:** [https://areeb-frontend.vercel.app](https://areeb-frontend.vercel.app)
 - **Backend API:** [https://areeb-backend.vercel.app](https://areeb-backend.vercel.app)
+
+---
+
+### 🤖 AI Usage
+
+AI was utilized throughout the development process to enhance productivity and inform decisions:
+
+- **Frontend:** Assistance with design system implementation, component creation, UI styling, and various parts of the application logic.
+- **Backend:** Help with writing tests, automating repeated development tasks, and discussions around design decisions.
+- **General:** Support in project planning, architecture discussions, and generating documentation.
 
 ---
 
@@ -31,7 +41,7 @@ apps/
 
 ---
 
-## 🧠 Design Decisions
+### 🧠 Design Decisions
 
 - Adopted **hexagonal architecture** for testability & future adapters
 - Used **CSS variables** + `@theme` for dark mode
@@ -40,10 +50,12 @@ apps/
 
 ---
 
-## ✅ CI/CD
+### ✅ CI/CD
 
 - GitHub Actions build & deploy
 - Vercel (frontend and backend)
+
+---
 
 ### 🚀 Getting Started
 
