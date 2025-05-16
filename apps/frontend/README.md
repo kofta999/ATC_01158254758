@@ -67,9 +67,9 @@ src/
 ### 🧪 Scripts
 
 ```bash
-npm dev       # start dev server
-npm build     # production build
-npm preview   # preview production build
+bun dev       # start dev server
+bun build     # production build
+bun preview   # preview production build
 ```
 
 ### 🧭 Routes

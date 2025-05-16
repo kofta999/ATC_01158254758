@@ -59,11 +59,11 @@ cp .env.example .env
 #### 3. Install dependencies
 
 ```bash
-npm install
+bun install
 ```
 
 #### 4. Start dev servers
 
 ```bash
-npm dev
+bun dev
 ```

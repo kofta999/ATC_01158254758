@@ -144,10 +144,10 @@ src/
 ### 🧪 Scripts
 
 ```bash
-npm dev          # dev server
-npm build        # build
-npm lint         # lint code
-npm test         # coming soon (unit + integration)
+bun dev          # dev server
+bun build        # build
+bun lint         # lint code
+bun test         # coming soon (unit + integration)
 ```
 
 ### 📡 API Routes
