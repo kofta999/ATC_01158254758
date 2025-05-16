@@ -8,6 +8,13 @@ This repository contains a full-stack event booking system built with a modern w
 
 ---
 
+## 🌍 Access the Platform
+
+- **Frontend:** [https://areeb-frontend.vercel.app](https://areeb-frontend.vercel.app)
+- **Backend API:** [https://areeb-backend.vercel.app](https://areeb-backend.vercel.app)
+
+---
+
 ### 🖼️ System Architecture Diagram
 
 > ![System Architecture](./docs/architecture.svg)
@@ -33,7 +40,6 @@ apps/
 
 #### Prerequisites
 
-- Node.js >= 18
 - Bun >= 1.2.0
 - Docker + Docker Compose
 
