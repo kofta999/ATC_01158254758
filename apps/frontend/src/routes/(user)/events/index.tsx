@@ -9,20 +9,31 @@ import { CategoryFilter } from "@/components/category-filter";
 import { z } from "zod";
 import { eventCategories } from "@repo/areeb-backend/consts/event-categories";
 import clsx from "clsx";
+import { Pagination } from "@/components/pagination";
 
 export const Route = createFileRoute("/(user)/events/")({
   validateSearch: z.object({
     category: z.enum(eventCategories).optional().catch(undefined), // Make redirect optional
+    page: z.coerce.number().optional().default(1),
   }),
-  loaderDeps: ({ search }) => ({ category: search.category }),
-  loader: async ({ context, deps: { category } }) => {
-    const res = await baseApiClient.events.$get({ query: { category } });
+  loaderDeps: ({ search }) => ({
+    category: search.category,
+    page: search.page,
+  }),
+  loader: async ({ context, deps: { category, page } }) => {
+    const res = await baseApiClient.events.$get({
+      // Currently, I don't want users to change perPage
+      // 12 is fitting for desktop screens (3 grid rows)
+      query: { category, page, perPage: 12 },
+    });
     if (!res.ok) {
       const errorText = await res.text();
       console.error("Failed to fetch events:", res.status, errorText);
       throw new Error(`Failed to load events: ${res.status} ${errorText}`);
     }
-    const events = await res.json(); // Type will be inferred if baseApiClient is strongly typed
+    const data = await res.json(); // Type will be inferred if baseApiClient is strongly typed
+    const events = data.data;
+    const meta = data.meta;
     const bookedEvents = new Set();
 
     if (context.auth && context.auth.user && context.auth.isAuthenticated) {
@@ -36,7 +47,7 @@ export const Route = createFileRoute("/(user)/events/")({
       }
     }
 
-    return { events, bookedEvents };
+    return { events, bookedEvents, meta, currentPage: page };
   },
   component: EventsComponent,
   errorComponent: EventsErrorComponent,
@@ -73,7 +84,7 @@ function EventsErrorComponent({ error }: { error: Error }) {
 }
 
 function EventsComponent() {
-  const { events, bookedEvents } = Route.useLoaderData(); // `events` will have the inferred type from the loader
+  const { events, bookedEvents, meta, currentPage } = Route.useLoaderData(); // `events` will have the inferred type from the loader
   const { t, i18n } = useTranslation();
   const [selectedCategory, setSelectedCategory] = useState<string | undefined>(
     undefined,
@@ -84,7 +95,7 @@ function EventsComponent() {
     // Programmatically navigate to update the search params
     router.navigate({
       to: "/events",
-      search: (old) => ({ ...old, category: category || undefined }),
+      search: (old) => ({ ...old, category: category || undefined, page: 1 }),
       replace: true,
     });
   };
@@ -114,80 +125,87 @@ function EventsComponent() {
 
       {/* Ensure events is an array and has items before mapping */}
       {Array.isArray(events) && events.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {events.map((event) => (
-            <Link
-              key={event.eventId}
-              to="/events/$eventId"
-              params={{ eventId: String(event.eventId) }}
-              className="relative bg-surface rounded-2xl shadow-md overflow-hidden flex flex-col transition duration-300 ease-in-out hover:shadow-lg focus:outline-none focus:ring-primary focus:ring-opacity-50"
-            >
-              {bookedEvents.has(event.eventId) && (
-                <span className="absolute top-2 right-2 bg-success text-white text-xs font-semibold px-2 py-1 rounded-full z-10 shadow">
-                  {t("events.bookedStatus")}
-                </span>
-              )}
-              <img
-                src={
-                  event.image ||
-                  `https://ui-avatars.com/api/?name=${encodeURIComponent(
-                    event.eventName,
-                  )}&background=random&size=400x200`
-                }
-                alt={event.eventName}
-                className="w-full h-48 object-cover"
-              />
-              <div className="p-4 md:p-6 flex flex-col flex-grow">
-                <h2
-                  className="text-xl font-semibold text-text mb-2 truncate"
-                  title={event.eventName}
-                >
-                  {event.eventName}
-                </h2>
-                <p className="text-sm text-muted mb-1">
-                  <span className="font-medium">Date:</span>{" "}
-                  {new Date(event.date).toLocaleDateString()}
-                </p>
-                <p className="text-sm text-muted mb-1">
-                  <span className="font-medium">
-                    {t("myBookings.venuePrefix")}:
-                  </span>{" "}
-                  {event.venue}
-                </p>
-                <p className="text-sm text-muted mb-3">
-                  <span className="font-medium">
-                    {t("myBookings.categoryPrefix")}:
-                  </span>{" "}
-                  {event.category}
-                </p>
-                {event.availableTickets !== undefined &&
-                  event.availableTickets < 10 &&
-                  event.availableTickets !== 0 && (
-                    <p className="text-sm text-warning mb-3">
-                      {t("events.hurryUpMessage", {
-                        availableTickets: event.availableTickets,
-                      })}
-                    </p>
-                  )}
-
-                {event.availableTickets !== undefined &&
-                  event.availableTickets === 0 && (
-                    <p className="text-sm text-danger mb-3">
-                      {t("events.noTicketsAvailable")}
-                    </p>
-                  )}
-                <div className="mt-auto pt-3 border-t border-divider">
-                  <p className="text-lg font-bold text-primary text-right">
-                    $
-                    {typeof event.price === "number"
-                      ? event.price.toFixed(2)
-                      : "N/A"}
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {events.map((event) => (
+              <Link
+                key={event.eventId}
+                to="/events/$eventId"
+                params={{ eventId: String(event.eventId) }}
+                className="relative bg-surface rounded-2xl shadow-md overflow-hidden flex flex-col transition duration-300 ease-in-out hover:shadow-lg focus:outline-none focus:ring-primary focus:ring-opacity-50"
+              >
+                {bookedEvents.has(event.eventId) && (
+                  <span className="absolute top-2 right-2 bg-success text-white text-xs font-semibold px-2 py-1 rounded-full z-10 shadow">
+                    {t("events.bookedStatus")}
+                  </span>
+                )}
+                <img
+                  src={
+                    event.image ||
+                    `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                      event.eventName,
+                    )}&background=random&size=400x200`
+                  }
+                  alt={event.eventName}
+                  className="w-full h-48 object-cover"
+                />
+                <div className="p-4 md:p-6 flex flex-col flex-grow">
+                  <h2
+                    className="text-xl font-semibold text-text mb-2 truncate"
+                    title={event.eventName}
+                  >
+                    {event.eventName}
+                  </h2>
+                  <p className="text-sm text-muted mb-1">
+                    <span className="font-medium">Date:</span>{" "}
+                    {new Date(event.date).toLocaleDateString()}
                   </p>
+                  <p className="text-sm text-muted mb-1">
+                    <span className="font-medium">
+                      {t("myBookings.venuePrefix")}:
+                    </span>{" "}
+                    {event.venue}
+                  </p>
+                  <p className="text-sm text-muted mb-3">
+                    <span className="font-medium">
+                      {t("myBookings.categoryPrefix")}:
+                    </span>{" "}
+                    {event.category}
+                  </p>
+                  {event.availableTickets !== undefined &&
+                    event.availableTickets < 10 &&
+                    event.availableTickets !== 0 && (
+                      <p className="text-sm text-warning mb-3">
+                        {t("events.hurryUpMessage", {
+                          availableTickets: event.availableTickets,
+                        })}
+                      </p>
+                    )}
+
+                  {event.availableTickets !== undefined &&
+                    event.availableTickets === 0 && (
+                      <p className="text-sm text-danger mb-3">
+                        {t("events.noTicketsAvailable")}
+                      </p>
+                    )}
+                  <div className="mt-auto pt-3 border-t border-divider">
+                    <p className="text-lg font-bold text-primary text-right">
+                      $
+                      {typeof event.price === "number"
+                        ? event.price.toFixed(2)
+                        : "N/A"}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            </Link>
-          ))}
-        </div>
+              </Link>
+            ))}
+          </div>
+          <Pagination
+            currentPage={currentPage}
+            totalPages={meta.totalPages}
+            to="/events"
+          />
+        </>
       ) : (
         <Card className="text-center py-10">
           {/* Adjusted padding as Card has its own */}

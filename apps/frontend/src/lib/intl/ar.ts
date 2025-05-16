@@ -179,6 +179,12 @@ const ns1 = {
 	date: {
 		longFormat: "{{date, datetime}}",
 	},
+	pagination: {
+		previous: "السابق",
+		next: "التالي",
+		first: "الأول",
+		last: "الأخير",
+	},
 } as const;
 
 export default ns1;
