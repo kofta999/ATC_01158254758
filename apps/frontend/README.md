@@ -10,6 +10,36 @@
 
 ### ⚙️ Architecture
 
+```mermaid
+flowchart TB
+    %% Frontend Actors
+    User["User (Browser)"]:::external
+    Admin["Admin (Browser)"]:::external
+
+    subgraph "Frontend (apps/frontend)"
+        direction TB
+        SPA["Vite-built SPA"]:::frontend
+        APIClient["Base API Client"]:::frontend
+        AuthHook["Auth Hook"]:::frontend
+        Routes["Route Definitions"]:::frontend
+        UIComponents["UI Components"]:::frontend
+    end
+
+    User -->|"loads SPA"| SPA
+    Admin -->|"loads SPA"| SPA
+
+    %% Clicks (optional - link to GitHub)
+    click SPA "https://github.com/kofta999/atc_01158254758/tree/master/apps/frontend"
+    click APIClient "https://github.com/kofta999/atc_01158254758/blob/master/apps/frontend/src/lib/base-api-client.ts"
+    click AuthHook "https://github.com/kofta999/atc_01158254758/blob/master/apps/frontend/src/lib/hooks/use-auth.tsx"
+    click Routes "https://github.com/kofta999/atc_01158254758/tree/master/apps/frontend/src/routes"
+    click UIComponents "https://github.com/kofta999/atc_01158254758/tree/master/apps/frontend/src/components"
+
+    %% Styles - dark mode optimized
+    classDef external fill:#0f172a,stroke:#cbd5e1,color:#f8fafc,stroke-width:1px
+    classDef frontend fill:#2563eb,stroke:#cbd5e1,color:#f8fafc,stroke-width:1px
+```
+
 - Modular component-based design
 - Clear separation of views, reusable components, and logic
 - Uses React context for auth state and language

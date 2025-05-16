@@ -27,9 +27,7 @@ apps/
 ## ✅ CI/CD
 
 - GitHub Actions build & deploy
-- Vercel (frontend) & Render/Cloud backend
-
----
+- Vercel (frontend and backend)
 
 ### 🚀 Getting Started
 
