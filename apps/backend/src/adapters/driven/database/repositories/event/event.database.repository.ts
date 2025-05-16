@@ -30,7 +30,7 @@ export class EventDatabaseRepository implements EventRepositoryPort {
 				.limit(options.limit)
 				.offset(options.offset);
 
-			return res[0].c;
+			return res.length > 0 ? res[0].c : 0;
 		}
 
 		const res = await this.db.select({ c: count() }).from(eventTable);
