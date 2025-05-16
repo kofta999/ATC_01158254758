@@ -22,6 +22,12 @@ export const getAllEvents = createRoute({
 				.enum(eventCategories)
 				.optional()
 				.openapi({ example: "Music" }),
+			page: z.coerce.number().optional().default(1).openapi({ example: 1 }),
+			perPage: z.coerce
+				.number()
+				.optional()
+				.default(10)
+				.openapi({ example: 10 }),
 		}),
 	},
 	summary: "Get all events",

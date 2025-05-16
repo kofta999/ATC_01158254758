@@ -27,7 +27,7 @@ export class EventCacheRepository implements EventRepositoryPort {
 		return this.cache.generateKey(this.CACHE_KEY_PREFIX, "all*");
 	}
 
-	async create(eventData: Omit<Event, "eventId" >): Promise<Event> {
+	async create(eventData: Omit<Event, "eventId">): Promise<Event> {
 		await this.invalidateCache();
 
 		const newEvent = await this.repository.create(eventData);
@@ -73,10 +73,17 @@ export class EventCacheRepository implements EventRepositoryPort {
 		return eventToDelete;
 	}
 
-	async getAll(options?: GetAllOptions): Promise<Event[]> {
-		const key = options?.category
-			? this.cache.generateKey(this.CACHE_KEY_PREFIX, "all", options.category)
-			: this.cache.generateKey(this.CACHE_KEY_PREFIX, "all");
+	async getAll(options: GetAllOptions): Promise<Event[]> {
+		let key = this.cache.generateKey(
+			this.CACHE_KEY_PREFIX,
+			"all",
+			options.offset,
+			options.limit,
+		);
+
+		if (options.category) {
+			key = this.cache.generateKey(key, options.category);
+		}
 
 		const cached = await this.cache.get<Event[]>(key);
 
@@ -86,9 +93,39 @@ export class EventCacheRepository implements EventRepositoryPort {
 
 		const events = await this.repository.getAll(options);
 
-		await this.cache.set(key, events);
+		if (events.length > 0) {
+			await this.cache.set(key, events);
+		}
 
 		return events;
+	}
+
+	async count(options: GetAllOptions): Promise<number> {
+		let key = this.cache.generateKey(
+			this.CACHE_KEY_PREFIX,
+			"all",
+			options.offset,
+			options.limit,
+			"count",
+		);
+
+		if (options.category) {
+			key = this.cache.generateKey(key, options.category);
+		}
+
+		const cached = await this.cache.get<number>(key);
+
+		if (cached) {
+			return cached;
+		}
+
+		const count = await this.repository.count(options);
+
+		if (count > 0) {
+			await this.cache.set(key, count);
+		}
+
+		return count;
 	}
 
 	invalidateCache(eventId?: number): Promise<void> {

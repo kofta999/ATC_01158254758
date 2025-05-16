@@ -180,6 +180,12 @@ const ns1 = {
 	date: {
 		longFormat: "{{date, datetime}}",
 	},
+	pagination: {
+		previous: "Previous",
+		next: "Next",
+		first: "First",
+		last: "Last",
+	},
 } as const;
 
 export default ns1;

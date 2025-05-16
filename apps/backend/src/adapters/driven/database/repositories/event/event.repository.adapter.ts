@@ -14,6 +14,10 @@ export class EventRepositoryAdapter implements EventRepositoryPort {
 		private repository: EventCacheRepository,
 	) {}
 
+	count(options: GetAllOptions): Promise<number> {
+		return this.repository.count(options);
+	}
+
 	create(event: Event): Promise<Event> {
 		return this.repository.create(event);
 	}
@@ -30,7 +34,7 @@ export class EventRepositoryAdapter implements EventRepositoryPort {
 		return this.repository.delete(eventId);
 	}
 
-	getAll(options?: GetAllOptions): Promise<Event[]> {
+	getAll(options: GetAllOptions): Promise<Event[]> {
 		return this.repository.getAll(options);
 	}
 

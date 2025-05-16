@@ -21,10 +21,31 @@ export class EventService implements EventApiPort {
 		private eventRepository: EventRepositoryPort,
 	) {}
 
-	getEventList(options?: GetEventListOptions): Promise<EventListDTO> {
-		return this.eventRepository.getAll({
-			category: options?.filter.category,
-		});
+	async getEventList({
+		pagination,
+		filter,
+	}: GetEventListOptions): Promise<EventListDTO> {
+		const queryOptions = {
+			category: filter?.category,
+			limit: pagination.limit,
+			offset: pagination.limit * (pagination.page - 1),
+		};
+
+		const eventCount = await this.eventRepository.count(queryOptions);
+		const events = await this.eventRepository.getAll(queryOptions);
+
+		const totalPages = Math.ceil(eventCount / pagination.limit);
+
+		return {
+			data: events,
+			meta: {
+				currentPage: pagination.page,
+				totalPages,
+				totalItems: eventCount,
+				hasNextPage: pagination.page < totalPages,
+				hasPreviousPage: pagination.page > 1,
+			},
+		};
 	}
 
 	async getEventDetails(eventId: number): Promise<EventDetailsDTO> {
