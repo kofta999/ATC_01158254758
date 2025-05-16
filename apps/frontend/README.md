@@ -53,7 +53,7 @@ src/
   routes/             → App routes (auth, dashboard, etc.)
   lib/
     base-api-client/  → Generated API client bindings
-    hooks/            → `useAuth`, `useDarkMode`, etc.
+    hooks/            → `useAuth`, etc.
 ```
 
 ### ✨ General Features

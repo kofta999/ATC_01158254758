@@ -31,6 +31,15 @@ apps/
 
 ---
 
+## 🧠 Design Decisions
+
+- Adopted **hexagonal architecture** for testability & future adapters
+- Used **CSS variables** + `@theme` for dark mode
+- TanStack Router enables modular route-driven file setup
+- Full i18n-ready frontend
+
+---
+
 ## ✅ CI/CD
 
 - GitHub Actions build & deploy

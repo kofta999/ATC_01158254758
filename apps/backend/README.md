@@ -164,12 +164,3 @@ POST   /bookings                 → Create a new booking (User only)
 GET    /bookings                 → Get user's bookings (User only)
 DELETE /bookings/:id             → Delete a booking by ID (User only)
 ```
-
----
-
-## 🧠 Design Decisions
-
-- Adopted **hexagonal architecture** for testability & future adapters
-- Used **CSS variables** + `@theme` for dark mode
-- TanStack Router enables modular route-driven file setup
-- Full i18n-ready frontend
