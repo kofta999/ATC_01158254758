@@ -67,8 +67,8 @@ apps/
 #### 1. Clone the repo
 
 ```bash
-git clone https://github.com/kofta999/ATC_01158254758.git
-cd event-booking-platform
+git clone https://github.com/kofta999/evently.git
+cd evently
 ```
 
 #### 2. Setup environment
